@@ -5,7 +5,6 @@ namespace App\EventListener;
 use App\Entity\Order;
 use App\Enum\StoreConfigEnum;
 use App\Event\TransactionRefundEvent;
-use App\Service\SlackManager;
 use App\Service\StoreInfoService;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
@@ -16,7 +15,6 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 class TransactionEventListener
 {
     public function __construct(
-        private readonly SlackManager          $slackManager,
         private readonly UrlGeneratorInterface $urlGenerator,
         private readonly MailerInterface       $mailer,
         private readonly StoreInfoService      $storeInfoService,

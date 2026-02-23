@@ -15,8 +15,6 @@ use App\Service\CartManagerService;
 use App\Service\CogsHandlerService;
 use App\Service\OrderLogger;
 use App\Service\OrderService;
-use App\Service\SlackManager;
-use App\SlackSchema\PaymentLinkPaidSchema;
 use App\Trait\StoreTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -91,7 +89,6 @@ class AffirmController extends AbstractController
         OrderService $orderService,
         Gateway $gateway,
         SessionInterface $session,
-        SlackManager $slack,
         CogsHandlerService $cogs,
         OrderLogger $logger, 
         VichS3Helper $s3
@@ -118,7 +115,7 @@ class AffirmController extends AbstractController
                 return $this->handleApproveProofFlow($em, $orderId, $checkoutToken, $gateway, $logger, $s3, $cogs);
 
             case 'payment_link':
-                return $this->handlePaymentLinkFlow($em, $transactionId, $checkoutToken, $gateway, $slack, $orderService, $cogs);
+                return $this->handlePaymentLinkFlow($em, $transactionId, $checkoutToken, $gateway, $orderService, $cogs);
 
             default:
                 return $this->json(['success' => false, 'message' => 'Invalid form action.'], 400);
@@ -208,7 +205,7 @@ class AffirmController extends AbstractController
         return $this->json(['success' => false, 'message' => 'Payment failed.'], 500);
     }
     
-    private function handlePaymentLinkFlow($em, $transactionId, $checkoutToken, $gateway, $slack, $orderService, $cogs): JsonResponse
+    private function handlePaymentLinkFlow($em, $transactionId, $checkoutToken, $gateway , $orderService, $cogs): JsonResponse
     {
         $orderTransaction = $em->getRepository(OrderTransaction::class)->findOneBy(['transactionId' => $transactionId]);
         $order = $orderTransaction?->getOrder();
@@ -229,11 +226,6 @@ class AffirmController extends AbstractController
 
         if ($payment['success']) {
             $cogs->syncPaymentLinkAmount($order->getStore(), $order->getOrderAt());
-            $slack->send(SlackManager::SALES, PaymentLinkPaidSchema::get($order, $orderTransaction, [
-                'paymentLink' => $this->generateUrl('payment_link', ['requestId' => $transactionId], UrlGeneratorInterface::ABSOLUTE_URL),
-                'viewOrderLink' => $this->generateUrl('admin_order_overview', ['orderId' => $order->getOrderId()], UrlGeneratorInterface::ABSOLUTE_URL),
-                'proofsLink' => $this->generateUrl('admin_order_proofs', ['orderId' => $order->getOrderId()], UrlGeneratorInterface::ABSOLUTE_URL)
-            ]));
 
             $order = $orderService->updatePaymentStatus($order);
             $em->persist($order);

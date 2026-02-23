@@ -3,8 +3,6 @@
 namespace App\Service\Webhook;
 
 use App\Service\Admin\StripeInvoiceService;
-use App\Service\SlackManager;
-use App\SlackSchema\InvoiceSchema;
 use Stripe\Invoice;
 use Stripe\Webhook;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,7 +12,6 @@ class StripeWebhookService
 {
     public function __construct(
         private readonly StripeInvoiceService $stripeInvoiceService,
-        private readonly SlackManager $slackManager,
         private readonly UrlGeneratorInterface $urlGenerator,
     ) {}
 
@@ -43,28 +40,12 @@ class StripeWebhookService
 
         $invoiceData = $this->buildInvoiceData($invoice, $lineItems);
 
-        $this->notifySlack($invoiceData, [
-            'platform' => 'stripe',
-            'adminInvoiceList' => $this->urlGenerator->generate(
-                'admin_invoice_stripe',
-                [],
-                UrlGeneratorInterface::ABSOLUTE_URL
-            ),
-        ]);
     }
 
     private function handlePaymentFailed(Invoice $invoice): void
     {
         $invoiceData = $this->buildInvoiceData($invoice);
 
-        $this->notifySlack($invoiceData, [
-            'adminInvoiceLink' => $this->urlGenerator->generate(
-                'admin_invoice_stripe',
-                [],
-                UrlGeneratorInterface::ABSOLUTE_URL
-            ),
-            'eventType' => 'invoice.payment_failed',
-        ]);
     }
 
     private function getLineItems(Invoice $invoice): array
@@ -101,13 +82,5 @@ class StripeWebhookService
             'refund_status' => null,
             'items' => $lineItems,
         ];
-    }
-
-    private function notifySlack(array $invoiceData, array $options = []): void
-    {
-        $this->slackManager->send(
-            SlackManager::SALES,
-            InvoiceSchema::get($invoiceData, $options)
-        );
     }
 }

@@ -49,10 +49,8 @@ use App\Service\OrderDeliveryDateService;
 use App\Service\OrderLogger;
 use App\Service\OrderService;
 use App\Service\Reward\RewardService;
-use App\Service\SlackManager;
 use App\Service\Ups\TimeInTransitPayload;
 use App\Service\Ups\UpsTimeInTransitService;
-use App\SlackSchema\AddressUpdatedSchema;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
@@ -220,7 +218,7 @@ class OrderController extends AbstractController
     }
 
     #[Route('/orders/{orderId}/update-address/{type}', name: 'order_update_address')]
-    public function updateAddress(string $orderId, string $type, OrderRepository $repository, Request $request, EntityManagerInterface $entityManager, OrderLogger $orderLogger, FraudRepository $fraudRepository, EventDispatcherInterface $eventDispatcher, SlackManager $slack): Response
+    public function updateAddress(string $orderId, string $type, OrderRepository $repository, Request $request, EntityManagerInterface $entityManager, OrderLogger $orderLogger, FraudRepository $fraudRepository, EventDispatcherInterface $eventDispatcher): Response
     {
         $this->denyAccessUnlessGranted($request->get('_route'));
         $order = $repository->findByOrderId($orderId);
@@ -245,7 +243,6 @@ class OrderController extends AbstractController
                     AddressHelper::formatAddressChange($currentAddress, $newAddress)
                 );
 
-                $slack->send(SlackManager::ADDRESS_CHANGE, AddressUpdatedSchema::get($order, $type, $currentAddress, $newAddress));
                 $orderLogger->setOrder($order);
                 $orderLogger->log(content: $message, type: OrderLog::ORDER_ADDRESS_UPDATED);
             }

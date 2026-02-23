@@ -3,8 +3,6 @@
 namespace App\EventListener;
 
 use App\Constant\NotFoundRouteMapping;
-use App\Service\SlackManager;
-use App\SlackSchema\ErrorLogSchema;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -12,7 +10,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ExceptionListener
 {
-    public function __construct(private readonly SlackManager $slackManager)
+    public function __construct()
     {
     }
 
@@ -43,7 +41,6 @@ class ExceptionListener
 
         $message = $this->prepareMessage($event);
 
-        $this->slackManager->send(SlackManager::ERROR_LOG, ErrorLogSchema::get($message));
         return $event;
     }
 

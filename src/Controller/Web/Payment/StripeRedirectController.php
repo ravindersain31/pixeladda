@@ -9,14 +9,11 @@ use App\Entity\OrderTransaction;
 use App\Service\OrderLogger;
 use Psr\Log\LoggerInterface;
 use App\Enum\OrderStatusEnum;
-use App\Service\SlackManager;
 use App\Enum\PaymentStatusEnum;
 use App\Event\OrderProofApprovedEvent;
 use App\Event\OrderReceivedEvent;
 use App\Service\CartManagerService;
 use Doctrine\ORM\EntityManagerInterface;
-use App\SlackSchema\PaymentDeclineSchema;
-use App\SlackSchema\PaymentLinkPaidSchema;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Lock\LockFactory;
 use Symfony\Component\HttpFoundation\Response;
@@ -27,7 +24,6 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use App\Payment\Stripe\Stripe;
-use App\SlackSchema\OrderApprovedSchema;
 
 class StripeRedirectController extends AbstractController
 {
@@ -41,7 +37,6 @@ class StripeRedirectController extends AbstractController
         private readonly LoggerInterface $logger,
         private readonly EntityManagerInterface $entityManager,
         private readonly OrderLogger $orderLogger,
-        private readonly SlackManager $slackManager,
         private readonly LockFactory $lockFactory,
         private readonly ParameterBagInterface $parameterBag
     ) {
@@ -120,7 +115,6 @@ class StripeRedirectController extends AbstractController
                 $this->entityManager->persist($order);
                 $this->entityManager->flush();
 
-                $this->slackManager->send(SlackManager::ORDER_APPROVED, OrderApprovedSchema::get($order, $urlGenerator));
                 
                 $response['message'] = 'Thank you for approving your proof and completing payment. We will begin processing your order immediately. <br/>Thank you for choosing Yard Sign Plus.';
             } else if (strtoupper($actionOnSuccess) === 'REDIRECT_ON_PAYMENT_LINK') {
@@ -128,11 +122,6 @@ class StripeRedirectController extends AbstractController
                 $transaction->setStatus(PaymentStatusEnum::COMPLETED);
                 $this->entityManager->persist($transaction);
                 $this->entityManager->flush();
-                $this->slackManager->send(SlackManager::SALES, PaymentLinkPaidSchema::get($order, $transaction, [
-                    'paymentLink' => $this->generateUrl('payment_link', ['requestId' => $transaction->getTransactionId()], UrlGeneratorInterface::ABSOLUTE_URL),
-                    'viewOrderLink' => $this->generateUrl('admin_order_overview', ['orderId' => $order->getOrderId()], UrlGeneratorInterface::ABSOLUTE_URL),
-                    'proofsLink' => $this->generateUrl('admin_order_proofs', ['orderId' => $order->getOrderId()], UrlGeneratorInterface::ABSOLUTE_URL)
-                ]));
                 return $this->redirectToRoute('payment_link', ['requestId' => $transaction->getTransactionId()]);
             }
         } else {
@@ -303,14 +292,6 @@ class StripeRedirectController extends AbstractController
         $transaction->setStatus(PaymentStatusEnum::PENDING)
             ->setMetaDataKey('stripeId', $object->id)
             ->setMetaDataKey('paymentIntentId', $object->payment_intent);
-
-        $this->slackManager->send(
-            SlackManager::CSR_DECLINES,
-            PaymentDeclineSchema::get($order, 'Payment intent not paid.', [
-                'viewOrderLink' => $this->generateUrl('admin_order_overview', ['orderId' => $order->getOrderId()], UrlGeneratorInterface::ABSOLUTE_URL),
-                'proofsLink' => $this->generateUrl('admin_order_proofs', ['orderId' => $order->getOrderId()], UrlGeneratorInterface::ABSOLUTE_URL)
-            ])
-        );
 
         $this->orderLogger->log(sprintf(
             'Transaction Id %s status has been updated to %s',

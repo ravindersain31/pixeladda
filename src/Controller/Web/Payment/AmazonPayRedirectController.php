@@ -14,10 +14,6 @@ use App\Payment\AmazonPay\AmazonPay;
 use App\Payment\Gateway;
 use App\Service\CartManagerService;
 use App\Service\OrderService;
-use App\Service\SlackManager;
-use App\SlackSchema\NewProofUploadedSchema;
-use App\SlackSchema\PaymentDeclineSchema;
-use App\SlackSchema\PaymentLinkPaidSchema;
 use App\Trait\StoreTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -27,7 +23,6 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use App\Service\PaymentLinkMailer;
-use App\SlackSchema\OrderApprovedSchema;
 use Symfony\Component\Mailer\MailerInterface;
 
 class AmazonPayRedirectController extends AbstractController
@@ -39,8 +34,7 @@ class AmazonPayRedirectController extends AbstractController
         string $orderId,
         Request $request,
         Gateway $gateway,
-        OrderService $orderService,
-        SlackManager $slackManager,
+        OrderService $orderService,        
         CartManagerService $cartManagerService,
         AmazonPay $amazonPay,
         SessionInterface $session,
@@ -102,20 +96,14 @@ class AmazonPayRedirectController extends AbstractController
 
             if ($payment['success']) {
                 $cartManagerService->issueNewCart();
-                $slackManager->send(SlackManager::SALES, PaymentLinkPaidSchema::get($order, $orderTransaction, [
-                    'paymentLink' => $this->generateUrl('payment_link', ['requestId' => $orderTransaction->getTransactionId()], UrlGeneratorInterface::ABSOLUTE_URL),
-                    'viewOrderLink' => $this->generateUrl('admin_order_overview', ['orderId' => $order->getOrderId()], UrlGeneratorInterface::ABSOLUTE_URL),
-                    'proofsLink' => $this->generateUrl('admin_order_proofs', ['orderId' => $order->getOrderId()], UrlGeneratorInterface::ABSOLUTE_URL)
-                ]));
+                 
 
                 $session->set('newOrder', true);
                 $session->set('orderId', $order->getOrderId());
 
                 return $this->redirectToRoute('order_view', ['oid' => $order->getOrderId()]);
             }
-            $slackManager->send(SlackManager::CSR_DECLINES, PaymentDeclineSchema::get($order, $payment['message'], [
-                'paymentLink' => $this->generateUrl('payment_link', ['requestId' => $orderTransaction->getTransactionId()], UrlGeneratorInterface::ABSOLUTE_URL),
-            ]));
+            
         }
         elseif ($type == 'order_proof_approve') {
             $order = $entityManager->getRepository(Order::class)->findOneBy(['orderId' => $orderId]);
@@ -141,16 +129,11 @@ class AmazonPayRedirectController extends AbstractController
             $order->setTotalAmount($receivedAmount);
             $order->setStatus(OrderStatusEnum::PROOF_APPROVED);
 
-            $slackManager->send(SlackManager::ORDER_APPROVED, OrderApprovedSchema::get($order, $urlGenerator));
 
             if ($payment['success']) {
                 $cartManagerService->issueNewCart();
                 $approvedProof = $entityManager->getRepository(OrderMessage::class)->getLastProofMessage($order);
-                $slackManager->send(SlackManager::DESIGNER, NewProofUploadedSchema::get($order, $approvedProof, [
-                    'customerProofLink' => $this->generateUrl('order_proof', ['oid' => $order->getOrderId()], UrlGeneratorInterface::ABSOLUTE_URL),
-                    'viewOrderLink' => $this->generateUrl('admin_order_overview', ['orderId' => $order->getOrderId()], UrlGeneratorInterface::ABSOLUTE_URL),
-                    'proofsLink' => $this->generateUrl('admin_order_proofs', ['orderId' => $order->getOrderId()], UrlGeneratorInterface::ABSOLUTE_URL)
-                ]));
+                
                 $session->set('newOrder', true);
                 $session->set('orderId', $order->getOrderId());
 
@@ -181,10 +164,6 @@ class AmazonPayRedirectController extends AbstractController
                 return $this->redirectToRoute('order_view', ['oid' => $order->getOrderId()]);
             }
         }
-        $slackManager->send(SlackManager::CSR_DECLINES, PaymentDeclineSchema::get($order, $payment['message'], [
-            'viewOrderLink' => $this->generateUrl('admin_order_overview', ['orderId' => $order->getOrderId()], UrlGeneratorInterface::ABSOLUTE_URL),
-            'proofsLink' => $this->generateUrl('admin_order_proofs', ['orderId' => $order->getOrderId()], UrlGeneratorInterface::ABSOLUTE_URL),
-        ]));
 
         $this->addFlash('error', 'Amazon Pay payment failed: ' . $payment['message']);
         return $this->redirectToRoute('cart'); 

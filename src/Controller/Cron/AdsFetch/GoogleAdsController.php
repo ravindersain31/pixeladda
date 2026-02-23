@@ -3,8 +3,6 @@
 namespace App\Controller\Cron\AdsFetch;
 
 use App\Service\CogsHandlerService;
-use App\Service\SlackManager;
-use App\SlackSchema\ErrorLogSchema;
 use App\Entity\Store;
 use Doctrine\ORM\EntityManagerInterface;
 use Google\Ads\GoogleAds\Lib\OAuth2TokenBuilder;
@@ -31,7 +29,6 @@ class GoogleAdsController extends AbstractController
         private readonly EntityManagerInterface $entityManager,
         private readonly ParameterBagInterface $parameterBag,
         private readonly CogsHandlerService $cogs,
-        private readonly SlackManager $slackManager,
     ) {}
 
     #[Route('/fetch-google-ads-data', name: 'cron_fetch_ads_data')]
@@ -168,6 +165,5 @@ SQL;
             $message = "*General Exception* \n *Message:* ```" . $exception->getMessage() . "```";
         }
 
-        $this->slackManager->send(SlackManager::ERROR_LOG, ErrorLogSchema::get($message));
     }
 }

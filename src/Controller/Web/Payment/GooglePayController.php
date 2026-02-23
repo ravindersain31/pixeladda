@@ -15,9 +15,6 @@ use App\Payment\Gateway;
 use App\Payment\Paypal\Capture;
 use App\Service\CartManagerService;
 use App\Service\OrderService;
-use App\Service\SlackManager;
-use App\SlackSchema\PaymentDeclineSchema;
-use App\SlackSchema\PaymentLinkPaidSchema;
 use App\Trait\StoreTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -34,7 +31,7 @@ class GooglePayController extends AbstractController
     use StoreTrait;
 
     #[Route(path: '/payment/google-pay/checkout', name: 'google_pay_checkout')]
-    public function paypalReturn(Request $request, Gateway $gateway, OrderService $orderService, SessionInterface $session, SlackManager $slackManager, CartManagerService $cartManagerService): Response
+    public function paypalReturn(Request $request, Gateway $gateway, OrderService $orderService, SessionInterface $session, CartManagerService $cartManagerService): Response
     {
         $email = $request->get('email');
         $address = $request->get('shippingAddress');
@@ -73,12 +70,6 @@ class GooglePayController extends AbstractController
                 'redirectUrl' => $this->generateUrl('order_view', ['oid' => $order->getOrderId()], UrlGeneratorInterface::ABSOLUTE_URL),
             ]);
         }
-
-        $slackManager->send(SlackManager::CSR_DECLINES, PaymentDeclineSchema::get($order, $payment['message'], [
-            'viewOrderLink' => $this->generateUrl('admin_order_overview', ['orderId' => $order->getOrderId()], UrlGeneratorInterface::ABSOLUTE_URL),
-            'proofsLink' => $this->generateUrl('admin_order_proofs', ['orderId' => $order->getOrderId()], UrlGeneratorInterface::ABSOLUTE_URL)
-        ]));
-
 
         return $this->json([
             'success' => false,

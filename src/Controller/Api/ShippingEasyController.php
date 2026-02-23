@@ -9,8 +9,6 @@ use App\Event\OrderShippedEvent;
 use App\Service\Admin\ShippingEasy\Signature;
 use App\Service\CogsHandlerService;
 use App\Service\OrderLogger;
-use App\Service\SlackManager;
-use App\SlackSchema\PlainMessageSchema;
 use App\Trait\StoreTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -24,7 +22,7 @@ class ShippingEasyController extends AbstractController
     use StoreTrait;
 
     #[Route(path: '/shipping-easy/callback', name: 'shipping_easy_callback')]
-    public function shippingEasyCallback(Request $request, EntityManagerInterface $entityManager, Signature $signature, ParameterBagInterface $parameterBag, OrderLogger $orderLogger, CogsHandlerService $cogs, SlackManager $slackManager): Response
+    public function shippingEasyCallback(Request $request, EntityManagerInterface $entityManager, Signature $signature, ParameterBagInterface $parameterBag, OrderLogger $orderLogger, CogsHandlerService $cogs): Response
     {
         $shipment = $request->get('shipment', []);
         $apiSignature = $request->get('api_signature', []);
@@ -101,7 +99,6 @@ class ShippingEasyController extends AbstractController
                     }
 
                     $message = 'Order Id: ' . $order->getOrderId() . ' has been shipped via ' . $order->getShippingCarrier() . ' (' . $order->getShippingCarrierService() . ') and tracking number is ' . $order->getShippingTrackingId();
-                    $slackManager->send(SlackManager::SHIPPING_EASY, PlainMessageSchema::get($message));
                 }
             }
         }

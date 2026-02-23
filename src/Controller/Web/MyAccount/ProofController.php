@@ -30,9 +30,6 @@ use App\Helper\VichS3Helper;
 use App\Payment\AmazonPay\AmazonPay;
 use App\Service\SavedPaymentDetailService;
 use App\Service\StoreInfoService;
-use App\Service\SlackManager;
-use App\SlackSchema\AddressUpdatedSchema;
-use App\SlackSchema\OrderApprovedSchema;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class ProofController extends AbstractController
@@ -46,7 +43,7 @@ class ProofController extends AbstractController
     }
 
     #[Route(path: '/order/proof/{oid}', name: 'order_proof')]
-    public function proofs(string $oid, Request $request, EntityManagerInterface $entityManager, MailerInterface $mailer, OrderDeliveryDateService $deliveryDateService, OrderLogger $orderLogger, VichS3Helper $s3Helper, SlackManager $slack): Response
+    public function proofs(string $oid, Request $request, EntityManagerInterface $entityManager, MailerInterface $mailer, OrderDeliveryDateService $deliveryDateService, OrderLogger $orderLogger, VichS3Helper $s3Helper): Response
     {
 
         $order = $entityManager->getRepository(Order::class)->findOneBy(['orderId' => $oid]);
@@ -69,17 +66,11 @@ class ProofController extends AbstractController
             $entityManager->flush();
 
             if (AddressHelper::isAddressUpdated($oldShipping, $newShipping)) {
-                $slack->send(
-                    SlackManager::ADDRESS_CHANGE,
-                    AddressUpdatedSchema::get($order, 'shippingAddress', $oldShipping, $newShipping)
-                );
+                 
             }
 
             if (AddressHelper::isAddressUpdated($oldBilling, $newBilling)) {
-                $slack->send(
-                    SlackManager::ADDRESS_CHANGE,
-                    AddressUpdatedSchema::get($order, 'billingAddress', $oldBilling, $newBilling)
-                );
+                 
             }
 
             $this->addFlash('success', 'Your address has been updated successfully.');
@@ -154,7 +145,7 @@ class ProofController extends AbstractController
     }
 
     #[Route(path: '/order/proof/{oid}/approve', name: 'order_proof_approve')]
-    public function approveProof(string $oid, Request $request, EntityManagerInterface $entityManager, Gateway $gateway, SlackManager $slack, OrderLogger $orderLogger, VichS3Helper $s3Helper, CogsHandlerService $cogs, AmazonPay $amazonPay, UrlGeneratorInterface $urlGenerator, StoreInfoService $storeInfoService, SavedPaymentDetailService $savedPaymentDetailService): Response
+    public function approveProof(string $oid, Request $request, EntityManagerInterface $entityManager, Gateway $gateway, OrderLogger $orderLogger, VichS3Helper $s3Helper, CogsHandlerService $cogs, AmazonPay $amazonPay, UrlGeneratorInterface $urlGenerator, StoreInfoService $storeInfoService, SavedPaymentDetailService $savedPaymentDetailService): Response
     {
 
         $order = $entityManager->getRepository(Order::class)->findOneBy(['orderId' => $oid]);
@@ -194,7 +185,6 @@ class ProofController extends AbstractController
                 $entityManager->persist($order);
                 $entityManager->flush();
 
-                $slack->send(SlackManager::ORDER_APPROVED, OrderApprovedSchema::get($order, $urlGenerator));
 
                 $this->addFlash('success', $thankYouMessage);
                 return $this->redirectToRoute('order_proof', ['oid' => $order->getOrderId()]);
@@ -277,7 +267,6 @@ class ProofController extends AbstractController
                     $entityManager->persist($order);
                     $entityManager->flush();
 
-                    $slack->send(SlackManager::ORDER_APPROVED, OrderApprovedSchema::get($order, $urlGenerator));
                     
                     $this->addFlash('success', $thankYouMessage);
                     $cogs->syncOrderSales($order->getStore(), $order->getOrderAt());
@@ -301,17 +290,11 @@ class ProofController extends AbstractController
             $entityManager->flush();
 
             if (AddressHelper::isAddressUpdated($oldShipping, $newShipping)) {
-                $slack->send(
-                    SlackManager::ADDRESS_CHANGE,
-                    AddressUpdatedSchema::get($order, 'shippingAddress', $oldShipping, $newShipping)
-                );
+                 
             }
 
             if (AddressHelper::isAddressUpdated($oldBilling, $newBilling)) {
-                $slack->send(
-                    SlackManager::ADDRESS_CHANGE,
-                    AddressUpdatedSchema::get($order, 'billingAddress', $oldBilling, $newBilling)
-                );
+
             }
 
             $this->addFlash('success', 'Your address has been updated successfully.');

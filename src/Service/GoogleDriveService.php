@@ -2,7 +2,6 @@
 
 namespace App\Service;
 
-use App\SlackSchema\ErrorLogSchema;
 use Google\Client;
 use Google\Service\Drive;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
@@ -21,7 +20,6 @@ final class GoogleDriveService
         private readonly ParameterBagInterface $parameterBag,
         private readonly KernelInterface       $kernel,
         private readonly RequestStack          $requestStack,
-        private readonly SlackManager          $slackManager
     ) {
         $googleDriveEnv = $this->parameterBag->get('GOOGLE_DRIVE_ENV');
         $encryptionKey = $this->parameterBag->get('GOOGLE_SERVICE_ACCOUNT_ENCRYPTION_KEY');
@@ -234,7 +232,6 @@ final class GoogleDriveService
             $exception->getLine()
         );
 
-        $this->slackManager->send(SlackManager::ERROR_LOG, ErrorLogSchema::get($message));
     }
 
     /**

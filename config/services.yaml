@@ -56,16 +56,6 @@ parameters:
   SHIPPING_EASY_API_KEY: '%env(resolve:SHIPPING_EASY_API_KEY)%'
   SHIPPING_EASY_API_SECRET: '%env(resolve:SHIPPING_EASY_API_SECRET)%'
 
-  SLACK_HOOK_SALES: '%env(resolve:SLACK_HOOK_SALES)%'
-  SLACK_HOOK_DESIGNERS: '%env(resolve:SLACK_HOOK_DESIGNERS)%'
-  SLACK_HOOK_ADWORDS: '%env(resolve:SLACK_HOOK_ADWORDS)%'
-  SLACK_HOOK_CSR_DECLINES: '%env(resolve:SLACK_HOOK_CSR_DECLINES)%'
-  SLACK_HOOK_ERROR_LOG: '%env(resolve:SLACK_HOOK_ERROR_LOG)%'
-  SLACK_HOOK_WAREHOUSE_PRINTER_ALERT: '%env(resolve:SLACK_HOOK_WAREHOUSE_PRINTER_ALERT)%'
-  SLACK_HOOK_SHIPPING_EASY: '%env(resolve:SLACK_HOOK_SHIPPING_EASY)%'
-  SLACK_HOOK_ADDRESS_CHANGE: '%env(resolve:SLACK_HOOK_ADDRESS_CHANGE)%'
-  SLACK_HOOK_ORDER_APPROVED: '%env(resolve:SLACK_HOOK_ORDER_APPROVED)%'
-
   TWILIO_SID: '%env(resolve:TWILIO_SID)%'
   TWILIO_TOKEN: '%env(resolve:TWILIO_TOKEN)%'
 
@@ -150,7 +140,6 @@ services:
     decorates: Symfony\Component\Mailer\MailerInterface
     arguments:
       $mailer: '@App\Service\SafeMailer.inner'
-      $slackManager: '@App\Service\SlackManager'
   App\Service\Ups\AbstractUpsService:
     abstract: true
     arguments:

@@ -15,8 +15,6 @@ use App\Service\CogsHandlerService;
 use App\Service\OrderService;
 use App\Service\PaymentLinkMailer;
 use App\Service\SavedPaymentDetailService;
-use App\Service\SlackManager;
-use App\SlackSchema\PaymentLinkPaidSchema;
 use App\Trait\StoreTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
@@ -34,7 +32,7 @@ class PaymentLinkController extends AbstractController
 
     #[Route(path: '/payment-link/{requestId}', name: 'payment_link')]
     public function paymentLink(Request $request,PaymentLinkMailer $paymentLinkMailer,
-        EntityManagerInterface $entityManager, Gateway $gateway, SlackManager $slackManager, CogsHandlerService $cogs, OrderService $orderService,  AmazonPay $amazonPay, SavedPaymentDetailService $savedPaymentDetailService): Response
+        EntityManagerInterface $entityManager, Gateway $gateway, CogsHandlerService $cogs, OrderService $orderService,  AmazonPay $amazonPay, SavedPaymentDetailService $savedPaymentDetailService): Response
     {
         $requestId = $request->get('requestId');
         $paymentRequest = $entityManager->getRepository(OrderTransaction::class)->findOneBy(['transactionId' => $requestId]);
@@ -115,11 +113,6 @@ class PaymentLinkController extends AbstractController
                     }
 
                     $cogs->syncPaymentLinkAmount($order->getStore(), $order->getOrderAt());
-                    $slackManager->send(SlackManager::SALES, PaymentLinkPaidSchema::get($order, $paymentRequest, [
-                        'paymentLink' => $this->generateUrl('payment_link', ['requestId' => $paymentRequest->getTransactionId()], UrlGeneratorInterface::ABSOLUTE_URL),
-                        'viewOrderLink' => $this->generateUrl('admin_order_overview', ['orderId' => $order->getOrderId()], UrlGeneratorInterface::ABSOLUTE_URL),
-                        'proofsLink' => $this->generateUrl('admin_order_proofs', ['orderId' => $order->getOrderId()], UrlGeneratorInterface::ABSOLUTE_URL)
-                    ]));
 
                     $order = $orderService->updatePaymentStatus($order);
                     $entityManager->persist($order);

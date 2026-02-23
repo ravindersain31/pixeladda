@@ -14,8 +14,6 @@ use App\Service\KlaviyoService;
 use App\Service\OrderService;
 use App\Service\RecaptchaManager;
 use App\Service\SavedPaymentDetailService;
-use App\Service\SlackManager;
-use App\SlackSchema\PaymentDeclineSchema;
 use App\Trait\StoreTrait;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormError;
@@ -37,7 +35,6 @@ class CheckoutController extends AbstractController
         CartManagerService $cartManagerService,
         OrderService $orderService,
         Gateway $gateway,
-        SlackManager $slackManager,
         Session $session,
         KlaviyoService $klaviyoService,
         AmazonPay $amazonPay,
@@ -153,10 +150,6 @@ class CheckoutController extends AbstractController
                 }
                 $this->addFlash('danger', $payment['message']);
 
-                $slackManager->send(SlackManager::CSR_DECLINES, PaymentDeclineSchema::get($order, $payment['message'], [
-                    'viewOrderLink' => $this->generateUrl('admin_order_overview', ['orderId' => $order->getOrderId()], UrlGeneratorInterface::ABSOLUTE_URL),
-                    'proofsLink' => $this->generateUrl('admin_order_proofs', ['orderId' => $order->getOrderId()], UrlGeneratorInterface::ABSOLUTE_URL)
-                ]));
             }
         } else {
             if ($form->isSubmitted() && !$form->isValid()) {

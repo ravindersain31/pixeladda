@@ -10,9 +10,6 @@ use App\Payment\Gateway;
 use App\Service\CartManagerService;
 use App\Service\CogsHandlerService;
 use App\Service\OrderService;
-use App\Service\SlackManager;
-use App\SlackSchema\PaymentDeclineSchema;
-use App\SlackSchema\PaymentLinkPaidSchema;
 use App\Trait\StoreTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -33,7 +30,6 @@ class ApplePayController extends AbstractController
         Gateway $gateway,
         OrderService $orderService,
         SessionInterface $session,
-        SlackManager $slackManager,
         CogsHandlerService $cogs,
         CartManagerService $cartManagerService,
         EntityManagerInterface $em,
@@ -48,18 +44,18 @@ class ApplePayController extends AbstractController
         $isExpress = $request->get('isExpress');
 
         if($isExpress){
-            return $this->handleExpressApplePay($paymentNonce, $shippingContact, $email, $cartManagerService, $orderService, $gateway, $session, $slackManager);
+            return $this->handleExpressApplePay($paymentNonce, $shippingContact, $email, $cartManagerService, $orderService, $gateway, $session);
         }
 
         switch ($formAction) {
             case 'checkout':
-                return $this->handleCheckoutFlow($formData, $paymentNonce, $cartManagerService, $orderService, $gateway, $session, $slackManager);
+                return $this->handleCheckoutFlow($formData, $paymentNonce, $cartManagerService, $orderService, $gateway, $session);
 
             case 'approve_proof':
-                return $this->handleApproveProofFlow($em, $paymentNonce, $orderId, $gateway, $cogs, $slackManager);
+                return $this->handleApproveProofFlow($em, $paymentNonce, $orderId, $gateway, $cogs);
 
             case 'payment_link':
-                return $this->handlePaymentLinkFlow($em, $paymentNonce, $transactionId, $gateway, $slackManager, $orderService, $cogs);
+                return $this->handlePaymentLinkFlow($em, $paymentNonce, $transactionId, $gateway, $orderService, $cogs);
 
             default:
                 return $this->json(['success' => false, 'message' => 'Invalid form action.'], 400);
@@ -73,7 +69,6 @@ class ApplePayController extends AbstractController
         OrderService $orderService,
         Gateway $gateway,
         SessionInterface $session,
-        SlackManager $slackManager
     ): JsonResponse {
         $shippingAddress = $this->makeFormAddress($formData['checkout']['shippingAddress'] ?? []);
         $billingAddress = $this->makeFormAddress($formData['checkout']['billingAddress'] ?? []);
@@ -110,7 +105,6 @@ class ApplePayController extends AbstractController
             ]);
         }
 
-        $slackManager->send(SlackManager::CSR_DECLINES, PaymentDeclineSchema::get($order, $payment['message'], $this->getSlackLinks($order)));
 
         return $this->json([
             'success' => false,
@@ -124,7 +118,6 @@ class ApplePayController extends AbstractController
         string $orderId,
         Gateway $gateway,
         CogsHandlerService $cogs,
-        SlackManager $slackManager
     ): JsonResponse {
         $order = $em->getRepository(Order::class)->findOneBy(['orderId' => $orderId, 'store' => $this->getStore()->id]);
         if (!$order instanceof Order) {
@@ -161,8 +154,6 @@ class ApplePayController extends AbstractController
             ]);
         }
 
-        $slackManager->send(SlackManager::CSR_DECLINES, PaymentDeclineSchema::get($order, $payment['message'], $this->getSlackLinks($order)));
-
         return $this->json([
             'success' => false,
             'message' => $payment['message'] ?? 'Payment failed. Please try again.',
@@ -174,7 +165,6 @@ class ApplePayController extends AbstractController
         string $paymentNonce,
         string $transactionId,
         Gateway $gateway,
-        SlackManager $slackManager,
         OrderService $orderService,
         CogsHandlerService $cogs
     ): JsonResponse {
@@ -197,13 +187,6 @@ class ApplePayController extends AbstractController
 
         if ($payment['success']) {
             $cogs->syncPaymentLinkAmount($order->getStore(), $order->getOrderAt());
-            $slackManager->send(SlackManager::SALES, PaymentLinkPaidSchema::get($order, $orderTransaction, array_merge(
-                $this->getSlackLinks($order),
-                [
-                    'paymentLink' => $this->generateUrl('payment_link', ['requestId' => $transactionId], UrlGeneratorInterface::ABSOLUTE_URL)
-                ]
-            )));
-
             $order = $orderService->updatePaymentStatus($order);
             $em->persist($order);
             $em->flush();
@@ -215,8 +198,6 @@ class ApplePayController extends AbstractController
                 'redirect_url' => $this->generateUrl('payment_link', ['requestId' => $transactionId])
             ]);
         }
-
-        $slackManager->send(SlackManager::CSR_DECLINES, PaymentDeclineSchema::get($order, $payment['message'], $this->getSlackLinks($order)));
 
         return $this->json([
             'success' => false,
@@ -232,7 +213,6 @@ class ApplePayController extends AbstractController
         OrderService $orderService,
         Gateway $gateway,
         SessionInterface $session,
-        SlackManager $slackManager
     ): JsonResponse {
         $billingAddress = $this->makeAppleAddress($shippingContact, $email);
         $shippingAddress = $this->makeAppleAddress($shippingContact, $email);
@@ -270,13 +250,6 @@ class ApplePayController extends AbstractController
                 'redirect_url' => $this->generateUrl('order_view', ['oid' => $order->getOrderId()])
             ]);
         }
-
-        $slackManager->send(SlackManager::CSR_DECLINES, PaymentDeclineSchema::get($order, $payment['message'], [
-            'viewOrderLink' => $this->generateUrl('admin_order_overview', ['orderId' => $order->getOrderId()], UrlGeneratorInterface::ABSOLUTE_URL),
-            'proofsLink' => $this->generateUrl('admin_order_proofs', ['orderId' => $order->getOrderId()], UrlGeneratorInterface::ABSOLUTE_URL),
-        ]));
-
-        $slackManager->send(SlackManager::CSR_DECLINES, PaymentDeclineSchema::get($order, $payment['message'], $this->getSlackLinks($order)));
 
         return $this->json([
             'success' => false,
@@ -336,11 +309,4 @@ class ApplePayController extends AbstractController
         return [$givenName, $familyName];
     }
 
-    private function getSlackLinks(Order $order): array
-    {
-        return [
-            'viewOrderLink' => $this->generateUrl('admin_order_overview', ['orderId' => $order->getOrderId()], UrlGeneratorInterface::ABSOLUTE_URL),
-            'proofsLink' => $this->generateUrl('admin_order_proofs', ['orderId' => $order->getOrderId()], UrlGeneratorInterface::ABSOLUTE_URL),
-        ];
-    }
 }

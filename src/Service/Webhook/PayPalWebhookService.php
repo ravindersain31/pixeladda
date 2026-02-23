@@ -2,15 +2,12 @@
 
 namespace App\Service\Webhook;
 
-use App\Service\SlackManager;
-use App\SlackSchema\InvoiceSchema;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class PayPalWebhookService
 {
     public function __construct(
-        private readonly SlackManager $slackManager,
         private readonly UrlGeneratorInterface $urlGenerator,
     ) {}
 
@@ -34,14 +31,6 @@ class PayPalWebhookService
 
         $invoiceData = $this->buildInvoiceData($invoice, $lineItems);
 
-        $this->notifySlack($invoiceData, [
-            'platform' => 'paypal',
-            'adminInvoiceList' => $this->urlGenerator->generate(
-                'admin_invoice_paypal',
-                [],
-                UrlGeneratorInterface::ABSOLUTE_URL
-            ),
-        ]);
     }
 
     private function getLineItems(array $invoice): array
@@ -99,11 +88,4 @@ class PayPalWebhookService
         ];
     }
 
-    private function notifySlack(array $invoiceData, array $options = []): void
-    {
-        $this->slackManager->send(
-            SlackManager::SALES,
-            InvoiceSchema::get($invoiceData, $options)
-        );
-    }
 }

@@ -5,8 +5,6 @@ namespace App\Controller\Cron\AdsFetch;
 use App\Service\ThirdPartyTokenService;
 use App\Entity\Store;
 use App\Service\CogsHandlerService;
-use App\SlackSchema\ErrorLogSchema;
-use App\Service\SlackManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -28,7 +26,6 @@ class FacebookAdsController extends AbstractController
         private readonly ThirdPartyTokenService $thirdPartyTokenService,
         private readonly EntityManagerInterface $entityManagerInterface,
         private readonly CogsHandlerService     $cogs,
-        private readonly SlackManager           $slackManager,
     ) {
         $this->appId = $this->params->get('FACEBOOK_APP_ID');
         $this->appSecret = $this->params->get('FACEBOOK_APP_SECRET');
@@ -126,14 +123,8 @@ class FacebookAdsController extends AbstractController
             // throw new \RuntimeException('No data found or API response error');
 
         } catch (\RuntimeException $runtimeException) {
-            $message = ErrorLogSchema::get('*Facebook Ads Sync Failure* \n *Error Message:* ' . $runtimeException->getMessage());
-            $this->slackManager->send(SlackManager::ERROR_LOG, $message);
-
             return $this->json(['error' => 'Facebook Ads Sync Failure', 'details' => $runtimeException->getMessage()], 400);
         } catch (\Exception $exception) {
-            $message = ErrorLogSchema::get('*Facebook Ads Sync Failure* \n *Error Message:* ' . $exception->getMessage());
-            $this->slackManager->send(SlackManager::ERROR_LOG, $message);
-
             return $this->json(['error' => 'An unexpected error occurred', 'details' => $exception->getMessage()], 500);
         }
     }

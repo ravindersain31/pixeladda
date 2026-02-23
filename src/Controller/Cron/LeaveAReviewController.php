@@ -4,8 +4,6 @@ namespace App\Controller\Cron;
 
 use App\Entity\Order;
 use App\Message\SendReviewEmailMessage;
-use App\Service\SlackManager;
-use App\SlackSchema\LeaveAReviewSchema;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,7 +15,6 @@ class LeaveAReviewController extends AbstractController
 {
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
-        private readonly SlackManager $slackManager,
         private readonly MessageBusInterface $messageBus
     ){
     }
@@ -72,15 +69,7 @@ class LeaveAReviewController extends AbstractController
             $offset += $chunkSize;
         } while (count($orderIds) === $chunkSize); 
 
-        $dailyReviewsReport = LeaveAReviewSchema::get([
-            'date' => $date->format('Y-m-d H:i:s'),
-            'type' => $type,
-            'totalOrders' => $emailsSentCount + count($errors),
-            'emailsSent' => $emailsSentCount,
-            'errors' => $errors,
-        ]);
 
-        $this->slackManager->send(SlackManager::ERROR_LOG, $dailyReviewsReport);
 
         return $this->json([
             'status' => 'ok',

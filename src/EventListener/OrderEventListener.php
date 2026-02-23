@@ -18,12 +18,8 @@ use App\Event\OrderShippedEvent;
 use App\Service\KlaviyoService;
 use App\Service\OrderDeliveryDateService;
 use App\Service\ReferralService;
-use App\Service\SlackManager;
 use App\Service\SubscriberService;
 use App\Service\TwilioService;
-use App\SlackSchema\NewOrderSchema;
-use App\SlackSchema\NewProofUploadedSchema;
-use App\SlackSchema\RequestedChangesSchema;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
@@ -32,7 +28,6 @@ use Symfony\Component\Mime\Address;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use App\Service\Reward\RewardService;
 use App\Enum\PaymentStatusEnum;
-use App\SlackSchema\OrderApprovedSchema;
 use App\Service\StoreInfoService;
 use App\Service\GoogleDriveService;
 use App\Service\OrderLogger;
@@ -40,7 +35,6 @@ use App\Service\OrderLogger;
 readonly class OrderEventListener
 {
     public function __construct(
-        private SlackManager             $slackManager,
         private UrlGeneratorInterface    $urlGenerator,
         private MailerInterface          $mailer,
         private EntityManagerInterface   $entityManager,
@@ -60,12 +54,7 @@ readonly class OrderEventListener
     {
         $order = $event->getOrder();
 
-        $this->slackManager->send(SlackManager::SALES, NewOrderSchema::get($order, [
-            'totalSummary' => true,
-            'viewOrderLink' => $this->urlGenerator->generate('admin_order_overview', ['orderId' => $order->getOrderId()], UrlGeneratorInterface::ABSOLUTE_URL),
-            'proofsLink' => $this->urlGenerator->generate('admin_order_proofs', ['orderId' => $order->getOrderId()], UrlGeneratorInterface::ABSOLUTE_URL)
-        ], $this->entityManager));
-
+ 
         if ($order->isSample() || $order->isWireStake() || $order->isWireStakeAndSampleAndBlankSign() || $order->isBlankSign()) {
             // $order->setProofApprovedAt(new \DateTimeImmutable());
             // $order->setStatus(OrderStatusEnum::PROOF_APPROVED);
@@ -74,14 +63,7 @@ readonly class OrderEventListener
         } else {
             if ($order->isNeedProof() === false) {
                 $this->orderLogger->setOrder($order)->log('Proof pre-approved by customer.', null, OrderLog::PROOF_PRE_APPROVED);
-                $this->slackManager->send(SlackManager::ORDER_APPROVED, OrderApprovedSchema::get($order, $this->urlGenerator));
-            }
-            $this->slackManager->send(SlackManager::DESIGNER, NewOrderSchema::get($order, [
-                'totalSummary' => false,
-                'showPrice' => false,
-                'viewOrderLink' => $this->urlGenerator->generate('admin_order_overview', ['orderId' => $order->getOrderId()], UrlGeneratorInterface::ABSOLUTE_URL),
-                'proofsLink' => $this->urlGenerator->generate('admin_order_proofs', ['orderId' => $order->getOrderId()], UrlGeneratorInterface::ABSOLUTE_URL)
-            ], $this->entityManager));
+             }
         }
 
         if ($order->getOrderChannel()->isEmailNotification()) {
@@ -186,14 +168,8 @@ readonly class OrderEventListener
                 $this->entityManager->persist($order);
                 $this->entityManager->flush();
 
-                $this->slackManager->send(SlackManager::ORDER_APPROVED, OrderApprovedSchema::get($order, $this->urlGenerator));
             }
         } else {
-            $this->slackManager->send(SlackManager::DESIGNER, NewProofUploadedSchema::get($order, $uploadedProof, [
-                'customerProofLink' => $this->urlGenerator->generate('order_proof', ['oid' => $order->getOrderId()], UrlGeneratorInterface::ABSOLUTE_URL),
-                'viewOrderLink' => $this->urlGenerator->generate('admin_order_overview', ['orderId' => $order->getOrderId()], UrlGeneratorInterface::ABSOLUTE_URL),
-                'proofsLink' => $this->urlGenerator->generate('admin_order_proofs', ['orderId' => $order->getOrderId()], UrlGeneratorInterface::ABSOLUTE_URL)
-            ]));
         }
 
         if(!$order->getIsApproved()) {
@@ -269,10 +245,6 @@ readonly class OrderEventListener
 
         $changesRequested = $event->getChangesRequested();
 
-        $this->slackManager->send(SlackManager::DESIGNER, RequestedChangesSchema::get($order, $changesRequested->getContent(), [
-            'viewOrderLink' => $this->urlGenerator->generate('admin_order_overview', ['orderId' => $order->getOrderId()], UrlGeneratorInterface::ABSOLUTE_URL),
-            'proofsLink' => $this->urlGenerator->generate('admin_order_proofs', ['orderId' => $order->getOrderId()], UrlGeneratorInterface::ABSOLUTE_URL)
-        ]));
 
         if(!$order->getIsApproved()) {
             if ($order->getOrderChannel()->isEmailNotification()) {

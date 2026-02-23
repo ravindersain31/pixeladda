@@ -4,9 +4,7 @@ namespace App\Controller\Cron\AdsFetch;
 
 use App\Entity\Store;
 use App\Service\CogsHandlerService;
-use App\Service\SlackManager;
 use App\Service\ThirdPartyTokenService;
-use App\SlackSchema\ErrorLogSchema;
 use Doctrine\ORM\EntityManagerInterface;
 use Microsoft\BingAds\Auth\ApiEnvironment;
 use Microsoft\BingAds\Auth\AuthorizationData;
@@ -50,7 +48,6 @@ class BingAdsController extends AbstractController
 
     public function __construct(
         ParameterBagInterface                   $parameterBag,
-        private readonly SlackManager           $slackManager,
         private readonly EntityManagerInterface $entityManager,
         private readonly CogsHandlerService     $cogs,
         private readonly ThirdPartyTokenService $thirdPartyTokenService,
@@ -120,8 +117,6 @@ class BingAdsController extends AbstractController
             } else {
                 $errorMessage = $fault->getMessage();
             }
-            $message = ErrorLogSchema::get('*BingAds Sync Failure* \n *Requested Date:* ' . $date->format('M d, Y') . ' \n *Error Message:* ' . $errorMessage);
-            $this->slackManager->send(SlackManager::ERROR_LOG, $message);
         }
 
         $this->entityManager->close();
@@ -174,8 +169,6 @@ class BingAdsController extends AbstractController
                 }
             }
         } else {
-            $message = ErrorLogSchema::get('*BingAds Sync Failure* \n *Error Message:* Report generation failed, report status is: ' . $reportRequest->reportRequestStatus->Status);
-            $this->slackManager->send(SlackManager::ERROR_LOG, $message);
         }
     }
 
@@ -235,8 +228,6 @@ class BingAdsController extends AbstractController
     {
         $refreshToken = $this->thirdPartyTokenService->getBingAdsRefreshToken();
         if (!$refreshToken) {
-            $message = ErrorLogSchema::get('*BingAds Sync Failure* \n *Error Message:* Refresh Token is not available. Please generate one and store into the ThirdPartyToken entity. Follow: https://learn.microsoft.com/en-us/advertising/guides/authentication-oauth-get-tokens?view=bingads-13');
-            $this->slackManager->send(SlackManager::ERROR_LOG, $message);
         } else {
             $authentication = (new OAuthDesktopMobileAuthCodeGrant())
                 ->withClientId($this->clientId)
@@ -256,8 +247,6 @@ class BingAdsController extends AbstractController
             try {
                 $this->serviceClient = new ServiceClient(ServiceClientType::ReportingVersion13, $authorizationData, $this->environment);
             } catch (\Exception $e) {
-                $message = ErrorLogSchema::get('*BingAds Sync Failure* \n *Error Message:* Unable to setup the service client: '.$e->getMessage());
-                $this->slackManager->send(SlackManager::ERROR_LOG, $message);
             }
         }
     }

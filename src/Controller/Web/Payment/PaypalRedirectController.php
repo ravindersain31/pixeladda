@@ -12,9 +12,6 @@ use App\Event\OrderReceivedEvent;
 use App\Payment\Paypal\Capture;
 use App\Service\CartManagerService;
 use App\Service\CogsHandlerService;
-use App\Service\SlackManager;
-use App\SlackSchema\OrderApprovedSchema;
-use App\SlackSchema\PaymentLinkPaidSchema;
 use App\Trait\StoreTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
@@ -30,7 +27,7 @@ class PaypalRedirectController extends AbstractController
     use StoreTrait;
 
     #[Route(path: '/payment/paypal/return/{orderId}', name: 'paypal_return', defaults: ['orderId' => 0])]
-    public function paypalReturn(#[MapEntity(mapping: ['orderId' => 'orderId'])] Order $order, Request $request, Capture $capture, EntityManagerInterface $entityManager, SlackManager $slackManager, CartManagerService $cartManagerService, CogsHandlerService $cogs, UrlGeneratorInterface $urlGenerator): Response
+    public function paypalReturn(#[MapEntity(mapping: ['orderId' => 'orderId'])] Order $order, Request $request, Capture $capture, EntityManagerInterface $entityManager , CartManagerService $cartManagerService, CogsHandlerService $cogs, UrlGeneratorInterface $urlGenerator): Response
     {
         $token = $request->get('token');
         $payerId = $request->get('PayerID');
@@ -74,18 +71,12 @@ class PaypalRedirectController extends AbstractController
                     $entityManager->persist($order);
                     $entityManager->flush();
 
-                    $slackManager->send(SlackManager::ORDER_APPROVED, OrderApprovedSchema::get($order, $urlGenerator));
 
                     $response['message'] = 'Thank you for approving your proof and completing payment. We will begin processing your order immediately. <br/>Thank you for choosing Yard Sign Plus.';
                     $cogs->syncOrderSales($order->getStore(), $order->getOrderAt());
                 } else if (strtoupper($actionOnSuccess) === 'REDIRECT_ON_PAYMENT_LINK') {
                     $this->addFlash('success', $response['message']);
                     $cogs->syncPaymentLinkAmount($order->getStore(), $order->getOrderAt());
-                    $slackManager->send(SlackManager::SALES, PaymentLinkPaidSchema::get($order, $transaction, [
-                        'paymentLink' => $this->generateUrl('payment_link', ['requestId' => $transaction->getTransactionId()], UrlGeneratorInterface::ABSOLUTE_URL),
-                        'viewOrderLink' => $this->generateUrl('admin_order_overview', ['orderId' => $order->getOrderId()], UrlGeneratorInterface::ABSOLUTE_URL),
-                        'proofsLink' => $this->generateUrl('admin_order_proofs', ['orderId' => $order->getOrderId()], UrlGeneratorInterface::ABSOLUTE_URL)
-                    ]));
                     return $this->redirectToRoute('payment_link', ['requestId' => $transaction->getTransactionId()]);
                 }
             } else {

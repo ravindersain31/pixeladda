@@ -2,7 +2,6 @@
 
 namespace App\Service;
 
-use App\SlackSchema\ErrorLogSchema;
 use Symfony\Component\Mercure\Update;
 use Symfony\Component\Mercure\HubInterface;
 use Psr\Log\LoggerInterface;
@@ -14,7 +13,6 @@ class MercureEventPublisher
         private readonly HubInterface $hub,
         private readonly LoggerInterface $logger,
         private readonly ParameterBagInterface $parameterBag,
-        private readonly SlackManager $slackManager
     ) {
     }
 
@@ -57,7 +55,6 @@ class MercureEventPublisher
             ];
 
             $this->logger->error("Error publishing event to Mercure", $errorDetails);
-            $this->slackManager->send(SlackManager::ERROR_LOG, ErrorLogSchema::get($errorDetails));
         }
     }
 
