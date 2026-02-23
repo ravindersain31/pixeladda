@@ -1,0 +1,146 @@
+<style>
+    .collection-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        margin-bottom: 10px;
+        background: #f2f2f2;
+        padding: 10px;
+        border-radius: 10px;
+    }
+</style>
+<div {{ stimulus_controller('checkout', {formName: 'new_order'}) }}>
+    {{ form_start(form) }}
+    {{ form_errors(form) }}
+    <div class="row mb-3">
+        <div class="col-3">
+            {{ form_row(form.orderId) }}
+        </div>
+        <div class="col-2">
+            {{ form_row(form.orderChannel) }}
+        </div>
+        <div class="col-4">
+            {{ form_row(form.orderTag) }}
+        </div>
+        <div class="col-3">
+            {{ form_row(form.parent) }}
+        </div>
+        <div class="col-12 my-2">
+            <h6>Items</h6>
+            <div data-prototype="{{ form_widget(form.items.vars.prototype)|e('html_attr') }}">
+                {% for item in form.items %}
+                    <div class="collection-item">
+                        <div id="new_order_items_0" class="row flex-fill me-1 order-item">
+                            {{ form_row(item.name) }}
+                            {{ form_row(item.width) }}
+                            {{ form_row(item.height) }}
+                            {{ form_row(item.quantity) }}
+                            {{ form_row(item.price) }}
+                            {{ form_row(item.sides) }}
+                            {{ form_row(item.shapes) }}
+                            {{ form_row(item.imprintColor) }}
+                            {{ form_row(item.grommets) }}
+                            {{ form_row(item.grommetColor) }}
+                            {{ form_row(item.frame) }}
+                        </div>
+                        {% if loop.index != 1 %}
+                            <button type="button" class="btn btn-danger btn-sm mb-5 remove-item">X</button>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+
+            <button type="button" class="btn btn-primary btn-sm add-item">
+                <i class="fa fa-plus"></i> Add Item
+            </button>
+        </div>
+        <div class="col-12 col-md-6 pe-md-0 shipping-billing-form">
+            <div class="card shadow-none">
+                <div class="card-header p-2 align-items-center d-flex justify-content-between">
+                    {{ form_label(form.shippingAddress) }}
+                    <button
+                            type="button"
+                            class="btn btn-primary p-1 text-nowrap"
+                            data-loading="action(copyToBillingAddress)|addClass(disabled)"
+                            data-action="click->checkout#copyToBillingAddress"
+                    >
+                        Copy To Billing Address
+                    </button>
+                </div>
+                <div class="card-body p-2">
+                    {{ form_errors(form.shippingAddress) }}
+                    {{ include('admin/order/add/_address.html.twig', {
+                        address: form.shippingAddress,
+                        target: 'shippingAddress',
+                    }) }}
+                    <div class="d-flex justify-content-center">
+                        <button
+                                type="button"
+                                class="btn btn-primary btn-sm text-nowrap"
+                                data-loading="action(copyToBillingAddress)|addClass(disabled)"
+                                data-action="click->checkout#copyToBillingAddress"
+                        >
+                            Copy To Billing Address
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-6 shipping-billing-form mt-2 mt-md-0">
+            <div class="card shadow-none">
+                <div class="card-header p-2 align-items-center d-flex justify-content-between">
+                    {{ form_label(form.billingAddress) }}
+                    <div class="btn border-light p-1 text-nowrap">&nbsp;</div>
+                </div>
+                <div class="card-body p-2">
+                    {{ form_errors(form.billingAddress) }}
+                    {{ include('admin/order/add/_address.html.twig', {
+                        address: form.billingAddress,
+                        target: 'billingAddress',
+                    }) }}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 mt-2">
+            {{ form_row(form.shippingDate) }}
+        </div>
+        <div class="col-12 mt-2">
+            {{ form_row(form.additionalNotes) }}
+        </div>
+    </div>
+    {{ form_widget(form) }}
+    {{ form_end(form) }}
+
+    <script type="text/javascript">
+        document.addEventListener('DOMContentLoaded', function () {
+            const collectionHolder = document.querySelector('div[data-prototype]');
+            const addButton = document.querySelector('.add-item');
+            let index = collectionHolder.children.length;
+
+            addButton.addEventListener('click', function () {
+                const prototype = collectionHolder.dataset.prototype.replace(/__name__/g, index);
+                const newForm = document.createElement('div');
+                newForm.innerHTML = prototype;
+                newForm.classList.add('collection-item');
+
+                // Add delete button to the newly added item
+                const removeButton = document.createElement('button');
+                removeButton.type = 'button';
+                removeButton.classList.add('btn', 'btn-danger', 'btn-sm', 'mb-5', 'remove-item');
+                removeButton.textContent = 'X';
+                newForm.appendChild(removeButton);
+
+                collectionHolder.appendChild(newForm);
+                index++;
+            });
+
+            collectionHolder.addEventListener('click', function (e) {
+                if (e.target && e.target.classList.contains('remove-item')) {
+                    e.target.closest('.collection-item').remove();
+                }
+            });
+        });
+
+    </script>
+</div>

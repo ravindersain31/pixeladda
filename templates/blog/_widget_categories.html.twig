@@ -1,0 +1,51 @@
+<div class="accordion-item">
+    <h2 class="accordion-header" id="headingYardSigns">
+        <button class="accordion-button collapsed" type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#collapseYardSigns"
+                aria-expanded="false"
+                aria-controls="collapseYardSigns">
+            Browse Products
+        </button>
+    </h2>
+    <div id="collapseYardSigns" class="accordion-collapse collapse"
+        aria-labelledby="headingYardSigns"
+        data-bs-parent="#blogSidebarAccordion">
+        <div class="accordion-body p-0">
+            <ul class="list-group list-group-flush">
+                {% for category in categoriesList %}
+                    {% set radioId = 'product_cat_' ~ category.slug %}
+                    <li class="list-group-item d-flex align-items-center ms-2">
+                        <input
+                            type="radio"
+                            id="{{ radioId }}"
+                            name="yard_sign_category"
+                            class="form-check-input me-2 category-radio radio-button"
+                            data-url="{{ url('category_shop',{c: category.slug}) }}"
+                        >
+                        <label class="form-check-label" for="{{ radioId }}">
+                            {{ category.name }}
+                        </label>
+                    </li>
+                {% endfor %}
+
+                {% for category in additionalCategoriesList %}
+                    {% set radioId = 'product_cat_extra_' ~ category.slug %}
+
+                    <li class="list-group-item d-flex align-items-center ms-2">
+                        <input
+                            type="radio"
+                            id="{{ radioId }}"
+                            name="yard_sign_category"
+                            class="form-check-input me-2 category-radio radio-button"
+                            data-url="{{ url('category_shop',{c: category.slug}) }}"
+                        >
+                        <label class="form-check-label" for="{{ radioId }}">
+                            {{ category.name }}
+                        </label>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>

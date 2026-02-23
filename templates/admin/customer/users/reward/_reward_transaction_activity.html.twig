@@ -1,0 +1,11 @@
+<strong>{{ reward.getActionTypeLabel(transaction.actionType) }}<br></strong>
+{% if transaction.metaData.activity is defined %}
+  {% for activity in transaction.metaData.activity %}
+    {# Name: {{ activity.name }}<br>
+    Email: {{ activity.email }}<br> #}
+    {% if activity.performedBy is defined %}
+      Action Performed By: {{ activity.performedBy }}<br>
+    {% endif %}
+  {% endfor %}<br>
+{% endif %}
+At: {{ transaction.createdAt|date('M d, Y h:i A') }}

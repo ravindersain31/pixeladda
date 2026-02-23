@@ -1,0 +1,115 @@
+{% extends 'base.html.twig' %}
+
+{% set title = metaData.title ?: metaData.pageTitle ~ ' - ' ~ storeInfo.storeTitle %}
+
+{% block title %}{{ title }}{% endblock %}
+{% block metaData %}
+    {% set pageUrl = url('customer_photos') %}
+    {% set pageImageUrl = null %}
+
+    {% include 'common/_page_meta.html.twig' with {
+        title: title,
+        metaData: metaData,
+        pageUrl: pageUrl,
+        pageImageUrl: pageImageUrl,
+        storeInfo: storeInfo
+    } %}
+{% endblock %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.11.6/viewer.min.css" integrity="sha512-za6IYQz7tR0pzniM/EAkgjV1gf1kWMlVJHBHavKIvsNoUMKWU99ZHzvL6lIobjiE2yKDAKMDSSmcMAxoiWgoWA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+{% endblock %}
+{% block body %}
+    {{ include('common/common_mobile_bar.html.twig',{commonBarText: 'Order Online Or Call Now',commonBarTele: '+1-877-958-1499'}) }}
+    {{ include('customer/common/top_section.html.twig',{ section: { name: 'CUSTOMER PHOTOS', active: true, class: 'customer-photos'}}) }}
+    {{ include('common/highlights.html.twig') }}
+    {{ include('common/breadcrumb.html.twig', { breadcrumbs: [
+        { name: 'Customer Photos', active: true }
+    ]}) }}
+
+    <section class="customer-photos-section pt-3">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 mb-md-2">
+                    <div class="row justify-content-center">
+                        <div class="col-md-10 d-flex gap-2">
+                            <div class="upload-btn">
+                                <a href="javascript:void(0)" class="btn ysp-common-submit-btn px-2" data-bs-toggle="modal" data-bs-target="#photoModal">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                    ADD A PHOTO
+                                </a>
+                            </div>
+                            <div class="upload-btn">
+                                <a href="javascript:void(0)" class="btn ysp-common-submit-btn px-2" data-bs-toggle="modal" data-bs-target="#videoModal">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                    ADD A VIDEO
+                                </a>
+                            </div>
+                        </div>
+                        {{ include('common/flash.html.twig') }}
+                        <div class="col-md-10">
+                            <div class="row mt-md-2 mt-2" id="customer-photos-viewer">
+                                {% for photos in customerPhotos %}
+                                    <div class="col-6 col-sm-6 col-md-4 p-1 photos-div">
+                                        <a href="javascript:void(0);">
+                                            {% set defaultUrl = 'https://placehold.co/400x400?text=Awaiting+Image' %}
+                                            {% if 'video' in photos.photo.mimeType %}
+                                                {% set videoUrl = photos.photo.name is null ? defaultUrl : vich_s3.asset_video(photos, 'photoFile') %}
+                                                <video src="{{ videoUrl }}" width="100px" class="img-fluid card-img-top review-photos lazy loaded object-fit-contain" controls>
+                                            {% else %}
+                                                {% set imageUrl = photos.photo.name is null ? defaultUrl : vich_s3.asset(photos, 'photoFile', '1000x1000') %}
+                                                <img alt="customer photos of {{storeInfo.storeName}}" src="{{imageUrl}}" data-src="{{imageUrl}}" class="img-fluid card-img-top review-photos lazy loaded">
+                                            {% endif %}
+                                        </a>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-2 mt-md-3 d-flex justify-content-center">
+                        {{ knp_pagination_render(customerPhotos) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+<div class="modal fade " id="photoModal" data-bs-backdrop="no" data-bs-keyboard="false" tabindex="-1" aria-labelledby="photoModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="photoModalLabel">Add Photo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                {% include 'editor/page-header/_customer_photo_form.html.twig' %}
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade " id="videoModal" data-bs-backdrop="no" data-bs-keyboard="false" tabindex="-1" aria-labelledby="videoModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="videoModalLabel">Add Video</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                {% include 'editor/page-header/_customer_video_form.html.twig' %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block javascripts %}
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            if (window.location.hash === "#photoModal") {
+                $('#photoModal').modal('show');
+            }
+            if (window.location.hash === "#videoModal") {
+                $('#videoModal').modal('show');
+            }
+        });
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.11.6/viewer.min.js" integrity="sha512-EC3CQ+2OkM+ZKsM1dbFAB6OGEPKRxi6EDRnZW9ys8LghQRAq6cXPUgXCCujmDrXdodGXX9bqaaCRtwj4h4wgSQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+{% endblock %}

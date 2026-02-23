@@ -1,0 +1,248 @@
+$ysp-purple: var(--primary-color);
+$light-gray: #f3f3f3;
+$dark-text: #1a1a1a;
+$hover-bg: #e0d2f5;
+$border-color: #ddd;
+$box-shadow-color: #000;
+
+#bulk-order-faq-category-list {
+    background-color: $ysp-purple;
+    padding: 0;
+    border-radius: 8px;
+    overflow: hidden;
+
+    .list-group-item {
+        background-color: $light-gray;
+        color: $dark-text;
+        font-weight: 500;
+        padding: 12px 16px;
+        border: none;
+        border-bottom: 1px solid $border-color;
+        transition: background-color 0.3s ease, color 0.3s ease;
+
+        &:hover {
+            background-color: $hover-bg;
+            color: $ysp-purple;
+        }
+
+        &.active {
+            background-color: $ysp-purple;
+            color: #fff;
+            font-weight: bold;
+        }
+
+        &:first-child {
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+        }
+
+        &:last-child {
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+        }
+    }
+}
+
+.text-sgs-purple {
+    color: $ysp-purple;
+}
+
+.btn-sgs-white:hover {
+    color: #fff;
+    background-color: $ysp-purple !important;
+    border-color: $ysp-purple !important;
+}
+
+.btn-sgs-white {
+    color: #000;
+    background-color: #fff;
+    border-color: $ysp-purple !important;
+    border-radius: 3px;
+    box-shadow: 2px 3px 2px #000;
+    font-weight: 500;
+}
+
+.bulk-order-row {
+    display: flex;
+    flex-wrap: nowrap;
+}
+
+.bulk-gap-list {
+    background-color: #fff !important;
+}
+
+.btn-ysp-white {
+    color: $dark;
+    background-color: #fff;
+    border-color: $ysp-purple;
+    border-radius: 3px;
+    box-shadow: 2px 3px 2px $box-shadow-color;
+    font-weight: 500;
+
+    &:hover {
+        background-color: $ysp-purple;
+        color: white;
+        border-color: $ysp-purple;
+    }
+}
+
+.text-ysp-purple {
+    color: $ysp-purple;
+}
+
+.bulk-order h3 {
+    font-size: 25px;
+    font-weight: 600;
+    color: #343a40;
+}
+
+.bulk-order {
+    width: 100%;
+    padding-right: 15px;
+    padding-left: 15px;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+
+.datepicker {
+    font-size: 14px;
+    z-index: 20000000001 !important;
+    /* Ensure it's above modals */
+}
+
+.datepicker table {
+    width: 100%;
+}
+
+.datepicker-dropdown {
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.datepicker td,
+.datepicker th {
+    padding: 6px;
+    width: 36px;
+    height: 36px;
+    text-align: center;
+    border-radius: 6px;
+}
+
+.datepicker td.active,
+.datepicker td.active:hover {
+    background-color: #007bff !important;
+    color: white !important;
+}
+
+.datepicker td.today {
+    background-color: #f0f8ff;
+    border: 1px solid #007bff;
+}
+
+.datepicker td.day:hover {
+    background-color: #e9ecef;
+    cursor: pointer;
+}
+
+.input-group-calender {
+    position: absolute;
+    right: 10px;
+    font-size: 20px;
+    pointer-events: none;
+    top: 4px;
+}
+
+.bulk-list-item svg {
+    width: 20px;
+    height: 15px;
+    fill: #555;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+ .categories-bulk-section .bg-purple {
+    background-color:$ysp-purple;
+}
+
+.categories-bulk-section span {
+    font-size: 15px;
+    font-weight: 700;
+}
+.bulk-img-event {
+    width: 100px !important;
+}
+@media screen and (max-width: 768px){
+    .categories-bulk-section .small-category-label span {
+        font-size: 10px;
+    }
+    .categories-bulk-section span {
+        font-weight: 500;   
+    }
+    .bulk-img-event{
+        width: 50px !important;
+    }
+}
+
+        
+
+@media screen and (max-width: 576px) {
+    .bulk-list-item {
+        display: block;
+        margin-bottom: 16px;
+    }
+
+    .custom-bulk-info {
+        p {
+            font-size: 14px !important;
+        }
+
+        a,
+        h3 {
+            font-size: 20px !important;
+        }
+    }
+
+    .bulk-list-item .phone svg,
+    .live-chat svg {
+        height: 18px;
+        width: 18px;
+    }
+
+    .bulk-list-item svg {
+        width: 20px;
+        height: 15px;
+        fill: #555;
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+}
+
+@media screen and (max-width: 768px),
+screen and (max-width: 820px),
+screen and (max-width: 912px) {
+    .custom-bulk-info {
+
+        a,
+        h3 {
+            font-size: 16px !important;
+        }
+    }
+
+   .custom-bulk-info svg {
+        width: 20px;
+        height: 15px;
+        fill: 555;
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+    /* .bulk-img{
+        width: 100px !important;
+    } */
+}

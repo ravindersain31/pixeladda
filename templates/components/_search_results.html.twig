@@ -1,0 +1,55 @@
+{% set ProductEnum = enum('App\\Enum\\ProductEnum') %}
+<div id="search-container-1" class="search-container-1">
+    <div class="list-group">
+        {% if this.products %}
+            {% for product in this.products|slice(0, 5) %}
+                {% set productImage = vich_s3.asset(product, 'imageFile','200x200') %}
+                {% if product.sku == ProductEnum.SAMPLE.value %}
+                    <a href="{{ url('order_sample') }}" class="list-group-item list-group-item-action">
+                        <img src="{{ productImage }}" alt="{{ product.name }}" class="list-group-item-icon" />
+                        <div class="d-flex flex-column">
+                            <span class="fw-bold">{{ product.name }}</span>
+                            <span class="text-uppercase text-muted fs-13">{{ product.primaryCategory.name }}</span>
+                        </div>
+                    </a>
+                {% elseif product.sku == ProductEnum.WIRE_STAKE.value %}
+                    <a href="{{ url('order_wire_stake') }}" class="list-group-item list-group-item-action">
+                        <img src="{{ productImage }}" alt="{{ product.name }}" class="list-group-item-icon" />
+                        <div class="d-flex flex-column">
+                            <span class="fw-bold">{{ product.name }}</span>
+                            <span class="text-uppercase text-muted fs-13">{{ product.primaryCategory.name }}</span>
+                        </div>
+                    </a>
+                {% elseif product.sku == ProductEnum.BLANK_SIGN.value %}
+                    <a href="{{ url('order_blank_sign') }}" class="list-group-item list-group-item-action">
+                        <img src="{{ productImage }}" alt="{{ product.name }}" class="list-group-item-icon" />
+                        <div class="d-flex flex-column">
+                            <span class="fw-bold">{{ product.name }}</span>
+                            <span class="text-uppercase text-muted fs-13">{{ product.primaryCategory.name }}</span>
+                        </div>
+                    </a>
+                {% else %}
+                    <a href="{{ url('editor', {
+                            category: product.primaryCategory.slug,
+                            productType: product.productType.slug,
+                            sku: product.sku
+                        }) }}" class="list-group-item list-group-item-action">
+                        <img src="{{ productImage }}" alt="{{ product.name }}" class="list-group-item-icon" />
+                        <div class="d-flex flex-column">
+                            <span class="fw-bold">{{ product.name }}</span>
+                            <span class="text-uppercase text-muted fs-13">{{ product.primaryCategory.name }}</span>
+                        </div>
+                    </a>
+                {% endif %}
+            {% endfor %}
+                <a href="{{ url('category_shop',{search: this.query}) }}" class="list-group-item view-more">
+                    View More
+                </a>
+
+        {% elseif (this.notFound) %}
+            <a href="javascript:;" class="list-group-item list-group-item-action">
+                No results found matching "{{this.query}}"
+            </a>
+        {% endif %}
+    </div>
+</div>

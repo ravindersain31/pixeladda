@@ -1,0 +1,87 @@
+{% extends 'base.html.twig' %}
+{% block title %}Shipment Tracking - {{storeInfo.storeTitle}}{% endblock %}
+{% block metaData %}
+    <meta property="og:title" content="Shipment Tracking - {{storeInfo.storeName}}">
+    <meta property="title" content="Shipment Tracking - {{storeInfo.storeName}}">
+    <link rel="canonical" href="{{ url('shipment_track') }}"/>
+{% endblock %}
+{% block body %}
+    <div class="page-header">
+        <div class="page-header-content">
+            Shipment Tracking
+        </div>
+    </div>
+    <div class="container my-2 my-md-3">
+        {% include 'common/flash.html.twig' %}
+        <div class="header-tracking">
+            <div class="row">
+                <h5 class="col-12 col-sm-6">Tracking No: {{ shipment.trackingId }}</h5>
+                <h5 class="col-12 col-sm-6 text-end">Order ID: {{ order.orderId }}</h5>
+            </div>
+            {% set orderShipments = order.orderShipments %}
+            {% if orderShipments | length > 1 %}
+                <div class="text-center py-3">
+                    <p>This order has multiple shipments, here is the list of all shipments linked with this order.</p>
+                    {% if orderShipments | length > 0 %}
+
+                        <table class="table table-light mb-0">
+                            <tr>
+                                <th>#</th>
+                                <th>Carrier</th>
+                                <th>Tracking ID</th>
+                                <th>Status</th>
+                                <th class="text-end">Last Updated At</th>
+                            </tr>
+                            {% for shipment in orderShipments %}
+                                <tr>
+                                    <td>{{ loop.index }}</td>
+                                    <td>{{ shipment.selectedRate.carrier }} {{ shipment.selectedRate.service }}</td>
+                                    <td>
+                                        <a target="_blank"
+                                           href="{{ shippingTracking.generateTrackingLink(shipment.selectedRate.carrier, {trk: shipment.trackingId, oid: order.orderId }) }}">
+                                            {{ shipment.trackingId }}
+                                        </a>
+                                    </td>
+                                    <td class="text-capitalize">{{ shipment.status | replace({'_': ' '}) | capitalize }}</td>
+                                    <td class="text-end">{{ shipment.updatedAt | date('M d, Y h:i A') }}</td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+        {% if not byOrderOnly %}
+            <h5 class="mt-4 mb-3">Tracking Details</h5>
+            <div class="mt-2 border-top">
+                {% if shipment.status != 'unknown' %}
+                    <ul class="list-group list-group-flush">
+                        {% for history in shipment.tracking | reverse %}
+                            <li class="list-group-item">
+                                <div class="d-flex justify-content-between">
+                                    <span class="fw-bold">Date:</span>
+                                    <span>{{ history.datetime|date('M d, Y h:i A') }}</span>
+                                </div>
+                                {% if history.tracking_location.zip is not null %}
+                                    <div class="d-flex justify-content-between">
+                                        <span class="fw-bold">Location:</span>
+                                        <span>
+                                    {{ history.tracking_location.city | default('') }},
+                                    {{ history.tracking_location.state | default('') }},
+                                    {{ history.tracking_location.country | default('') }}
+                                            {{ history.tracking_location.zip }}
+                                </span>
+                                    </div>
+                                {% endif %}
+                                <div class="d-flex justify-content-between">
+                                    <span class="fw-bold">Status:</span>
+                                    <span class="text-capitalize">{{ history.message }}</span>
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

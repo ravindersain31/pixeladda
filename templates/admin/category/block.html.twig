@@ -1,0 +1,30 @@
+{% extends 'admin/base.html.twig' %}
+{% block title %}Edit Category Blocks for {{ category.name }}{% endblock %}
+{% block pageTitle %}
+	<div class="page-header-icon">
+		<i class="fas fa-dashboard"></i>
+	</div>
+	Category Blocks for {{ category.name }}
+{% endblock %}
+
+{% block body %}
+	<div class="card card-header-actions mx-auto shadow-none">
+		<div class="card-header">
+			Category Blocks for {{ category.name }}
+			<div>
+				<a href="{{ url('admin_categories') }}" class="btn btn-light btn-sm">
+					<i class="fas fa-arrow-left me-2"></i>
+					List
+				</a>
+			</div>
+		</div>
+		<div class="card-body">
+			{{ component('AdminCategoryBlocksForm', {
+                form: form,
+                category: category,
+            }) }}
+		</div>
+	</div>
+
+{% endblock %}
+

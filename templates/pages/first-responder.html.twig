@@ -1,0 +1,103 @@
+{% extends 'base.html.twig' %}
+{% set title = metaData.title ?: metaData.pageTitle ~ ' - ' ~ storeInfo.storeTitle %}
+
+{% block title %}{{ title }}{% endblock %}
+{% block metaData %}
+    {% set pageUrl = url('first_responder') %}
+    {% set pageImageUrl = null %}
+
+    {% include 'common/_page_meta.html.twig' with {
+        title: title,
+        metaData: metaData,
+        pageUrl: pageUrl,
+        pageImageUrl: pageImageUrl,
+        storeInfo: storeInfo
+    } %}
+{% endblock %}
+
+{% block body %}
+{{ include('common/common_mobile_bar.html.twig',{commonBarText: 'Order Online Or Call Now',commonBarTele: '+1-877-958-1499'}) }}
+
+<section class="header-design-one container-fluid header-cart-page ">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="d-flex justify-content-center align-items-center">
+                <h2 class="heading-title">First Responder</h2>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="container mt-3 mb-4">
+    <div class="row">
+        <div class="col-12 first-responder">
+            <div class="text-center mt-2">
+                <h3>{{storeInfo. storeName}} First Responder Discount</h3>
+            <p class="mt-3">
+                When a crisis strikes, you’re the one who takes the call. You make the right decisions at the right moment to save lives. Communities thrive on the work you do every day.
+            </p>
+            <p>
+                At <b>{{storeInfo. storeName}}</b> we know those first responders like you work hard to keep everyone safe. To show our appreciation, we’re offering a <b>15% discount</b> across our store to first responders as a small thank you for the work you do every day.
+                Enjoy <span class="first-responder-heading"> Extra 15% OFF </span> <span class="text-center"> on <b>{{storeInfo. storeName}}</b> storewide with no minimum purchase. </span>
+            </p>
+            </div>
+            <p>We are offering this discount to:</p>
+            <ul>
+                <li><b>First responders</b><br>
+                    <ul>
+                        <li class="mx-3">Police officers (Local, State, and Federal) - Active &amp; Retired</li>
+                        <li class="mx-3">EMRs, EMTs, Paramedics, and other emergency personnel</li>
+                        <li class="mx-3">Fire Fighters (Local, State, and Federal)</li>
+                        <li class="mx-3">Fire Marshals</li>
+                    </ul>
+                </li>
+            </ul>
+            <p><i>**If you’re a first responder and by any chance, we haven’t included your position in the list above, feel free to send us an email to further assist you.**</i></p>
+            
+        </div>
+    </div>
+
+    <div class="col-12">
+        <section class="ysp-faq-wrapper mt-4 mb-4">
+            <div class="container">
+                <div class="row">
+                    {% for title, faqsList in faqs %}
+                        {% set parentAccordionId = random(99,999) %}
+                        <div class="col-md-12 mb-3">
+                            <div class="faq-title">
+                                <h3 class="text-uppercase">{{ title }}</h3>
+                            </div>
+                            <div class="accordion ysp-accordion mt-3" id="accordionFaq{{ parentAccordionId }}">
+                                {% for question, answer in faqsList %}
+                                    {% set index = random(99,999) %}
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header" id="yspAccordion{{ index }}">
+                                            <button class="accordion-button collapsed p-2"
+                                                    type="button"
+                                                    data-bs-toggle="collapse"
+                                                    data-bs-target="#yspAccord{{ index }}"
+                                                    aria-expanded="false"
+                                                    aria-controls="yspAccord{{ index }}">
+                                                {{ question|raw }}
+                                            </button>
+                                        </h2>
+                                        <div id="yspAccord{{ index }}"
+                                             class="accordion-collapse collapse"
+                                             aria-labelledby="yspAccordion{{ index }}"
+                                             data-bs-parent="#accordionFaq{{ parentAccordionId }}">
+                                            <div class="accordion-body">
+                                                <p>{{ answer|raw }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+        <p class="ps-3">From all of us at <b>{{storeInfo. storeName}}</b>, we thank you all for your tireless service. From our family to yours, thank you, and stay safe!</p>
+    </div>
+</div>
+{% endblock %}

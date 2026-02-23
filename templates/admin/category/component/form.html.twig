@@ -1,0 +1,91 @@
+<div {{ attributes }}>
+    {{ form_start(form) }}
+    {{ form_errors(form) }}
+    <div class="row mb-3">
+        <div class="col-12 col-md-12">
+            {{ form_row(form.name) }}
+        </div>
+        <div class="col-12 col-md-2">
+            {{ form_row(form.skuInitial) }}
+        </div>
+        <div class="col-12 col-md-2">
+            {{ form_row(form.sortPosition) }}
+        </div>
+            <div class="col-12 col-md-3">
+            {{ form_row(form.displayLayout) }}
+        </div>
+        <div class="col-12 col-md-5 {% if form.vars.data.subCategories is not empty %}d-none{% endif %}">
+            {{ form_row(form.parent) }}
+        </div>
+        {% if form.slug is defined %}
+            <div class="col-12">
+                {{ form_row(form.slug) }}
+            </div>
+        {% endif %}
+        <div class="col-12">
+            {{ form_row(form.store) }}
+        </div>
+        <div class="col-12 col-md-3">
+            {{ form_row(form.bannerFile) }}
+        </div>
+        <div class="col-12 col-md-3">
+            {{ form_row(form.mobileBannerFile) }}
+        </div>
+        <div class="col-12 col-md-3">
+            {{ form_row(form.thumbnailFile) }}
+        </div>
+        <div class="col-12 col-md-3">
+            {{ form_row(form.categoryThumbnailFile) }}
+        </div>
+         <div class="col-12 col-md-3">
+            {{ form_row(form.promoBannerFile) }}
+        </div>
+        <div class="col-12 col-md-3">
+            {{ form_row(form.promoMobileBannerFile) }}
+        </div>
+        <div class="col-12 col-md-3">
+            {{ form_row(form.promoThumbnailFile) }}
+        </div>
+        <div class="col-12 col-md-3">
+            {{ form_row(form.promoCategoryThumbnailFile) }}
+        </div>
+    </div>
+    <div class="bg-light p-3 rounded mb-3">
+        <h6>Category Meta Data</h6>
+        <div class="row">
+            <div class="col-12 col-md-6">
+                {{ form_row(form.seoMeta.title) }}
+            </div>
+            <div class="col-12 col-md-6">
+                {{ form_row(form.seoMeta.headerTag) }}
+            </div>
+            <div class="col-12">
+                {{ form_row(form.seoMeta.description) }}
+            </div>
+            <div class="col-12">
+                {{ form_row(form.seoMeta.keywords) }}
+            </div>
+        </div>
+    </div>
+    <div class="bg-light p-3 rounded mb-3">
+        <h6>Product Meta Data</h6>
+        <p>Any information updated here will override in all products of this category. Each field is optional, if left blank, it will use the default.</p>
+        <div class="row">
+            <div class="col-12 col-md-6">
+                {{ form_row(form.productSeoMeta.title) }}
+            </div>
+            <div class="col-12 col-md-6">
+                {{ form_row(form.productSeoMeta.headerTag) }}
+            </div>
+            <div class="col-12">
+                {{ form_row(form.productSeoMeta.description) }}
+            </div>
+            <div class="col-12">
+                {{ form_row(form.productSeoMeta.keywords) }}
+            </div>
+        </div>
+    </div>
+    {{ form_row(form.description) }}
+    {{ form_row(form.productDescription) }}
+    {{ form_end(form) }}
+</div>

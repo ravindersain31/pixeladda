@@ -1,0 +1,43 @@
+<script type="application/ld+json">
+    {
+    "@context": "https://schema.org",
+    "@graph": [
+        {
+            "@type": "CollectionPage",
+            "@id": "{{ app.request.schemeAndHttpHost }}/{{ category.slug }}/#webpage",
+            "url": "{{ app.request.schemeAndHttpHost }}/{{ category.slug }}",
+            "name": "{{ category.name }}",
+            "headline": "{{ category.seoMeta.headerTag | default(category.name ~ ' Custom Yard Signs') }}",
+            "description": {{ categoryDescription | json_encode(constant('JSON_UNESCAPED_SLASHES')) | raw }},
+            "inLanguage": "{{ app.request.locale|default('en') }}",
+            "isPartOf": { "@id": "{{ app.request.schemeAndHttpHost }}/#website" }
+        },
+        {
+        "@type": "BreadcrumbList",
+        "@id": "{{ app.request.schemeAndHttpHost }}/{{ category.slug }}/#breadcrumbs",
+        "itemListElement": [
+            {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "{{ app.request.schemeAndHttpHost }}/"
+            },
+            {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "{{ category.name }}",
+                "item": "{{ app.request.schemeAndHttpHost }}/{{ category.slug }}"
+            }
+        ]
+        },
+        {
+            "@type": "ItemList",
+            "@id": "{{ app.request.schemeAndHttpHost }}/{{ category.slug }}/#itemlist",
+            "name": "{{ category.name }} - Products",
+            "itemListOrder": "https://schema.org/ItemListOrderAscending",
+            "numberOfItems": {{ schemaItemList|length }},
+            "itemListElement": {{ schemaItemList | json_encode(constant('JSON_UNESCAPED_SLASHES')) | raw }}
+        }
+    ]
+    }
+</script>

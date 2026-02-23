@@ -1,0 +1,24 @@
+<button class="btn badge bg-secondary text-decoration-none text-white" data-bs-toggle="offcanvas"
+        data-bs-target="#order_action_{{ order.orderId }}" aria-controls="order_action_{{ order.orderId }}">
+    Create Shipment
+</button>
+<div class="text-start offcanvas offcanvas-end" tabindex="-1"
+     id="order_action_{{ order.orderId }}"
+     aria-labelledby="order_action_{{ order.orderId }}_label">
+    <div class="offcanvas-header p-2">
+        <div class="heading-offcanvas d-flex justify-content-center align-items-center">
+            <h5 class="offcanvas-title me-1" id="order_action_{{ order.orderId }}_label">
+                {{ order.orderId }}
+            </h5>
+            <a href="{{ url('admin_order_overview', {orderId: order.orderId }) }}"
+               target="_blank"
+               class="badge bg-primary small text-decoration-none text-white">
+                <i class="fa fa-external-link"></i> View
+            </a>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body p-2 border-top">
+        {{ component('CreateShipment', { order }) }}
+    </div>
+</div>

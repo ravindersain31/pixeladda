@@ -1,0 +1,15 @@
+<div {{ attributes }} class="me-1 d-inline">
+    <h6 class="d-inline">
+        <input 
+            class="form-check-input m-0 focus-none" 
+            data-model="proof_printed"
+            type="checkbox"
+            name="proof_printed"
+            data-action="live#action:prevent"
+            data-live-action-param="save"
+            id="proof-printed-{{ warehouseOrder.id }}"
+            {% if this.getProofPrinted %} checked {% endif %}
+            {% if is_granted('warehouse_update_proof_printed_update') %}{% else %}disabled{% endif %}
+        >
+    </h6>
+</div>

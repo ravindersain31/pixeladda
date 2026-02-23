@@ -1,0 +1,258 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    {% if category is defined and category.seoMeta.title %}
+        {{ category.seoMeta.title }}
+    {% else %}
+        Shop - YardSignPlus
+    {% endif %}
+{% endblock %}
+{% block metaData %}
+<link rel="canonical" href="{{ url('category_shop') }}" />
+{% endblock %}
+
+{% block body %}
+    {{ include('common/common_mobile_bar.html.twig',{commonBarText: 'Order Online Or Call Now',commonBarTele: '+1-877-958-1499'}) }}
+    {% set breadcrumbs = [
+            {
+                name: categories|first|capitalize ?: 'Search',
+                link: categories|first ? url('category', {slug: categories|first}) : null
+            },
+            { name: 'Shop', active: true }
+        ]
+    %}
+    {% if isMobile() %}
+        {{ include('common/breadcrumb.html.twig', { breadcrumbs: breadcrumbs}) }}
+        <div class="overnight-delivery-text"><button type="button" class="ysp-delivery-calendar-btn fw-600 text-white mt-0 fs-13" data-bs-toggle="modal" data-bs-target="#ysp-delivery-calendar">Overnight Delivery&nbsp;</button>Available</div>
+    {% endif %}
+    <div class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+            {% if isAllCategorySelected %}
+                {% set DesktopBanner = storeInfo.isPromoStore ? "https://static.yardsignplus.com/shop_banner.png" : 'https://static.yardsignplus.com/shop_banner.png'%}
+                {% set MobileBanner =  storeInfo.isPromoStore ? "https://static.yardsignplus.com/shop_banner_mobile.png" : 'https://static.yardsignplus.com/shop_banner_mobile.png'%}
+
+                <picture>
+                    <source srcset="{{ MobileBanner }}" media="(max-width: 776px)">
+                    <img fetchpriority="high" width="1905" height="338" class="d-block w-100 h-auto" src="{{ DesktopBanner }}" alt="YSP Contact Banner">
+                </picture>
+            {% else %}
+               {% set firstCategory = categories|first ? ysp.getCategoryBySlug(categories|first) : null %}
+
+                {% set DesktopImage = storeInfo.isPromoStore 
+                    ? "https://static.yardsignplus.com/storage/promo-store/Promo-Search%20Products-Banner-Desktop.webp" 
+                    : "https://static.yardsignplus.com/product_20230111-61a88be0-91af-11ed-8659-659ab59e89bb.jpg" 
+                %}
+
+                {% set MobileImage = storeInfo.isPromoStore 
+                    ? "https://static.yardsignplus.com/storage/promo-store/Promo-Search%20Products-Banner-.webp" 
+                    : "https://static.yardsignplus.com/search_mob_static.jpg" 
+                %}
+
+                {% set bannerFile = (firstCategory is not null) 
+                    ? (storeInfo.isPromoStore 
+                        ? vich_s3.asset(firstCategory, 'promoBannerFile') 
+                        : vich_s3.asset(firstCategory, 'bannerFile')) 
+                    : null 
+                %}
+
+                {% set mobileBannerFile = (firstCategory is not null) 
+                    ? (storeInfo.isPromoStore 
+                        ? vich_s3.asset(firstCategory, 'promoMobileBannerFile') 
+                        : vich_s3.asset(firstCategory, 'mobileBannerFile')) 
+                    : null 
+                %}
+
+                {% set DesktopBanner = (firstCategory is null) ? DesktopImage : bannerFile %}
+                {% set MobileBanner = (firstCategory is null) ? MobileImage : mobileBannerFile %}
+
+                {% set currentCategory = ysp.getCategoryBySlug(categories|first) %}
+                {% if MobileBanner is null and DesktopBanner is null %}
+                    <div class="page-header">
+                        <div class="page-header-content">
+                            {{currentCategory.name}}
+                        </div>
+                    </div>
+                {% else %}
+                    <picture>
+                        <source srcset="{{ MobileBanner }}" media="(max-width: 776px)">
+                        <img fetchpriority="high" width="1905" height="338" class="d-block w-100 h-auto" src="{{ DesktopBanner }}" alt="YSP Contact Banner">
+                    </picture>
+                {% endif %}
+            {% endif %}
+            </div>
+        </div>
+    </div>
+    {{ include('common/drawerPurchaseOrder.html.twig') }}
+    {% if not isMobile() %}
+        {{ include('common/breadcrumb.html.twig', { breadcrumbs: breadcrumbs}) }}
+    {% endif %}
+    {{ include('common/uploadCustom.html.twig') }}
+    <div class="py-2">
+        {{ include('common/custom_search.html.twig') }}
+    </div>
+    <div class="pay-later-sec-banner">
+        {{ include('common/paylater.html.twig') }}
+    </div>
+    <div class="d-block d-xl-none mt-2">
+        {{ include('common/createCustom.html.twig') }}
+    </div>
+    <div class="container-fluid p-3 py-2 shop-page">
+        <div class="choose-category-list">
+            <div class="row">
+                <div class="col-xxl-2 col-xl-3">
+                    <div class="accordion" id="yspAccordionSidebar">
+                        {% set openCategoryAccordion = 'show' %}
+                        {% set openSubCategoryAccordion = '' %}
+                        
+                        {% if categories|length > 0 and subChoices|length > 0 %}
+                            {% set openCategoryAccordion = 'show' %}
+                            {% set openSubCategoryAccordion = '' %}
+                        {% elseif categories|length > 0 %}
+                            {% set openCategoryAccordion = 'show' %}
+                        {% endif %}
+                        {{ form_start(filterForm, { attr: {onchange: 'this.submit()'}}) }}
+                        <div class="accordion-item category-accordion">
+                            <h2 class="accordion-header" id="headingOne">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                    Product Styles
+                                </button>
+                            </h2>
+                            <div id="collapseOne" class="accordion-collapse collapse {{openCategoryAccordion}}" aria-labelledby="headingOne"
+                                 data-bs-parent="#yspAccordionSidebar">
+                                <div class="ysp-product-styles-sidebar-wrapper">
+                                    <nav class="navbar-expand-xl">
+                                        <div class="offcanvas-body flex-column">
+                                           <span class="ysp-divider"></span>
+                                            {# {% if isAllCategorySelected %}
+                                                <a href="{{ url('category_shop') }}" class="select-all-btn">
+                                                    Unselect All
+                                                </a>
+                                            {% else %}
+                                                <a href="{{ url('category_shop', {c: choices | join(',')}) }}" class="select-all-btn">
+                                                    Select All
+                                                </a>
+                                            {% endif %}  #}
+                                            {{ form_widget(filterForm.c) }}
+                                        </div>
+                                    </nav>
+                                </div>
+                            </div>
+                        </div>
+                        {% if filterForm.sc is defined and filterForm.sc.vars.choices | length > 0 %}
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingTwo">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+                                    SubCategories
+                                </button>
+                            </h2>
+                            <div id="collapseTwo" class="accordion-collapse collapse {{openSubCategoryAccordion}}" aria-labelledby="headingTwo"
+                                 data-bs-parent="#yspAccordionSidebar">
+                                <div class="ysp-product-styles-sidebar-wrapper">
+                                    <nav class="navbar-expand-xl">
+                                        <div class="offcanvas-body flex-column">
+                                            <span class="ysp-divider"></span>
+                                            {% set parentCategorySlug = app.request.get('c') ?? '' %}
+                                            {% if isAllSubCategorySelected %}
+                                                <a href="{{ url('category_shop', {c: parentCategorySlug}) }}" class="select-all-btn">
+                                                    Unselect All
+                                                </a>
+                                            {% else %}
+                                                <a href="{{ url('category_shop', {c: parentCategorySlug, sc: subChoices | join(',')}) }}" class="select-all-btn">
+                                                    Select All
+                                                </a>
+                                            {% endif %}                                  
+                                            {{ form_widget(filterForm.sc) }}
+                                        </div>
+                                    </nav>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        {{ form_end(filterForm) }}
+                    </div>
+                </div>
+                <div class="col-xxl-10 col-xl-9 pages-with-filtertab">
+                    <div class="d-none d-xl-block mb-2">
+                        {{ include('common/createCustom.html.twig') }}
+                    </div>
+                    {% if categories|first is empty %}
+                        <div class="text-center d-block info-text {% if products|length == 0 %}mt-3{% else %}mt-0{% endif %} mt-sm-0">
+                            Not what you’re looking for? Please try again or call us anytime at
+                            <a href="tel: {{ ysp.getHomePageConstants('INFO_TELEPHONE') }}" class="text-decoration-none text-decoration-none ysp-purple display-inline-block">{{ ysp.getHomePageConstants('INFO_TELEPHONE') }}</a>,
+                                email
+                            <a href="mailto: {{ ysp.getHomePageConstants('INFO_EMAIL') }}" class="text-decoration-none ysp-purple display-inline-block">{{ ysp.getHomePageConstants('INFO_EMAIL') }}</a>,
+                                or message us on our
+                            <a href="javascript:void(Tawk_API.toggle())" class="text-decoration-none ysp-purple display-inline-block"> Live Chat</a>
+                        </div>
+                    {% endif %}
+                    <div id="category-list-badge">
+                        {% for category in categories %}
+                            <span class="badge bg-success">{{ ysp.getCategoryBySlug(category).name | upper }}</span>
+                        {% endfor %}
+                        {% for category in subCategories %}
+                            <span class="badge bg-success">{{ ysp.getCategoryBySlug(category).name | upper }}</span>
+                        {% endfor %}
+                    </div>
+                    <div class="product-block">
+                        <div class="row product-list card-group" id="shop-product-list">
+                        {% if products | length > 0 or virtualProducts | length > 0 %}
+                            {% set selectedCategories = (categories|default([]))|merge(subCategories|default([])) %}
+
+                            {% set showAll = selectedCategories is empty %}
+                            {% set customImage = storeInfo.isPromoStore ? "	https://static.yardsignplus.com/product/img/CUSTOM/692ea135b6beb023851400.webp":  "https://static.yardsignplus.com/product/img/CUSTOM/68e895a937b78694760714.webp" %}
+                            {% set customImageBHC = storeInfo.isPromoStore ? "https://static.yardsignplus.com/storage/editor/6915955340549825287294-1-6943e0dc73675652974529.webp":  "https://static.yardsignplus.com/product/img/BHC-CUSTOM/fit-in/980x736/68906d35d4846092311243.webp" %}
+                            {% set customImageDC = storeInfo.isPromoStore ? "https://static.yardsignplus.com/product/img/DC-CUSTOM/6916fad0e2bde969328232.webp":  "https://static.yardsignplus.com/storage/images/fit-in/980x736/shop-Die-Cut.webp" %}
+                            {% set customImageHF = storeInfo.isPromoStore ? "https://static.yardsignplus.com/product/img/HF-CUSTOM/69141f8542c18909554286.webp":  "https://static.yardsignplus.com/storage/images/fit-in/980x736/shop-Hand-Fans.webp" %}
+
+                            {{ include('common/_custom_product_card.html.twig',{
+                                product: ysp.getDefaultCustomProduct,
+                                buttonText: 'Customize Now',
+                                customImageUrl: customImage
+                            }) }}
+
+                            {{ include('common/_custom_product_card.html.twig',{
+                                product: ysp.getDefaultCustomProduct('CUSTOM-SIGN'),
+                                buttonText: 'Customize Now',
+                            }) }}
+
+                            {{ include('common/_custom_product_card.html.twig', {
+                                product: ysp.getDefaultCustomProduct('BHC-CUSTOM'),
+                                buttonText: 'Customize Now',
+                                customImageUrl: customImageBHC
+                            }) }}
+
+                            {{ include('common/_custom_product_card.html.twig',{
+                                product: ysp.getDefaultCustomProduct('DC-CUSTOM'),
+                                buttonText: 'Customize Now',
+                                customImageUrl: customImageDC
+                            }) }}
+
+                            {% if ysp.isEnableProduct('HF-CUSTOM') %}                                
+                                {{ include('common/_custom_product_card.html.twig', {
+                                    product: ysp.getDefaultCustomProduct('HF-CUSTOM'),
+                                    buttonText: 'Customize Now', 
+                                    customImageUrl: customImageHF
+                                }) }}
+                            {% endif %}
+
+                            {% include 'shop/_virtual_products.html.twig' %}
+                            <div {{ react_component('ProductList')}} style="display: contents;"></div>
+                        {% else %}
+                            {{ include('common/_not_found.html.twig') }}
+                            {{ include('common/customer_photos.html.twig')}}
+                        {% endif %}
+                        </div>
+                    </div>
+                    {# <div id="loader" class="text-center">
+                        <img src="{{ asset('app-images/spinner.svg') }}" alt="Loading Spinner">
+                    </div> #}
+                </div>
+            </div>
+        </div>
+    </div>
+    {{ include('common/_delivery_calendar.html.twig') }}
+{% endblock %}
+

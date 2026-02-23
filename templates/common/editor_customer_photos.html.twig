@@ -1,0 +1,32 @@
+<div class="editor-customer-photos-slider mt-1" id="editor-customer-photos-slider">
+    <label class="mt-4 font-bold categories-label">
+        <span class="our-label">OUR</span>
+        SATISFIED CUSTOMERS
+    </label>
+    <div class="swiper customer-item editor-customer-photos-swiper">
+        <div class="swiper-wrapper editor-customer-wrapper">
+            {% for key,photos in ysp.getCustomerPhotos(ysp.storeId, true)|slice(0,6) %}
+                <div class="slide-image image customer-image search-customer-image">
+                    {% set defaultUrl = 'https://placehold.co/400x400?text=Awaiting+Image' %}
+                    {% if 'video' in photos.photo.mimeType %}
+                        {% set videoUrl = photos.photo.name is null ? defaultUrl : vich_s3.asset_video(photos, 'photoFile') %}
+                        <video src="{{ videoUrl }}" width="100px" class="img-fluid card-img-top review-photos lazy loaded object-fit-contain" controls>
+                    {% else %}
+                        {% set imageUrl = photos.photo.name is null ? defaultUrl : vich_s3.asset(photos, 'photoFile', '1200x1200') %}
+                        <a href="{{ imageUrl }}" target="_blank">
+                            <img fetchpriority="high" loading="lazy" width="188" height="168" class="customer-img" src="{{ imageUrl }}" alt="Customer Photo #{{ loop.index }}"/>
+                        </a>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="customer-photos-link pt-3 gap-2 border-1 border-bottom">
+        <a href="{{ url('customer_photos') }}" class="view-customer-photos">
+            View Customer Photos
+        </a>
+        <span class="fw-light">|</span>
+        <button type="button" class="delivery-calendar-btn fw-500 fs-15" data-bs-toggle="modal" data-bs-target="#ysp-delivery-calendar">View Delivery Calendar</button>
+    </div>
+    {{ include('common/_delivery_calendar.html.twig') }}
+</div>

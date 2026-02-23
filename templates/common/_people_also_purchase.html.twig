@@ -1,0 +1,92 @@
+{% block stylesheets %}
+	<link media="all" type="text/css" rel="stylesheet" href="{{asset('javascripts-libs/slick/slick/slick.css')}}">
+	<link media="all" type="text/css" rel="stylesheet" href="{{asset('javascripts-libs/slick/slick/slick-theme.css')}}">
+{% endblock %}
+<section class="people-also-purchase common-sec-horizontal-pad similar-purchased-main-wrapper d-none">
+    <div class="row d-flex justify-content-center">
+        <div class="col-11 col-md-12 ps-lg-4">
+            <p class="ysp-cart-common-sec-title">PEOPLE ALSO PURCHASED</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="purchase-products product-block">
+                {% for product in ysp.getSimilarProducts(20) %}
+                    <a href="{{ url('editor', {
+                                category: product.primaryCategory.slug,
+                                productType: product.productType.slug,
+                                sku: product.sku
+                            }) }}"
+                        class="common-similar-purchased-wrapper">
+                        <div class="img-wrapper">
+                        {% set productImage = vich_s3.asset(product, 'imageFile') %}
+                        {% if productImage is null %}
+                            <img class="product-image"
+                                src="https://static.yardsignplus.com/template_design_20230211-2e2074f0-aa00-11ed-8ed5-adb46e18d4eb.png"
+                                alt="...">
+                        {% else %}
+                            <img src="{{ productImage }}" alt="{{ product.name }}"
+                                class="ysp-more-menu-icon" />
+                        {% endif %}
+
+                        </div>
+                        <div class="details-wrapper product-item">
+                            <div class="details-col-left">
+                                <p>{{ product.name }}</p>
+                            </div>
+                             <div class="product-meta-data">
+                                <div class="product-price">${{ product.lowestPrice | number_format(2) }}</div>
+                                <div class="product-min-qty">Min 1</div>
+                                <div class="product-rating-star">
+                                    {% for item in 0..4 %}
+                                        <span class="star" data-rating="1"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-star"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></span>
+                                    {% endfor %}
+                                </div>
+                                <div class="product-rating-count">({{ product.reviewCount }})</div>
+                            </div>
+                            <span class="customize-btn">Customize Now</span>
+                        </div>
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</section>
+{% block scripts %}
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+	<script src="{{asset('javascripts-libs/slick/slick/slick.min.js')}}" type=" text/javascript"></script>
+    <script>
+        $(document).ready(function(){
+            $('.people-also-purchase').removeClass('d-none');
+            $('.purchase-products').slick({
+                infinite: true,
+                autoplay: true,
+                slidesToShow: 4,
+                slidesToScroll: 1,
+                autoplaySpeed: 5000,
+                dots: false,
+                responsive: [
+                    {
+                        breakpoint: 1199,
+                        settings: {
+                            slidesToShow: 3,
+                        }
+                    },
+                    {
+                        breakpoint: 767,
+                        settings: {
+                            slidesToShow: 2
+                        }
+                    },
+                    {
+                        breakpoint: 575,
+                        settings: {
+                            slidesToShow: 1
+                        }
+                    }
+                ]
+
+            });
+        });
+    </script>
+{% endblock %}

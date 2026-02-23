@@ -1,0 +1,256 @@
+body {
+  font-size: $defaultFontSize;
+  font-family: $defaultFont;
+  font-weight: $defaultFontWeight;
+  line-height: 1.5715;
+  font-variant: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+.text-purple {
+  color: var(--primary-color) !important;
+}
+
+.offcanvas-start {
+  .nav-item {
+    a.active,
+    a:hover {
+      color: var(--primary-color) !important;
+      text-shadow: 0 0 10px var(--primary-color);
+    }
+  }
+}
+
+a,
+.nav-link {
+  color: $primaryColor;
+  text-decoration: none;
+
+  &:hover {
+    color: $primaryColorLight;
+  }
+
+  &:focus,
+  &:active,
+  .nav-link:focus,
+  .nav-link:active {
+    color: $primaryColor;
+  }
+}
+
+.view-proof-btn {
+  &:focus {
+    color: white;
+  }
+
+  &:active {
+    color: white;
+  }
+}
+
+@media (min-width: 1200px) {
+  .mobile-only {
+    display: none;
+  }
+
+  .desktop-only {
+    display: inline-block;
+  }
+
+}
+
+@media (max-width: 1200px) {
+  .mobile-only {
+    display: inline-block;
+  }
+
+  .desktop-only {
+    display: none;
+  }
+}
+
+.form-control,
+.form-select {
+  border-color: $primaryColorLight;
+
+  &:focus {
+    color: var(--bs-body-color);
+    background-color: var(--bs-body-bg);
+    border-color: $primaryColorLight;
+    outline: 0;
+    box-shadow: 0 0 0 0.25rem rgba(111, 76, 158, .25);
+  }
+}
+
+.btn-ysp-outline {
+  font-weight: 500;
+  background: $white;
+  color: $dark;
+  border-color: $primaryColor;
+  text-transform: uppercase;
+  box-shadow: 1px 1px 2px $primaryColorLight;
+
+  &:hover {
+    color: $white;
+    background: $primaryColor;
+
+  }
+}
+
+.btn-ysp-outline-purple {
+  font-weight: 500;
+  background: $white;
+  color: $dark;
+  border-color: $primaryColor;
+  text-transform: uppercase;
+  font-size: 18px; 
+  padding: 5px 45px; 
+  box-shadow: 2px 2px 2px #000000;
+
+  &:hover {
+    color: $white;
+    background: $primaryColor;
+  }
+
+  @media screen and (max-width: 480px) {
+    font-size: 14px;
+    padding: 5px 35px;
+  }
+}
+
+.box-shadow {
+  box-shadow: 1px 1px 2px $primaryColorLight;
+}
+
+.fw-400 {
+  font-weight: 400;
+}
+
+.fw-500 {
+  font-weight: 500;
+}
+
+.fw-600 {
+  font-weight: 600;
+}
+
+.offcanvas-start {
+  .offcanvas-header {
+    img {
+      width: 85px;
+      height: auto;
+    }
+
+    .btn-close {
+      background: none;
+      background-color: #ffffff;
+      opacity: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 15px;
+      width: 15px;
+      border-radius: 50%;
+      font-weight: 700;
+      box-shadow: 0 0 20px rgb(0 0 0 / 20%);
+      line-height: 100%;
+      padding: 8px;
+      border: none;
+
+      svg {
+        width: 9px;
+        height: auto;
+      }
+    }
+  }
+
+  .offcanvas-body {
+    padding: 0 1rem 1rem;
+
+    form {
+      input[type="search"] {
+        height: 42px;
+        margin: 0;
+        padding: 0.375rem 0.75rem;
+        font-size: 1rem;
+        line-height: 1.5;
+        border: 2px solid #ced4da;
+        border-right: none;
+        border-radius: 0.25rem !important;
+        border-top-right-radius: 0 !important;
+        border-bottom-right-radius: 0 !important;
+        transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+      }
+
+      button {
+        color: #1c202b;
+        border: 2px solid #ced4da !important;
+        border-left: none !important;
+
+        &:hover {
+          background-color: #ffffff;
+        }
+      }
+
+      .form-control:focus {
+        box-shadow: none;
+      }
+    }
+
+    ul {
+      li {
+        .nav-link {
+          font-weight: 500;
+          color: #1c202b;
+          font-size: 14px;
+          padding: 6px 0;
+
+          &.active {
+            color: var(--primary-color);
+          }
+        }
+      }
+    }
+  }
+}
+
+#paypal-button-container {
+  html body .paypal-button-text {
+    background: #000;
+  }
+}
+
+.lg-toolbar.lg-group {
+  a {
+    display: none !important;
+  }
+}
+
+.ant-image-preview-operations-progress {
+  display: none !important;
+}
+
+label.error, .recaptcha-error-message {
+  color: #e80000 !important;
+  text-transform: none !important;
+  font-weight: 400 !important;
+}
+
+textarea.error, input.error, select.error {
+  border-color: #e80000 !important;
+}
+
+.pac-container {
+  z-index: 99999;
+}
+
+#scrollToTopBtn {
+  position: fixed;
+  bottom: 150px;
+  right: 0;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+  z-index: 1044;
+  box-shadow: 2px 3px 2px #000;
+}

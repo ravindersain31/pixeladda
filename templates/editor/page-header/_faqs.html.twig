@@ -1,0 +1,50 @@
+<div class="faqs-container">
+    <div class="faq-search-section faq-search-editor-section col-12 col-md-6 offset-md-3 mb-2">
+        <h3 class="mb-2 text-center"> How can we help you? </h3>
+        <div class="input-group faq-search">
+            <div class="d-flex input-group-prepend faq-search-icon-wrap">
+                <span class="input-group-text bg-white border-right-0 faq-search-icon-box">
+                    <i class="fas fa-search text-muted"></i>
+                </span>
+            </div>
+            <button id="clearSearch"
+                    type="button"
+                    class="btn btn-link text-muted position-absolute d-none"
+                    aria-label="Clear search"
+            >
+                <i class="fas fa-times"></i>
+            </button>
+            <input type="text" id="faqSearch" class="form-control border-left-0 pl-0" placeholder="Search for answers..." autocomplete="off">
+                
+        </div>
+        <div id="noResult" class="w-100 text-center mt-3 mb-3 text-muted fs-6 fw-500" style="display:none;">No FAQs found for your search.</div>
+    </div>
+
+    {% for faqTitle, faqsList in faqs %}
+        {% set groupId = loop.index %}
+        <div class="faq-section faq-groups">
+            <h4>{{ faqTitle }}</h4>
+            <div class="accordion" id="faq_group_{{ groupId }}">
+                {% for question, answer in faqsList %}
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="faq_{{ groupId }}_question_{{ loop.index }}_heading">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#faq_{{ groupId }}_question_{{ loop.index }}_content"
+                                    aria-expanded="true"
+                                    aria-controls="faq_{{ groupId }}_question_{{ loop.index }}_content">
+                                {{ question | raw }}
+                            </button>
+                        </h2>
+                        <div id="faq_{{ groupId }}_question_{{ loop.index }}_content"
+                             class="accordion-collapse collapse"
+                             aria-labelledby="faq_{{ groupId }}_question_{{ loop.index }}_heading" data-bs-parent="#faq_group_{{ groupId }}">
+                            <div class="accordion-body">
+                                {{ answer | raw }}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endfor %}
+</div>

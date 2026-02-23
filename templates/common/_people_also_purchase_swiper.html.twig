@@ -1,0 +1,63 @@
+<div class="people-also-purchase similar-purchased-main-wrapper mt-2">
+    <div class="container-fluid d-flex justify-content-center">
+        <div class="row w-100 d-flex justify-content-center">
+            <div class="col-11 col-md-12 ps-lg-4">
+                <p class="ysp-cart-common-sec-title">PEOPLE ALSO PURCHASED</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="swiper people-also-purchased-swiper">
+        <div class="swiper-wrapper">
+            {% for product in ysp.getSimilarProducts(20) %}
+                <div class="swiper-slide">
+                    <a href="{{ url('editor', {
+                        category: product.primaryCategory.slug,
+                        productType: product.productType.slug,
+                        sku: product.sku
+                    }) }}" class="common-similar-purchased-wrapper">
+                        <div class="img-wrapper">
+                            {% set productImage = vich_s3.asset(product, 'imageFile') %}
+                            {% if productImage is null %}
+                                <img class="product-image"
+                                     src="https://static.yardsignplus.com/template_design_20230211-2e2074f0-aa00-11ed-8ed5-adb46e18d4eb.png"
+                                     alt="...">
+                            {% else %}
+                                <img src="{{ productImage }}" alt="{{ product.name }}"
+                                     class="ysp-more-menu-icon"/>
+                            {% endif %}
+
+                        </div>
+                        <li class="list-group-item border-0">
+                            <span class="badge d-inline-flex align-items-center px-1 py-0 rounded-pill custom-badge-super-rush">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-lightning-fill me-1" viewBox="0 0 16 16">
+                                    <path d="M11.3 1L4 9h4l-1 6 7-8H9l2.3-6z"/>
+                                </svg>
+                                Overnight Delivery
+                            </span>
+                        </li>
+                        {{ include('common/_product_pricing_chart.html.twig') }}
+                        <div class="details-wrapper product-item">
+                            <div class="details-col-left">
+                                <p>{{ product.name }}</p>
+                            </div>
+                            <div class="product-meta-data">
+                                <div class="product-price">${{ product.lowestPrice | number_format(2) }}</div>
+                                <div class="product-min-qty">Min 1</div>
+                                <div class="product-rating-star">
+                                    {% for item in 0..4 %}
+                                        <span class="star" data-rating="1"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-star"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></span>
+                                    {% endfor %}
+                                </div>
+                                <div class="product-rating-count">({{ product.reviewCount }})</div>
+                            </div>
+                            <span class="customize-btn">Customize Now</span>
+                        </div>
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
+    </div>
+</div>

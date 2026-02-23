@@ -1,0 +1,35 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Edit Search Tags{% endblock %}
+{% block pageTitle %}
+    <div class="page-header-icon">
+        <i class="fas fa-dashboard"></i>
+    </div>
+    Edit Search Tags
+{% endblock %}
+
+{% block javascripts %}
+    <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tagsinput/0.8.0/bootstrap-tagsinput.js" integrity="sha512-VvWznBcyBJK71YKEKDMpZ0pCVxjNuKwApp4zLF3ul+CiflQi6aIJR+aZCP/qWsoFBA28avL5T5HA+RE+zrGQYg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+{% endblock %}
+
+{% block body %}
+    <div class="card card-header-actions mx-auto shadow-none">
+        <div class="card-header">
+            Edit: {{ searchTag.urlName}}
+            <div>
+                <a href="{{ url('admin_search_tag_list') }}" class="btn btn-dark btn-sm">
+                    <i class="fas fa-arrow-left me-2"></i>
+                    List
+                </a>
+            </div>
+        </div>
+        <div class="card-body">
+             {{ component('SearchTagForm',{
+                form:form,
+                searchTag:searchTag
+            }) }}
+        </div>
+    </div>
+
+{% endblock %}

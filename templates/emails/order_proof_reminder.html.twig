@@ -1,0 +1,22 @@
+{% extends 'emails/base.html.twig' %}
+{% block title %}Request Changes for Order ID #{{ order.orderId }}{% endblock %}
+{% block subject %}Request Changes for Order ID #{{ order.orderId }}{% endblock %}
+{% block body %}
+    {% set instruction = 'Your order will not go into production until you Approve your Proof. Please access your proof via the proof link in this email for you to Approve or Request Changes. Once approved, we will begin processing your order.' %}
+    <tr>
+        <td colspan="3">
+            <p style="font-size: 26px; font-weight: bold; color: #000000; padding: 0 50px; margin: 20px 0 10px;" class="user-name">
+                Hi {{ order.billingAddress.firstName }} {{ order.billingAddress.lastName }}
+            </p>
+            <p class="off-desc ys-mob-ryt-lft-pad15 font-sm-17"
+                style="font-size: 20px; color: #000000; padding: 0 50px; line-height: 135%; margin: 15px 0 20px;">
+                Thank you for your interest in {{storeName}}. Please Approve for production or Request Changes via the proof link below.
+            </p>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="3">
+            {% include 'emails/common/_order_info_with_proof_table.html.twig' %}
+        </td>
+    </tr>
+{% endblock %}

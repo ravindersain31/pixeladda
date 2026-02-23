@@ -1,0 +1,94 @@
+{% extends 'admin/base.html.twig' %}
+{% block title %}view #{{ transaction.transactionId }} {% endblock %}
+{% block pageTitle %}
+	<div class="page-header-icon">
+		<i class="fas fa-dashboard"></i>
+	</div>
+	Transaction ID #{{ transaction.transactionId }}
+{% endblock %}
+
+{% block body %}
+	<div class="card card-header-actions mx-auto shadow-none">
+		<div class="card-header">
+			Transaction ID: #{{ transaction.transactionId }}
+			<div>
+				<a href="{{ url('admin_users_customer_reward_points', { id: transaction.reward.user.id }) }}" class="btn btn-dark btn-sm">
+					<i class="fas fa-arrow-left me-2"></i>
+					List
+				</a>
+			</div>
+		</div>
+		<div class="card-body">
+			<table class="table table-hover">
+                <tbody>
+                    <tr>
+                        <th scope="row">Name</th>
+                        <td>{{ transaction.reward.user.name|default('-') }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Email</th>
+                        <td>{{ transaction.reward.user.email }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Order</th>
+                        <td>
+                            {% if transaction.order is defined and transaction.order.orderId is defined %}
+                                <a href="{{ url('admin_order_overview', { orderId: transaction.order.orderId }) }}">{{ transaction.order.orderId }}</a>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Type</th>
+                        <td>
+                            {% if transaction.type == 'DEBIT' %}
+                                <span class=" badge bg-danger">{{ transaction.type }}</span>
+                            {% elseif transaction.type == 'CREDIT' %}
+                                <span class=" badge bg-success">{{ transaction.type }}</span>
+                            {% else %}
+                                {{ transaction.type }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Reward Amount</th>
+                        <td>${{ transaction.points }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Comment</th>
+                        <td>
+                            {{ transaction.comment }}
+                            {% include 'admin/customer/users/reward/_reward_status.html.twig' %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Status</th>
+                        <td>
+                            <span class="badge {{ reward.getBadgeClass(transaction.status) }}">{{ transaction.status }}</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Activity</th>
+                        <td>
+                            {% include 'admin/customer/users/reward/_reward_transaction_activity.html.twig' %}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="card card-header-actions mx-auto shadow-none d-none">
+                <div class="card-header">
+                    Edit Transaction ID: #{{ transaction.transactionId }}
+                </div>
+                <div class="card-body">
+                    {{ component('RewardTransactionForm',{
+                        form:form,
+                        rewardTransaction: transaction
+                    }) }}
+                </div>
+            </div>
+		</div>
+	</div>
+
+{% endblock %}
+

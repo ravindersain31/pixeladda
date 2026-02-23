@@ -1,0 +1,249 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+	Order History
+{% endblock %}
+
+{% block body %}
+<style>
+    .custom-popover {
+        --bs-popover-max-width: 300px;
+        --bs-popover-border-radius: 3px;
+        --bs-popover-body-padding-y: 0.5rem;
+        font-family: "Montserrat", sans-serif;
+        box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
+        @media (max-width: 480px) {
+            --bs-popover-max-width: 240px;
+        }
+    }
+</style>
+{{ include('common/common_mobile_bar.html.twig',{commonBarText: 'Order Online Or Call Now',commonBarTele: '+1-877-958-1499'}) }}
+{{ include('customer/common/top_section.html.twig',
+	{ section: { name: 'Order History', active: true }}) 
+}}
+
+{{ include("customer/common/customer_details.html.twig") }}
+
+<section class="customer-orders order-history mb-3 mt-4">
+    <div class="container proof-order-container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="table-responsive card shadow-sm rounded-lg">
+                    <div id="myAccountOrdersListTable_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
+                        <div class="row">
+                            <div class="col-sm-12 col-md-6">
+                            </div>
+                            <div class="col-sm-12 col-md-6">
+                            </div>
+                        </div>
+                        <div class="row">
+                              {% macro sort_link(label, field, activeSort, sortDirection) %}
+                                    {% set isActive = (activeSort == field) %}
+                                    {% set nextDir = (isActive and sortDirection == 'ASC') ? 'DESC' : 'ASC' %}
+
+                                    <a href="{{ path('repeat_order_history', {
+                                        sort: field,
+                                        dir: nextDir
+                                    }) }}"
+                                    class="text-decoration-none text-dark d-flex align-items-center">
+                                        <span>{{ label }}</span>
+                                        <span class="ms-1">
+                                            {% if isActive %}
+                                               <i class="fa-solid fa-sort"></i>
+                                            {% else %}
+                                                <i class="fa-solid fa-sort text-muted"></i>
+                                            {% endif %}
+                                        </span>
+                                    </a>
+                                {% endmacro %}
+
+                                {% import _self as table %}
+
+                            <div class="col-sm-12">
+                                <table class="table dataTable no-footer" id="myAccountOrdersListTable" style="margin-top: 0 !important;">
+                                    <thead>
+                                    <tr>
+                                            <th></th>
+                                            <th>
+                                                {{ table.sort_link('Order Date', 'orderAt', sort, dir) }}
+                                            </th>
+                                            <th>
+                                                {{ table.sort_link('Order ID', 'orderId', sort, dir) }}
+                                            </th>
+                                            <th class="fit-to-cell">
+                                                SKU
+                                            </th>
+                                            <th class="fit-to-cell">
+                                                {{ table.sort_link('Amount', 'totalAmount', sort, dir) }}
+                                            </th>
+                                            <th class="fit-to-cell">
+                                                {{ table.sort_link('Order Status', 'status', sort, dir) }}
+                                            </th>
+                                            <th class="fit-to-cell">
+                                                {{ table.sort_link('Payment Status', 'paymentStatus', sort, dir) }}
+                                            </th>
+                                            <th>
+                                                Actions
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                        <tbody>
+                                            {% if orders %}
+                                                {% for key,order in orders %}
+                                                    <tr class="even">
+                                                        <td> {{ key + 1 }}</td>
+                                                        <td class="text-nowrap">{{ order.orderAt|date('M d, Y') }}</td>
+                                                        <td>{{ order.orderId }} </br>
+                                                            {% if isPromoStore(order.storeDomain) %}
+                                                                <span class="badge bg-gradient-primary-to-secondary">{{order.storeDomain.name}}</span>
+                                                            {% endif %}
+                                                        </td>
+                                                        <td>
+                                                            {% for item in order.orderItems %}
+                                                            {% if item.product.parent.sku == 'SAMPLE' %}
+                                                                <a href="{{ url('order_sample') }}" target="_blank">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-external-link text-sgs-red"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                                                                </a>
+                                                            {% elseif item.metaData.customSize.isSample is defined and item.metaData.customSize.isSample %}
+                                                                <a href="{{ url('order_sample') }}" target="_blank">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-external-link text-sgs-red"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                                                                </a>
+                                                            {% elseif item.metaData.isCustomSize is defined and item.metaData.isCustomSize %}
+                                                                {% if item.metaData.customSize.sku is defined %}
+                                                                        {% set product = ysp.getDefaultCustomProduct(item.metaData.customSize.sku) %}
+                                                                            <a href="{{ url('editor', {category: product.primaryCategory.slug, productType: product.productType.slug, sku: product.sku}) }}" target="_blank">
+                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-external-link text-sgs-red"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                                                                            </a>
+                                                                {% else %}
+                                                                        CUSTOM-SIZE
+                                                                {% endif %}
+                                                            {% else %}
+                                                                <a href="{{ url('editor', {
+                                                                    category: item.product.parent.primaryCategory.slug,
+                                                                    productType: item.product.parent.productType.slug,
+                                                                    sku: item.product.parent.sku
+                                                                }) }}" target="_blank">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-external-link text-sgs-red"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                                                                </a>
+                                                            {% endif %}
+                                                                {% if item.metaData.customSize.isSample is defined and item.metaData.customSize.isSample %}
+                                                                    {{ item.product.parent.sku }}<span class="fs-13">({{ item.metaData.customSize.parentSku }})</span>
+                                                                {% else %}
+                                                                    {{ item.product.parent.sku }}
+                                                                {% endif %}
+                                                                <br>
+                                                            {% endfor %}
+                                                        </td>
+                                                        <td>${{order.totalAmount}}</td>
+                                                        <td class="text-center badges-status">{{ order.status | badgeOrderStatus | raw }}</td>
+
+                                                        <td class="text-center badges-status">{{ order.paymentStatus | badgePaymentStatus | raw }}</td>
+
+                                                        <td>
+                                                            <a href="{{ path('order_view',{oid: order.orderId}) }}" class="mr-3" target="_blank">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-eye text-sgs-red">
+                                                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z">
+                                                                    </path>
+                                                                    <circle cx="12" cy="12" r="3">
+                                                                    </circle>
+                                                                </svg>
+                                                                <span class="ml-1">Order Confirmation</span>
+                                                            </a>
+                                                            <br>
+                                                            {% set trackingLink = '#' %}
+                                                            {% set orderShipments = order.orderShipments %}
+
+                                                            {% if orderShipments | length > 0 %}
+                                                                {% set trackingLink = url('shipment_track', {oid: order.orderId }) %}
+                                                            {% else %}
+                                                                {% set firstShipment = orderShipments | first %}
+                                                                {% if firstShipment %}
+                                                                    {% set trackingLink = shippingTracking.generateTrackingLink(firstShipment.carrier, firstShipment.trackingId) %}
+                                                                {% endif %}
+                                                            {% endif %}
+                                                            <a class="{% if trackingLink == '#' %}text-muted disabled{% endif %}" 
+                                                                {% if trackingLink == '#' %}
+                                                                    href="javascript:void(0)"
+                                                                    data-bs-toggle="popover"
+                                                                    data-bs-trigger="hover"
+                                                                    data-bs-placement="top"
+                                                                    data-bs-custom-class="custom-popover"
+                                                                    data-bs-content="Your order has yet to ship. Please check back later."
+                                                                {% else %}
+                                                                    href="{{ trackingLink }}" target="_blank"
+                                                                {% endif %}>
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-truck text-sgs-red">
+                                                                    <rect x="1" y="3" width="15" height="13"></rect>
+                                                                    <polygon points="16 8 20 8 23 11 23 16 16 16 16 8">
+                                                                    </polygon>
+                                                                    <circle cx="5.5" cy="18.5" r="2.5">
+                                                                    </circle>
+                                                                    <circle cx="18.5" cy="18.5" r="2.5">
+                                                                    </circle>
+                                                                </svg>
+                                                                <span class="ml-1">Tracking Number</span>
+                                                            </a>
+                                                            <br>
+                                                            <a href="javascript:;" data-bs-toggle="modal" class="repeat-order-modal" data-bs-target="#repeatOrderModal" data-href="{{ url('customer_repeat_order',{oId:order.orderId}) }}">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 512 512" fill="var(--primary-color)" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                                    <path d="M64 464H288c8.8 0 16-7.2 16-16V384h48v64c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V224c0-35.3 28.7-64 64-64h64v48H64c-8.8 0-16 7.2-16 16V448c0 8.8 7.2 16 16 16zM224 304H448c8.8 0 16-7.2 16-16V64c0-8.8-7.2-16-16-16H224c-8.8 0-16 7.2-16 16V288c0 8.8 7.2 16 16 16zm-64-16V64c0-35.3 28.7-64 64-64H448c35.3 0 64 28.7 64 64V288c0 35.3-28.7 64-64 64H224c-35.3 0-64-28.7-64-64z"/>
+                                                                </svg>
+                                                                <span class="ml-1">Repeat Order</span>
+                                                            </a>
+                                                            <br>
+                                                            <a href="{{ path('order_proof',{oid:order.orderId}) }}" class="mr-3" target="_blank">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text text-sgs-red">
+                                                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z">
+                                                                    </path>
+                                                                    <polyline points="14 2 14 8 20 8"></polyline>
+                                                                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                                                                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                                                                    <polyline points="10 9 9 9 8 9"></polyline>
+                                                                </svg>
+                                                                <span class="ml-1">Proof Link</span>
+                                                            </a>
+                                                            <a href="{{ url('order_invoice_pdf',{orderId: order.orderId}) }}" class="mr-3 d-flex mt-1 align-items-center">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-download"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                                                                <span class='mx-1'>Download Invoice</span>
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+                                            {% else %}
+                                                <tr>
+                                                    <td colspan="9">
+                                                        <p class="text-center">You have not ordered yet.</p>
+                                                    </td>
+                                                </tr>
+                                            {% endif %}
+                                        </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-lg-12">
+                <div class="mt-4 repeat-infoo">
+                    <p class="mb-2">For repeat orders, visit the provided shopping cart link, </br>click <i class="fa fa-edit" aria-hidden="true"></i>
+					, and update your quantity. In the comments section mention your old order number. You may skip choosing
+                    your design and customizing your order.</p>
+                    <p class="mb-2">After submitting your order, you will receive a digital proof in 1 hour for your
+                        review that is identical in style and colors to your old order. Once approved, we will begin
+                        production.</p>
+                    <p class="mb-2">For questions please call <a href="tel:+1-877-958-1499">+1-877-958-1499</a>,
+                        message us on our <a href="javascript:void(Tawk_API.toggle())">Live Chat</a>, or email <a href="mailto:">{{storeInfo.storeEmail}}</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="container-fluid ysp-repeat-orders-wrapper" {{ stimulus_controller('repeat-order') }}>
+<div class="row">
+        {{ component('RepeatOrderForm') }}
+</div>
+</section>
+{{ include('customer/common/_repeat_order.html.twig') }}
+{% endblock %}

@@ -1,0 +1,75 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}User Login{% endblock %}
+
+{% block body %}
+{{ include('common/common_mobile_bar.html.twig', {
+    commonBarText: 'Order Online Or Call Now',
+    commonBarTele: '+1-877-958-1499'
+}) }}
+
+<section class="checkout-banner-text-wrapper shopping-cart-title-space">
+   	<p>{{ loginTitle }}</p>
+</section>
+
+<div class="container">
+  <section class="pages-contents customer-login common-account-pages-wrapper mb-5 mt-5">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-lg-5">
+          {{ include ('common/flash.html.twig') }}
+          <div class="card shadow-sm rounded-lg">
+            <div class="card-body login-form-body">
+
+              <div class="otp-card">
+                <a href="{{ path('login') }}" class="otp-back-link d-flex align-items-center gap-2 text-decoration-none mb-3">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                      class="lucide lucide-arrow-left h-4 w-4">
+                    <path d="m12 19-7-7 7-7"></path>
+                    <path d="M19 12H5"></path>
+                  </svg>
+                  Back to password login
+                </a>
+
+                <h2 class="otp-title mb-4 ysp-otp-submit-btn">Enter 4-Digit One Time Password</h2>
+
+                {{ form_start(form, {'attr': {'class': 'otp-form'}}) }}
+
+                  <div class="otp-inputs" id="otp-inputs">
+                    <input type="text" maxlength="1" inputmode="numeric" class="otp-box" />
+                    <input type="text" maxlength="1" inputmode="numeric" class="otp-box" />
+                    <input type="text" maxlength="1" inputmode="numeric" class="otp-box" />
+                    <input type="text" maxlength="1" inputmode="numeric" class="otp-box" />
+                  </div>
+
+                  {{ form_widget(form.otp, {'attr': {'id': 'otp-hidden', 'type': 'hidden'}}) }}
+
+                  <p class="otp-sent-text mt-3 align-items-center justify-content-between">
+                      One Time Password sent to <strong>{{ user.username }}</strong>
+                  </p>
+
+                  <p class="otp-change mt-1 align-items-center justify-content-between">
+                    <span class="not-you"> Not you? </span><a href="{{ path('login_via_otp') }}">Change email</a>
+                  </p>
+
+                  <div class="form-group d-flex align-items-center justify-content-between mt-3 mb-0">
+										<button type="submit" class="btn btn-primary btn-block ysp-account-submit-btn ysp-otp-submit-btn">Verify One Time Password</button>
+									</div>
+
+                {{ form_end(form) }}
+                <a type="button" id="resend-otp-btn" class="otp-resend mt-3 d-block w-100 text-center" disabled>
+                    Resend One Time Password (<span id="resend-timer">60</span>s)
+                </a>
+                <input type="hidden" id="resend-csrf" name="_token" value="{{ csrf_token('resend_otp') }}">
+                <input type="hidden" id="resend-user-id" value="{{ user.id }}">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+{% endblock %}

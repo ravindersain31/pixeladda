@@ -1,0 +1,43 @@
+<div {{ attributes }}>
+    {{ form_start(form, {attr: {
+        'novalidate': true,
+        'data-action': 'live#action:prevent',
+        'data-live-action-param': 'unsubscribeAction',
+    }}) }}
+
+    {% if flashMessage %}
+        <div class="d-flex justify-content-center">
+        {{ include('components/_flash.html.twig') }}
+        <meta http-equiv="refresh" content="5;url={{ path('homepage') }}">
+        </div>
+    {% else %}
+    <div class="container-fluid">
+        <div class="col-md-12 mb-3">
+            <div class="ysp-common-inner-wrapper">
+                <div id="unsubscribe_user">
+                        <div class="w-50 m-auto text-center card p-5 shadow-sm">
+                            <div class="unsubscribe-description">
+                                <p class="mb-2">Please note, order confirmations and essential support emails will still be sent.</p>
+                                <p>I appreciate it, but I'd prefer not to receive any more emails.</p>
+                            </div>
+                            {{ form_errors(form) }}
+                                <div class="ysp-unsubscribe-wrapper">
+                                    <div class="ysp-unsubscribe-bg-wrapper p-3 d-flex justify-content-center gap-4">                                
+                                        {{ form_row(form.email)}}
+                                        {{ form_row(form.unsubscribe)}}
+                                    </div>
+                                    <a href="{{ url('homepage') }}" class="btn py-1 px-3 btn-ysp-outline stay-btn mb-2">I'd rather stay</a>
+                                    <button type="submit" data-loading="action(unsubscribeAction)|addAttribute(disabled)" class="btn py-1 mb-2 px-3 btn-ysp-outline">
+                                        <span data-loading="action(unsubscribeAction)|show" style="display: none">Unsubscribe...</span>
+                                        <span data-loading="action(unsubscribeAction)|hide" style="display: block">Unsubscribe</span>
+                                    </button>
+                                </div>
+                            {{ form_end(form) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>

@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Invoice for Order Number #{{ order.orderId }} at {{storeInfo.storeTitle}}</title>
+    <style>
+        @media print {
+            @page {
+                margin: 0;
+            }
+
+            body {
+                margin: 1cm;
+            }
+
+            .out-side-print {
+                display: none;
+            }
+        }
+
+        body {
+            font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif;
+            text-align: center;
+            color: #777;
+        }
+
+        body h1 {
+            font-weight: 300;
+            margin-bottom: 0px;
+            padding-bottom: 0px;
+            color: #000;
+        }
+
+        body h3 {
+            font-weight: 300;
+            margin-top: 10px;
+            margin-bottom: 20px;
+            font-style: italic;
+            color: #555;
+        }
+
+        body a {
+            color: #06F;
+        }
+
+        .invoice-box {
+            max-width: 800px;
+            margin: auto;
+            padding: 30px;
+            border: 2px solid #eee;
+            font-size: 16px;
+            line-height: 24px;
+            font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif;
+            color: #555;
+        }
+
+        .invoice-box table {
+            width: 100%;
+            line-height: inherit;
+            text-align: left;
+        }
+
+        .invoice-box table td {
+            padding: 5px;
+            vertical-align: top;
+        }
+
+        .invoice-box table tr.top table td {
+            padding-bottom: 20px;
+        }
+
+        .invoice-box table tr.top table td.title {
+            font-size: 45px;
+            line-height: 45px;
+            color: #333;
+        }
+
+        .invoice-box table tr.information table td {
+            padding-bottom: 40px;
+        }
+
+        .invoice-box table tr.heading td {
+            background: #eee;
+            border-bottom: 1px solid #ddd;
+            font-weight: bold;
+        }
+
+        .invoice-box table tr.details td {
+            padding-bottom: 20px;
+        }
+
+        .invoice-box table tr.item td {
+            border-bottom: 1px solid #eee;
+        }
+
+        .invoice-box table tr.heading td:last-child,
+        .invoice-box table tr.item td:last-child,
+        .invoice-box table tr.total td:last-child {
+            text-align: right;
+        }
+
+        .invoice-box table tr.item.last td {
+            border-bottom: none;
+        }
+
+        .invoice-box table tr.total td {
+            border-top: 2px solid #eee;
+            font-weight: bold;
+        }
+
+        @media only screen and (max-width: 600px) {
+            .invoice-box table tr.top table td {
+                width: 100%;
+                display: block;
+                text-align: center;
+            }
+
+            .invoice-box table tr.information table td {
+                width: 100%;
+                display: block;
+                text-align: center;
+            }
+        }
+
+        .btn {
+            display: inline-block;
+            font-weight: 400;
+            text-decoration: none;
+            color: #687281;
+            text-align: center;
+            vertical-align: middle;
+            cursor: pointer;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            background-color: transparent;
+            border: 1px solid transparent;
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
+            line-height: 1.5;
+            border-radius: 0.35rem;
+            -webkit-transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+            transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+        }
+
+        .btn-success {
+            color: #fff;
+            background-color: #00ac69;
+            border-color: #00ac69;
+        }
+    </style>
+</head>
+<body>
+{% set storeInfo = storeInfo() %}
+<div class="invoice-box">
+    <table>
+        <tr colspan="5">
+            <td class="title" style="text-align: left" colspan="2">
+                <img src="{{ storeInfo.storeYardLogoOther }}"  style="max-width:200px;">
+            </td>
+            <td style="text-align: right" colspan="3">
+                <b>Invoice Number:</b> #{{ order.orderId }}<br>
+                <b>Invoice Date:</b> {{ order.orderAt | date('M d, Y') }}<br>
+                <b>Due Date:</b> {{ order.orderAt | date('M d, Y') }}
+            </td>
+        </tr>
+        <tr colspan="5">
+            <td colspan="3">
+                {{ order.billingAddress.firstName }} {{ order.billingAddress.lastName }}
+                {% if order.billingAddress.addressLine1 %}
+                    <br/>{{ order.billingAddress.addressLine1 }}
+                {% endif %}
+                {% if order.billingAddress.addressLine2 %}
+                    <br/>{{ order.billingAddress.addressLine2 }}
+                {% endif %}
+                {% if order.billingAddress.city %}
+                    <br/>{{ order.billingAddress.city }},
+                {% endif %}
+                {% if order.billingAddress.state %}
+                    {{ order.billingAddress.state }}
+                {% endif %}
+                {% if order.billingAddress.zipcode %}
+                    {{ order.billingAddress.zipcode }}
+                {% endif %}
+                {% if order.billingAddress.phone %}
+                    <br><strong>Phone Number: </strong>{{ order.billingAddress.phone }}
+                {% endif %}
+            </td>
+            <td style="text-align: right" colspan="2">
+                Vertical Brands<br/>
+                16107 Kensington Dr, Suite 314
+                <br/>Sugar Land, TX 77479
+                <br/><strong>Email: </strong>{{storeInfo.storeEmail}}
+                <br/><strong>Phone Number: </strong>+1-877-958-1499
+            </td>
+        </tr>
+        <tr class="heading">
+            <td>SKU</td>
+            <td>Price</td>
+            <td>Qty</td>
+            <td>Add-on</td>
+            <td>Total</td>
+        </tr>
+        {% for key,item in order.orderItemsAll %}
+        {% if item.itemType == 'DEFUALT' or item.product %}
+            {% set product = item.product.parent %}
+            {% set template = item.product %}
+            <tr class="item">
+                <td>
+                    {{ product.sku }} - {{ template.name }}
+                </td>
+                <td>
+                    {{ ysp.storeCurrencySymbol }}{{ item.price }}
+                </td>
+                <td>
+                    {{ item.quantity }}
+                </td>
+                <td> {{ ysp.storeCurrencySymbol }}{{ item.addOnsAmount }} </td>
+                <td>
+                    {{ ysp.storeCurrencySymbol }}{{ item.totalAmount }}
+                </td>
+            </tr>
+        {% elseif (((not item.product) and item.itemType == 'CHARGED_ITEM') or ((not item.product) and item.itemType == 'DISCOUNT_ITEM')) %}
+                <td>
+                    {{ item.itemName }} : {{ item.itemDescription }}
+                </td>
+                <td>
+                    {{ ysp.storeCurrencySymbol }}{{ item.price }}
+                </td>
+                <td> {{ item.quantity }} </td>
+                <td> {{ ysp.storeCurrencySymbol }}{{ item.addOnsAmount }} </td>
+                <td> {{ ysp.storeCurrencySymbol }}
+                    {% if item.itemType == 'DISCOUNT_ITEM' %}
+                        -${{ item.totalAmount | number_format(2) }}
+                    {% else %}
+                        ${{ item.totalAmount | number_format(2) }}
+                    {% endif %}
+                </td>
+        {% endif %}
+        {% endfor %}
+            <tr class="total">
+                <td colspan="4">Subtotal</td>
+                <td>
+                    {{ ysp.storeCurrencySymbol }}{{ order.subTotalAmount | number_format(2) }}
+                </td>
+            </tr>
+            <tr class="total">
+                <td colspan="4">Delivery Cost</td>
+                <td>+{{ ysp.storeCurrencySymbol }}{{ order.shippingAmount | number_format(2) }}</td>
+            </tr>
+        {% if order.orderProtectionAmount is defined %}
+            <tr class="total">
+                <td colspan="4">Order Protection Cost</td>
+                <td>+{{ ysp.storeCurrencySymbol }}{{ order.orderProtectionAmount | number_format(2) }}</td>
+            </tr>
+        {% endif %}
+        {% if order.coupon %}
+            <tr class="total">
+                <td colspan="4">Discount Coupon: {{ order.coupon.code }}</td>
+                <td>-{{ ysp.storeCurrencySymbol }}{{ order.couponDiscountAmount | number_format(2) }}</td>
+            </tr>
+        {% endif %}
+        <tr class="total">
+            <td colspan="4">Total</td>
+            <td>
+                {{ ysp.storeCurrencySymbol }}{{ order.totalAmount | number_format(2) }}
+            </td>
+        </tr>
+        {% if order.transactions %}
+            <tr>
+                <td colspan="5" style="padding-top: 40px; padding-left: 0; padding-right: 0">
+                    <table>
+                        <tr class="heading">
+                            <td>Transaction ID</td>
+                            <td>Payment Method</td>
+                            <td>Amount</td>
+                        </tr>
+                        {% for trans in order.transactions %}
+                            {% if trans.status in ["COMPLETED", "PARTIALLY_REFUNDED", "REFUNDED"] %}
+                                <tr colspan="1">
+                                    <td>{{ trans.transactionId }} </td>
+                                    <td>{{ trans.paymentMethod | replace({'_': ' '}) }}</td>
+                                    <td style="text-align: right">{{ ysp.storeCurrencySymbol }}{{ trans.amount | number_format(2) }}</td>
+                                </tr>
+                            {% endif %}
+                        {% endfor %}
+                            <tr class="total">
+                                <td colspan="1">Total Received</td>
+                                <td>{{order.paymentMethod | replace({'_': ' '}) }}</td>
+                                <td>
+                                    {{ ysp.storeCurrencySymbol }}{{ order.totalReceivedAmount }}
+                                </td>
+                            </tr>
+                        {% set balanceAmount = order.totalAmount - order.totalReceivedAmount %}
+                        {% if balanceAmount > 0 %}
+                            <tr class="total">
+                                <td colspan="1">Balance ({{ balanceAmount | number_format(2) }} - 
+                                    {{ ysp.storeCurrencySymbol }}{{ order.totalReceivedAmount | number_format(2) }})
+                                </td>
+                                <td></td>
+                                <td>{{ ysp.storeCurrencySymbol }}{{ balanceAmount | number_format(2) }}</td>
+                            </tr>
+                        {% endif %}
+                    </table>
+                </td>
+            </tr>
+        {% endif %}
+    </table>
+</div>
+{% if print is defined %}
+    <div class="out-side-print">
+        <button onclick="window.print()" style="margin-top: 20px" class="btn btn-success">Print</button>
+    </div>
+{% endif %}
+</body>
+</html>

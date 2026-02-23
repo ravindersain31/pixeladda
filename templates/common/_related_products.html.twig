@@ -1,0 +1,63 @@
+<section class="people-also-purchase common-sec-horizontal-pad similar-purchased-main-wrapper">
+    <div class="row d-flex justify-content-center">
+        <div class="col-11 col-md-12 ps-lg-4">
+            <p class="ysp-cart-common-sec-title">PEOPLE ALSO PURCHASED</p>
+        </div>
+    </div>
+    <div class="container-fluid">
+        <div class="row mx-auto my-auto justify-content-center multi-item-carousel px-3">
+            <div id="peopleAlsoPurchased" class="carousel slide" data-bs-ride="carousel" data-bs-touch="true">
+                <div class="carousel-inner purchase-products product-block" role="listbox">
+                    {% for product in ysp.getSimilarProducts(20) %}
+                        <div class="carousel-item {% if loop.first %}active{% endif %}">
+                            <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
+                                <a href="{{ url('editor', {
+                                    category: product.primaryCategory.slug,
+                                    productType: product.productType.slug,
+                                    sku: product.sku
+                                }) }}" class="common-similar-purchased-wrapper">
+                                    <div class="img-wrapper">
+                                        {% set productImage = vich_s3.asset(product, 'imageFile') %}
+                                        {% if productImage is null %}
+                                            <img class="product-image"
+                                                src="https://static.yardsignplus.com/template_design_20230211-2e2074f0-aa00-11ed-8ed5-adb46e18d4eb.png"
+                                                alt="...">
+                                        {% else %}
+                                            <img src="{{ productImage }}" alt="{{ product.name }}"
+                                                class="ysp-more-menu-icon"/>
+                                        {% endif %}
+
+                                    </div>
+                                    <div class="details-wrapper product-item">
+                                        <div class="details-col-left">
+                                            <p>{{ product.name }}</p>
+                                        </div>
+                                        <div class="product-meta-data">
+                                            <div class="product-price">${{ product.lowestPrice | number_format(2) }}</div>
+                                            <div class="product-min-qty">Min 1</div>
+                                            <div class="product-rating-star">
+                                                {% for item in 0..4 %}
+                                                    <span class="star" data-rating="1"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-star"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></span>
+                                                {% endfor %}
+                                            </div>
+                                            <div class="product-rating-count">({{ product.reviewCount }})</div>
+                                        </div>
+                                        <span class="customize-btn">Customize Now</span>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                <a class="carousel-control-prev bg-transparent w-aut" href="#peopleAlsoPurchased" role="button"
+                data-bs-slide="prev">
+                   <i class="fa-solid fa-chevron-left"></i>
+                </a>
+                <a class="carousel-control-next bg-transparent w-aut" href="#peopleAlsoPurchased" role="button"
+                data-bs-slide="next">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>

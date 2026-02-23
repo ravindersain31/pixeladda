@@ -1,0 +1,32 @@
+<div {{ attributes }}>
+	{{ form_start(form, {attr: {
+			'novalidate': true,
+			'data-action': 'live#action:prevent',
+			'data-live-action-param': 'save'
+	}}) }}
+	{{ form_errors(form) }}
+
+	<div class="modal-header">
+		<h5 class="modal-title">Update Email</h5>
+		<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+	</div>
+	<div class="modal-body">
+		<div class="row">
+			<div class="col-md-12">
+				<div class="form-group">
+					{{ form_label(form.email) }}
+					{{ form_widget(form.email) }}
+					{{ form_errors(form.email) }}
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+		 <button type="submit" data-loading="action(save)|addAttribute(disabled)" class="btn btn-primary btn-block ysp-account-submit-btn" {{ this.hasValidationErrors ? 'disabled' : '' }}>
+					<span data-loading="action(save)|show" style="display: none">Updating Email...</span>
+					<span data-loading="action(save)|hide" style="display: block">Update Email</span>
+			</button>
+	</div>
+{{ form_end(form) }}
+</div>

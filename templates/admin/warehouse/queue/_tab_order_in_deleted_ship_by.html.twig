@@ -1,0 +1,68 @@
+<div class="card-body p-0 table-responsive warehouse-table">
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th class="fit-to-cell"><small>Delivery Date</small></th>
+            <th class="fit-to-cell">#</th>
+            <th class="fit-to-cell">Order</th>
+            <th class="fit-to-cell">Signs</th>
+            <th class="fit-to-cell">Stakes</th>
+            <th class="fit-to-cell">Approved Date</th>
+            <th class="fit-to-cell">Order Date</th>
+            <th class="fit-to-cell">Shipping Service</th>
+            <th class="fit-to-cell">State</th>
+            <th class="fit-to-cell">Printer</th>
+            <th class="fit-to-cell">Ship By</th>
+            <th class="fit-to-cell">Print Status</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% set orderIndex = 1 %}
+        {% for warehouseOrder in orders %}
+            {% set order = warehouseOrder.order %}
+            {% set totalQuantities = order.totalQuantities %}
+            <tr>
+                <td>&nbsp;</td>
+                <td>{{ orders.getPaginationData.firstItemNumber + orderIndex - 1 }}</td>
+                <td>
+                    <a href="{{ url('admin_order_overview', {orderId: order.orderId}) }}" target="_blank">
+                        {{ order.orderId }}
+                    </a>
+                </td>
+                <td>{{ totalQuantities['totalQuantity'] }}</td>
+                <td>{{ totalQuantities['frameQuantity'] }}</td>
+                <td class="fit-to-cell">{{ order.proofApprovedAt | date('M d, y h:i A') }}</td>
+                <td class="fit-to-cell">{{ order.orderAt | date('M d, y h:i A') }}</td>
+                <td class="fit-to-cell">
+                    {% if warehouseOrder and warehouseOrder.shippingService %}
+                        {{ enum.warehouseShippingService(warehouseOrder.shippingService) }}
+                    {% else %}
+                        --
+                    {% endif %}
+                </td>
+                <td class="fit-to-cell">{{ order.shippingAddress.state }}</td>
+                <td class="fit-to-cell">
+                    {% if order.printerName %}
+                        {{ enum.warehousePrinterName(order.printerName, true) | raw }}
+                    {% endif %}
+                </td>
+                <td class="fit-to-cell">{{ warehouseOrder.shipBy | date('M d') }}</td>
+                <td class="fit-to-cell">{{ enum.warehouseOrderStatus(warehouseOrder.printStatus, true) | raw }}</td>
+                <td>
+                    <a href="{{ url('admin_warehouse_queue_order_in_deleted_ship_by_mark_done', {id: warehouseOrder.id }) }}" class="badge bg-success text-decoration-none text-white"
+                       onclick="return confirm('Are you sure?')">Mark Done</a>
+                    {% if is_granted('warehouse_update_order_details') %}
+                        {% include 'admin/warehouse/queue/_offcanvas_add_to_queue.html.twig' %}
+                    {% endif %}
+                </td>
+            </tr>
+            {% set orderIndex = orderIndex + 1 %}
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="mt-4 d-flex justify-content-around">
+        {{ knp_pagination_render(orders) }}
+    </div>
+</div>

@@ -1,0 +1,101 @@
+{% if checkoutSession is defined 
+    and checkoutSession.webCheckoutDetails is defined 
+    and checkoutSession.webCheckoutDetails.amazonPayRedirectUrl is not empty %}
+
+    <script src="https://static-na.payments-amazon.com/checkout.js"></script>
+
+    <div class="modal fade" id="amazonModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirm Amazon Pay Payment</h5>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        {% for type in ['Billing', 'Shipping'] %}
+                            <div class="col-sm-6">
+                                <table class="table table-bordered">
+                                    <thead><tr><td>{{ type }} Address</td></tr></thead>
+                                    <tbody><tr><td>
+                                        {{ checkoutSession.shippingAddress.name }}
+                                        {% if checkoutSession.shippingAddress.addressLine1 %}
+                                            <br/>{{ checkoutSession.shippingAddress.addressLine1 }}
+                                        {% endif %}
+                                        {% if checkoutSession.shippingAddress.addressLine2 %}
+                                            &nbsp;{{ checkoutSession.shippingAddress.addressLine2 }}
+                                        {% endif %}
+                                        {% if checkoutSession.shippingAddress.addressLine3 %}
+                                            &nbsp;{{ checkoutSession.shippingAddress.addressLine3 }}
+                                        {% endif %}
+                                        {% if checkoutSession.shippingAddress.city %}
+                                            <br/>{{ checkoutSession.shippingAddress.city }}
+                                        {% endif %}
+                                        {% if checkoutSession.shippingAddress.stateOrRegion %}
+                                            , {{ checkoutSession.shippingAddress.stateOrRegion }}
+                                        {% endif %}
+                                        {% if checkoutSession.shippingAddress.postalCode %}
+                                            {{ checkoutSession.shippingAddress.postalCode }}
+                                        {% endif %}
+                                        {% if checkoutSession.shippingAddress.countryCode %}
+                                            <br/>{{ checkoutSession.shippingAddress.countryCode }}
+                                        {% endif %}
+                                        {% if checkoutSession.shippingAddress.phoneNumber %}
+                                            <br><strong>Phone Number:</strong> {{ checkoutSession.shippingAddress.phoneNumber }}
+                                        {% endif %}
+                                        {% if checkoutSession.buyer.email %}
+                                            <br><strong>Email:</strong> {{ checkoutSession.buyer.email }}
+                                        {% endif %}
+                                    </td></tr></tbody>
+                                </table>
+                            </div>
+                        {% endfor %}
+
+                        {% if checkoutSession.paymentPreferences is not empty %}
+                        <div class="col-sm-12">
+                            <table class="table table-bordered">
+                                <thead><tr><td>Payment Method Selected in Amazon Pay</td></tr></thead>
+                                <tbody><tr><td class="text-center font-weight-bold">
+                                    {{ checkoutSession.paymentPreferences|first.paymentDescriptor }}
+                                </td></tr></tbody>
+                            </table>
+                        </div>
+                        {% endif %}
+
+                        <div class="col-sm-12 text-right">
+                            <span>Click to change Address or Amazon Payment Method</span>
+                            <button id="changeAddress" type="button" class="btn btn-sm btn-secondary ml-2">Click Here</button>
+                            <script>
+                                document.addEventListener("DOMContentLoaded", function () {
+                                    if (typeof amazon !== 'undefined' && amazon.Pay) {
+                                        amazon.Pay.bindChangeAction('#changeAddress', {
+                                            amazonCheckoutSessionId: '{{ checkoutSession.checkoutSessionId }}',
+                                            changeAction: 'changeAddress'
+                                        });
+                                    } else {
+                                        console.error('Amazon Pay SDK not loaded');
+                                    }
+                                });
+                            </script>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    {% if payment_cancel == 'order_proof_approve' and oid is defined and oid %}
+                        <a href="{{ path(payment_cancel, { oid: oid }) }}" class="btn btn-secondary" onclick="$('#amazonModal').modal('hide')" data-dismiss="modal">Cancel Payment</a>
+                    {% elseif payment_cancel == 'payment_link' and requestId is defined and requestId %}
+                        <a href="{{ path(payment_cancel, { requestId: requestId }) }}" class="btn btn-secondary" onclick="$('#amazonModal').modal('hide')" data-dismiss="modal">Cancel Payment</a>
+                    {% else %}
+                        <a href="{{ path(payment_cancel) }}" class="btn btn-secondary" onclick="$('#amazonModal').modal('hide')" data-dismiss="modal">Cancel Payment</a>
+                    {% endif %}
+                    <a href="{{ checkoutSession.webCheckoutDetails.amazonPayRedirectUrl }}" class="btn btn-primary">Pay</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            $('#amazonModal').modal('show');
+        });
+    </script>
+{% endif %}

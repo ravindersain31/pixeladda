@@ -1,0 +1,68 @@
+<button class="btn btn-secondary btn-sm" type="button" data-bs-toggle="offcanvas"
+        data-bs-target="#offcanvasChargeCard" aria-controls="offcanvasChargeCard">
+    Charge Card
+</button>
+<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasChargeCard" aria-labelledby="offcanvasChargeCardLabel">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="offcanvasChargeCardLabel">Charge Card</h5>
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        {{ form_start(chargeCardForm) }}
+        <div id="dropin-container" class="mb-2"></div>
+        {{ form_widget(chargeCardForm) }}
+        <div class="mb-3">
+            <button type="submit" data-loading="action(save)|addAttribute(disabled)" class="btn btn-primary">
+                <span data-loading="action(save)|show" style="display: none">Charging Card...</span>
+                <span data-loading="action(save)|hide" style="display: block">Charge Card</span>
+            </button>
+        </div>
+
+        {{ form_end(chargeCardForm) }}
+        <script src="https://js.braintreegateway.com/web/dropin/1.40.2/js/dropin.min.js"></script>
+        <script>
+            const form = document.querySelector('[name="charge_card"]');
+            const button = form.querySelector('button');
+
+            braintree.dropin.create({
+                authorization: window.braintreeClientAuth,
+                container: '#dropin-container'
+            }, (error, dropinInstance) => {
+                if (error){
+                    console.error(error);
+                    button.removeAttribute('disabled');
+                    button.textContent = 'Charge Card';
+                }
+
+                form.addEventListener('submit', event => {
+                    event.preventDefault();
+
+                    dropinInstance.requestPaymentMethod((error, payload) => {
+                        if (error){
+                            console.error(error);
+                            button.removeAttribute('disabled');
+                            button.textContent = 'Charge Card';
+                        }
+
+                        // Step four: when the user is ready to complete their
+                        //   transaction, use the dropinInstance to get a payment
+                        //   method nonce for the user's selected payment method, then add
+                        //   it a the hidden field before submitting the complete form to
+                        //   a server-side integration
+                        const chargeCardPaymentNonce = document.getElementById('charge_card_paymentNonce');
+                        chargeCardPaymentNonce.value = payload.nonce;
+                        chargeCardPaymentNonce.dispatchEvent(new Event('change'));
+
+                        form.submit();
+                    });
+                });
+            });
+        </script>
+        <style>
+            .credit-card .form-control {
+                padding: 0;
+                height: 43px
+            }
+        </style>
+    </div>
+</div>

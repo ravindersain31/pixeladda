@@ -1,0 +1,104 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Product Edit{% endblock %}
+{% block stylesheets %}
+    {{ encore_entry_link_tags('admin-editor') }}
+    {{ encore_entry_link_tags('admin') }}
+{% endblock %}
+{% block pageTitle %}
+    <div class="page-header-icon">
+        <i class="fas fa-dashboard"></i>
+    </div>
+    Edit Product - {{ product.sku }}
+    {% if variant is defined %}
+        | Variant - {{ variant.name }} ({{ variant.sku }})
+    {% endif %}
+    <a href="{{ url('admin_product_edit_toggle_sell', {id: product.id}) }}">
+        {% if product.isEnabled %}
+            <span class="badge bg-danger ms-2">Disable Selling</span>
+        {% else %}
+            <span class="badge bg-success ms-2">Enable Selling</span>
+        {% endif %}
+    </a>
+    {% if product.sku == 'WIRE-STAKE' %}
+        {% set href = url('order_wire_stake') %}
+    {% elseif product.sku == 'SAMPLE' %}
+        {% set href = url('order_sample') %}
+    {% elseif product.sku == 'BLANK-SIGN' %}
+        {% set href = url('order_blank_sign') %}
+    {% else %}
+        {% set href = url('editor', {
+            category: product.primaryCategory.slug,
+            productType: product.productType.slug,
+            sku: product.sku
+        }) %}
+    {% endif %}
+
+    <a href="{{ href }}" target="_blank">
+        <span class="badge bg-info ms-2">
+            <i class="fa fa-external-link-alt"></i> Open in Editor
+        </span>
+    </a>
+{% endblock %}
+{% block pageTitleAction %}
+    {% if variant is defined %}
+        <a href="{{ url('admin_product_variants', {productId: product.id}) }}">
+            <i class="fas fa-arrow-left"></i>
+            Back to variants
+        </a>
+    {% endif %}
+{% endblock %}
+
+{% block body %}
+    <div class="card card-header-actions mx-auto shadow-none">
+        <div class="card-header p-0 h-100 border-0">
+            <nav class="w-100">
+                <div class="nav nav-tabs ps-2 pe-2 pt-2" role="tablist">
+                    {% if variant is defined %}
+                        <a href="{{ url('admin_product_variant_edit', {productId: product.id, variantId: variant.id}) }}"
+                           class="nav-link {% if app.request.get('_route') in ['admin_product_variant_edit'] %}active{% endif %}"
+                           type="button">
+                            Overview
+                        </a>
+                    {% else %}
+                        <a href="{{ url('admin_product_edit', {id: product.id}) }}"
+                           class="nav-link {% if app.request.get('_route') in ['admin_product_edit'] %}active{% endif %}"
+                           type="button">
+                            Overview
+                            {% if product.isEnabled %}
+                                <span class="badge bg-success ms-2">Selling</span>
+                            {% else %}
+                                <span class="badge bg-warning ms-2">Not Selling</span>
+                            {% endif %}
+                        </a>
+                    {% endif %}
+                    <a href="{{ url('admin_product_variants', {productId: product.id}) }}"
+                       class="nav-link {% if app.request.get('_route') in ['admin_product_variants'] %}active{% endif %}"
+                       type="button">
+                        Variants
+                    </a>
+                    <a href="{{ url('admin_product_pricing', {id: product.id}) }}"
+                       class="nav-link {% if app.request.get('_route') in ['admin_product_pricing'] %}active{% endif %}"
+                       type="button">
+                        Pricing
+                    </a>
+                    {% if product.productType.slug == 'yard-letters' or product.sku == 'DC-CUSTOM' or product.sku == 'BHC-CUSTOM' %}
+                        <a href="{{ url('admin_product_pre_packed', {id: product.id}) }}"
+                        class="nav-link {% if app.request.get('_route') in ['admin_product_pre_packed'] %}active{% endif %}"
+                        type="button">
+                            Images
+                        </a>
+                    {% endif %}
+                </div>
+            </nav>
+        </div>
+        <div class="card-body">
+            {% include 'admin/product/edit/'~ app.request.get('_route') | replace({'admin_product_': '', }) ~ '.html.twig' %}
+        </div>
+    </div>
+
+{% endblock %}
+{% block javascripts %}
+    {{ encore_entry_script_tags('admin-editor') }}
+    {{ encore_entry_script_tags('admin') }}
+{% endblock %}

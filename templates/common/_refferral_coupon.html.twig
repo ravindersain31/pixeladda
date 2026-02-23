@@ -1,0 +1,86 @@
+<div class="modal fade" id="referralModal" tabindex="-1" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content referral-modal">
+
+			<div class="modal-header referral-header">
+				<div class="w-100 text-center">
+					<h4 class="modal-title">Give 5%, Get 5%!</h4>
+					<h5 class="modal-description">
+						Share your referral link and your friends get
+						<strong>5% off instantly</strong>
+						at checkout. Once their order ships,
+						<strong>you’ll earn 5% in YSP Rewards</strong>
+						(up to $50) to use on your next order!
+					</h5>
+				</div>
+
+				<button type="button" class="btn-close custom-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+
+				{% set referralForm = createReferralCoupoun() %}
+				<div id="ref-email-step">
+
+					{{ form_start(referralForm, {
+                        attr: {
+                            id: 'referralForm',
+                            novalidate: 'novalidate'
+                        }
+                    }) }}
+
+					<div class="form-group">
+						<label class="ref-label">
+							Enter your email
+							<span class="text-danger">*</span>
+						</label>
+
+						{{ form_widget(referralForm.email, {
+                            attr: {
+                                id: 'referral_coupon_email',
+                                name: 'referral_coupon[email]',
+                                placeholder: 'Enter your email',
+                                class: 'form-control ref-input'
+                            }
+                        }) }}
+					</div>
+
+					{% if referralForm.recaptcha is defined %}
+						<div class="col-12 d-flex justify-content-center mt-2">
+							<div class="form-group recaptcha-wrapper">
+								{{ form_row(referralForm.recaptcha, {
+                                    attr: { tabindex: 13 }
+                                }) }}
+							</div>
+						</div>
+					{% endif %}
+
+					<button type="button" id="getReferralLink" class="referral-submit">
+						GET DISCOUNT LINK
+					</button>
+
+					{{ form_end(referralForm) }}
+
+				</div>
+				<div id="ref-link-step" class="d-none">
+					<div id="referralMessage" class="alert alert-warning d-none text-center mb-3"></div>
+					<div class="input-group referral-link-group">
+						<input type="text" id="referralLink" class="form-control ref-input referral-link-input" readonly>
+
+						<button type="button" class="btn referral-copy-btn" onclick="copyReferralLink()">
+							Copy
+						</button>
+					</div>
+
+				</div>
+
+				<p class="terms-conditions">
+					<span class="terms-condition-text">By submitting,</span> I acknowledge the
+					<a href="{{ url('terms_and_conditions') }}">Terms of Service</a>
+					and
+					<a href="{{ url('privacy_policy') }}">Privacy Policy</a>.
+				</p>
+
+			</div>
+		</div>
+	</div>
+</div>

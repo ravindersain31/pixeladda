@@ -1,0 +1,108 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Orders{% endblock %}
+{% block pageTitle %}
+    <div class="page-header-icon">
+        <i class="fa-solid fa-cubes"></i>
+    </div>
+    Repeat Orders
+{% endblock %}
+
+{% block body %}
+    {% if isFilterFormSubmitted %}
+        Showing results for:
+        <div class="small">
+            {% if repeatOrderFilter.date.vars.value %}
+                <span><b>Date: </b>{{ repeatOrderFilter.date.vars.value }}</span>
+            {% endif %}
+        </div>
+    {% endif %}
+    <div class="card card-header-actions mx-auto shadow-none">
+        <div class="card-header">
+            Repeat Orders
+            <div class="card-header-actions">
+                <button class="btn btn-primary btn-sm" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasFilterOrder"
+                        aria-controls="offcanvasFilterOrder">
+                    Filter
+                </button>
+                <a href="{{ app.request.pathInfo }}" class="btn btn-danger btn-sm">Clear</a>
+                <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasFilterOrder"
+                    aria-labelledby="offcanvasFilterOrderLabel">
+                    <div class="offcanvas-header">
+                        <h5 class="offcanvas-title" id="offcanvasFilterOrderLabel">Filter</h5>
+                        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                    </div>
+                    <div class="offcanvas-body">
+                        {{ form_start(repeatOrderFilter) }}
+                        {{ form_row(repeatOrderFilter.date) }}
+                        <div class="mt-3">
+                            {{ form_widget(repeatOrderFilter.submit) }}
+                            <a href="{{ app.request.pathInfo }}" class="btn btn-danger">Clear</a>
+                        </div>
+                        {{ form_end(repeatOrderFilter) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="card-body table table-striped mb-0">
+                <thead>
+                <tr>
+                    <th>Sr.</th>
+                    <th>Email</th>
+                    <th>Repeat Orders</th>
+                    <th>Order Number</th>
+                </tr>
+                </thead>
+                <tbody>
+                    {% set totalOrders = 0 %}
+                    {% for user in users %}
+                        <tr>
+                            <td>{{ users.getPaginationData.firstItemNumber + loop.index - 1 }}</td>
+                            <td>
+                                {{ user.email|default('-') }}
+                            </td>
+                            <td>
+                                {% set ordersCount = user.orderIds|length %}
+                                {% set totalOrders = totalOrders + ordersCount %}
+                                {{ ordersCount }}
+                            </td>
+                            <td>
+                                <p class="d-inline-flex gap-1">
+                                    <a data-bs-toggle="collapse" href="#orderCollapse{{ user.id }}" role="button" aria-expanded="false" aria-controls="orderCollapse{{ user.id }}">
+                                        View Orders
+                                    </a>
+                                </p>
+                                <div class="collapse" id="orderCollapse{{ user.id }}">
+                                    <ul class="list-unstyled ">
+                                        {% for order in user.orderIds %}
+                                            <li>
+                                                <a target="_blank" href="{{ url('admin_order_overview',{ orderId:order }) }}">{{ order }}</a>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="9">No records</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th scope="row">Totals</th>
+                        <td></td>
+                        <td>{{ totalOrders }}</td>
+                    </tr>
+                    
+                </tfoot>
+            </table>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        {{ knp_pagination_render(users) }}
+    </div>
+{% endblock %}

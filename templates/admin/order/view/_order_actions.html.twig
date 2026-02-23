@@ -1,0 +1,146 @@
+{% if is_granted('order_actions') %}
+
+<div class="d-flex flex-wrap gap-1 p-1 ysp-overflow-auto">
+    <div class="d-flex flex-wrap gap-1 flex-grow-1 justify-content-start">
+    {# Update from address #}
+    {{ component('UpdateFromAddressComponent', { order }) }}
+    {% set allowPushToSE = is_granted('order_push_to_shipping_easy') and order.isAllowPushToSE() %}
+{#    {% if order.warehouseOrder is defined and order.warehouseOrder is not null and (order.isRequestPickup() or order.isIsFreightRequired()) %}#}
+{#        <button type="button" class="btn badge bg-primary text-decoration-none text-white me-2"#}
+{#                data-bs-toggle="modal" data-bs-target="#done_status_confirmation_{{ order.orderId }}">#}
+{#            <i class="fa-solid fa-check me-1"></i>#}
+{#            {% if order.isRequestPickup() %}#}
+{#                Pickup Done#}
+{#            {% elseif order.isIsFreightRequired() %}#}
+{#                Freight Shipment Done#}
+{#            {% endif %}#}
+{#        </button>#}
+{#        {% include 'admin/warehouse/components/_done_status_confirmation.html.twig' with { order, warehouseOrder: order.warehouseOrder, from: 'order' } %}#}
+{#    {% else %}#}
+{#        {% if allowPushToSE %}#}
+{#            <button type="button" class="btn badge bg-primary text-decoration-none text-white"#}
+{#                    data-bs-toggle="modal" data-bs-target="#push_to_se_{{ order.orderId }}">#}
+{#                <i class="fa fa-upload me-1"></i> Push to Shippingeasy#}
+{#            </button>#}
+{#            {% include 'admin/order/view/_push_to_se_confirm.html.twig' with { order, from: 'order' } %}#}
+{#        {% endif %}#}
+{#    {% endif %}#}
+    <a href="{{ storeBasedUrl(url('order_invoice_admin_pdf', {orderId: order.orderId}), order.storeDomain) }}" class="btn btn-primary btn-sm {% if allowPushToSE %}mx-2{% else %}me-2{% endif %} text-nowrap" onclick="return confirm('Are you sure you want to view the invoice?');">
+        View Invoice
+    </a>
+    <a href="{{ storeBasedUrl(url('order_invoice_admin_pdf', {orderId: order.orderId}), order.storeDomain) }}" class="btn btn-primary btn-sm text-nowrap" onclick="return confirm('Are you sure you want to download the invoice?');">
+        Download Invoice
+    </a>
+    <a href="{{ url('admin_order_send_invoice',{orderId: order.orderId}) }}" class="btn btn-primary btn-sm mx-1 text-nowrap" onclick="return confirm('Are you sure you want to email the invoice?');">
+        Email Invoice
+    </a>
+    <button type="button" class="btn btn-danger btn-sm text-nowrap" data-bs-toggle="modal" data-bs-target="#applyOrderCoupon{{ order.orderId }}">
+        Apply Discount
+    </button>
+
+    {% component BootstrapModal with { id: 'applyOrderCoupon' ~ order.orderId } %}
+        {% block modal_full_content %}
+            {{ component('ApplyOrderCouponForm',{
+                order: order
+            }) }}
+        {% endblock %}
+    {% endcomponent %}
+
+    <a href="{{ url('admin_export_order_details',{orderId:order.orderId}) }}" class="btn btn-info btn-sm mx-1 text-nowrap" onclick="return confirm('Are you sure you want to export this order?');">
+        Export Order to Excel
+    </a>
+
+    {% if order.status not in ['CANCELLED'] and printerNameForm is defined %}
+        <button type="button" class="btn btn-secondary btn-sm text-nowrap" data-bs-toggle="modal"
+                data-bs-target="#printName{{ order.orderId }}">
+            Assign Printer
+        </button>
+    {% endif %}
+    {% if order.parent is null %}
+        <button class="btn btn-sm btn-primary ms-1" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSplitOrder" aria-controls="offcanvasSplitOrder">
+            Split Order
+        </button>
+    {% endif %}
+    </div>
+    <div class="d-flex flex-wrap gap-1 justify-content-end">
+    {% component BootstrapModal with { id: 'printName' ~ order.orderId } %}
+        {% block modal_full_content %}
+            <div class="card">
+                <div class="card-body">
+                    {% if printerNameForm is defined %}
+                        {{ form(printerNameForm) }}
+                    {% endif %}
+                </div>
+            </div>
+        {% endblock %}
+    {% endcomponent %}
+
+    <button type="button" class="btn btn-primary btn-sm text-nowrap" data-bs-toggle="modal" data-bs-target="#orderTags{{ order.orderId }}">
+        Assign Tags
+    </button>
+
+    <a href="{{ url('admin_order_is_paused', {orderId: order.orderId}) }}" class="btn btn-warning btn-sm ms-1 text-nowrap" onclick="return confirm('Are you sure you want to pause this order?');">
+        {% if order.isPause %}
+            Proceed Order
+        {% else %}
+            Pause Order
+        {% endif %}
+    </a>
+
+
+    <button type="button" class="btn btn-primary btn-sm text-nowrap ms-1" data-bs-toggle="modal" data-bs-target="#resendEmail{{ order.orderId }}">
+        RE-SEND EMAILS
+    </button>
+
+    {% if order.status not in ['CANCELLED' , 'COMPLETED'] %}
+        <a href="{{ url('admin_order_mark_as_completed',{orderId: order.orderId}) }}" class="btn btn-primary btn-sm mx-1 text-nowrap" onclick="return confirm('Are you sure you want to mark this order as completed?');">
+            Mark as Completed
+        </a>
+    {% endif %}
+</div>
+    {% component BootstrapModal with { id: 'orderTags' ~ order.orderId } %}
+        {% block modal_full_content %}
+            <div class="card">
+                <div class="card-body">
+                    {% if orderTags is defined %}
+                        {{ form(orderTags) }}
+                    {% endif %}
+                </div>
+            </div>
+        {% endblock %}
+    {% endcomponent %}
+    {% if is_granted('order_create_shipment') and order.status in ['SHIPPED', 'COMPLETED'] %}
+        <div class="ms-2">
+            {{ component('EasyPostShipmentComponent', { order, type: shipmentTypeEnum('return') }) }}
+        </div>
+    {% endif %}
+    {% if is_granted('admin_re_queue_order') and order.status in ['COMPLETED', 'READY_FOR_SHIPMENT'] and ('now'|date('U') - order.updatedAt|date('U')) < 86400 %}
+        <a href="{{ url('admin_re_queue_order', {orderId: order.orderId}) }}" class="btn btn-primary btn-sm mx-2 text-nowrap"
+            onclick="return confirm('Are you sure you want to Re-queue this order?');">
+            Re-queue
+        </a>
+    {% elseif is_granted('admin_re_queue_order') and order.status == 'SHIPPED' and ('now'|date('U') - order.updatedAt|date('U')) < 86400 %}
+        <a href="{{ url('admin_re_queue_order', {orderId: order.orderId}) }}" class="btn btn-primary btn-sm mx-2 text-nowrap"
+            onclick="return confirm('This order is already shipped. Please make sure to cancel the order on ShippingEasy if Re-Queued.');">
+            Re-queue
+        </a>
+    {% endif %}
+
+    {% component BootstrapOffCanvas with { id: 'offcanvasSplitOrder' } %}
+        {% block offcanvas_header %} Split Order {{ order.orderId }} {% endblock %}
+        {% block offcanvas_body %}
+            {{ component('AdminOrderSplitOrder',{
+                order: order
+            }) }}
+        {% endblock %}
+    {% endcomponent %}
+
+    {% component BootstrapModal with { id: 'resendEmail' ~ order.orderId } %}
+        {% block modal_full_content %}
+                {{ component('ResendEmailsForm', {
+                    order: order
+                }) }}
+        {% endblock %}
+    {% endcomponent %}
+</div>
+{% endif %}

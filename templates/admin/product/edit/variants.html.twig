@@ -1,0 +1,10 @@
+{% set variants = product.variants %}
+{{ component('AdminProductVariantsForm', {
+    form: form,
+    product: product,
+}) }}
+{% if variants | length <= 0 %}
+    <a href="{{ url('admin_product_variant_init', {productId: product.id}) }}" class="btn btn-secondary btn-sm">
+        Create Default Variants
+    </a>
+{% endif %}

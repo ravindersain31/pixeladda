@@ -1,0 +1,12 @@
+<div class="card card-header-actions mx-auto shadow-none">
+	<div class="card-header">
+		{{user.email}}
+	</div>
+	<div class="card-body">
+		{{ component('UserForm',{
+							form:form,
+							user:user
+					}) }}
+	</div>
+</div>
+

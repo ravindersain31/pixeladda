@@ -1,0 +1,27 @@
+{% extends 'emails/base.html.twig' %}
+{% block title %}Your Design Has Been Saved{% endblock %}
+{% block subject %}Your Design Has Been Saved{% endblock %}
+{% block body %}
+    <tr>
+        <td style="text-align: left;">
+            <h3 style="font-size: 26px;color: #000000;">Hello,</h3>
+            <p style="font-weight: bold;font-size: 22px; line-height: 1.5;color: #000000;">
+                We have successfully saved your design. <br/>Please click the button or link below to resume your
+                order.</p>
+
+            <a href="{{ url('cart_resume', {id: cart.cartId}) }}" class="btn-shop-now"
+               style="background-color: #efc825;color: #000000;font-size: 32px;text-transform: uppercase;text-decoration: none;padding: 18px 30px;display: inline-block;font-weight: normal;border-radius: 10px;margin: 15px 0 35px;line-height: 1.5; "
+               target="_blank">Resume Your Order</a>
+
+            <br>
+            <a href="{{ url('cart_resume', {id: cart.cartId}) }}" style="color:blue;" target="_blank">
+                {{ url('cart', {id: cart.cartId}) }}
+            </a><br><br>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="3">
+            {% include 'emails/common/_cart_info_table.html.twig' %}
+        </td>
+    </tr>
+{% endblock %}

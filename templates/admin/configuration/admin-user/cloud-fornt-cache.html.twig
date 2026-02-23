@@ -1,0 +1,46 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Cache Management{% endblock %}
+{% block pageTitle %}
+    <div class="page-header-icon">
+        <i class="fas fa-user-md"></i>
+    </div>
+    Cache Management
+{% endblock %}
+
+{% block body %}
+    <div class="card card-header-actions mx-auto shadow-none">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <div>Clear Cache for CloudFront</div>
+        </div>
+        <div class="card-body">
+            {% for message in app.flashes('success') %}
+                <div class="alert alert-success">{{ message|raw }}</div>
+            {% endfor %}
+            {% for message in app.flashes('danger') %}
+                <div class="alert alert-danger">{{ message }}</div>
+            {% endfor %}
+            <div class="mb-3">
+                {{ form_start(invalidateForm, {
+                    action: path('admin_cloudfront_invalidate'),
+                    method: 'POST'
+                }) }}
+                    {{ form_row(invalidateForm.invalidate_path) }}
+                    <button type="submit" class="btn btn-outline-primary">
+                        <i class="fas fa-sync me-2"></i>Invalidate Cloudfront
+                    </button>
+                {{ form_end(invalidateForm) }}
+            </div>
+        </div>
+    </div>
+
+    <div class="card card-header-actions mx-auto shadow-none mt-5">
+        <div class="card-header d-flex justify-content-between">
+            <span>Server Cache</span>           
+        </div>
+
+        <div class="card-body">
+            {{ component('AdminCacheForm') }}
+        </div>
+    </div>    
+{% endblock %}

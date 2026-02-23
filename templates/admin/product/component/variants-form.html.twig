@@ -1,0 +1,123 @@
+<div {{ attributes }}>
+    {{ form_start(form) }}
+    {{ form_errors(form) }}
+    <div class="domainAlias row mb-3">
+        {% if form.variants | length > 0 %}
+            {% for key, variant in form.variants %}
+                <div class="variants-container col-md-4 mb-4">
+                    <div class="border p-2 rounded variants-box">
+                        <div class="row">
+                            <div class="col-12 col-md-12">
+                                <h5 class="px-2">#{{ loop.index }}</h5>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <div class="w-100">
+                                    {% set isNameHasValue = variant.vars.value.name is not empty %}
+                                    {{ form_row(variant.name, { attr: { readonly: isNameHasValue }}) }}
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                {{ form_row(variant.label) }}
+                            </div>
+                            <div class="col-12 col-md-12">
+                            {{ form_row(variant.imageFile) }}
+                            </div>
+                            <div class="col-12 col-md-12">
+                                {{ form_row(variant.promoImageFile) }}
+                            </div>
+                            {% if variant and variant.vars.value.id %}
+                            <div class="col-12 col-md-12">
+                                {% set productImageUrl = 'https://static.yardsignplus.com/product/img/' ~ variant.vars.value.image.name %}
+                                {% set templateJsonUrl = 'https://yardsignplus-static.s3.amazonaws.com/product/template/' ~ variant.vars.value.metaDataKey('templateJson') %}
+                                {% set templateSizeArr = variant.vars.value.name|split('x') %}
+                                
+                                {% set templateSize = {
+                                    width: templateSizeArr[0]|default(1),
+                                    height: templateSizeArr[1]|default(1)
+                                } %}
+
+                                {% set variantData = {
+                                    id: variant.vars.value.id,
+                                    name: variant.vars.value.name,
+                                    class: variant.vars.value.name ~ "_" ~ variant.vars.value.id,
+                                    sku: variant.vars.value.parent.sku,
+                                    templateSize: templateSize,
+                                    image: productImageUrl
+                                } %} 
+                                
+                                <div class="svg-uploader" {{ react_component('SVGUploader/SVGUploader', {
+                                    'variant': variantData,
+                                    'saveUrl': url('admin_product_variant_design_save', {productId: product.id, variantId: variant.vars.value.id}),
+                                    'uploadDataImage': url('admin_product_variant_design_save_data_image_upload', {productId: product.id, variantId: variant.vars.value.id}),
+                                    'templateJsonUrl': templateJsonUrl,
+                                })}}>
+                                </div>
+                            </div>
+                            {% endif %}
+                            <div class="col-12 col-md-12">
+                                {% if product.id and variant.vars.value.id %}
+                                    <a target="_blank"
+                                    href="{{ url('admin_product_variant_design', {productId: product.id, variantId: variant.vars.value.id}) }}"
+                                    class="btn btn-sm btn-success-soft ms-md-2">
+                                        <i class="fa fa-external-link me-1"></i>
+                                        Design in Editor
+                                    </a>
+                                {% endif %}
+                                <button class="btn btn-link" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#collapse_variant_{{ loop.index }}" aria-expanded="false"
+                                        aria-controls="collapse_variant_{{ loop.index }}">
+                                    More Config
+                                </button>
+                                {{ form_widget(variant.vars.button_delete) }}
+                            </div>
+                        </div>
+                        <div class="collapse" id="collapse_variant_{{ loop.index }}">
+                            <div class="card card-body shadow-none">
+                                <div class="row">
+                                    <div class="col-12 col-md-12">
+                                        {{ form_row(variant.sortPosition) }}
+                                    </div>
+                                    <div class="col-12 col-md-12">
+                                        {{ form_row(variant.modalName) }}
+                                    </div>
+                                    <div class="col-12 col-md-12">
+                                        {{ form_row(variant.seoImageFile) }}
+                                    </div>
+                                    <div class="col-12 col-md-12">
+                                        {{ form_row(variant.displayImageFile) }}
+                                    </div>
+                                    <div class="col-12 col-md-12">
+                                        {{ form_row(variant.templateLabel) }}
+                                    </div>
+                                    <div class="col-12 col-md-12">
+                                        {{ form_row(variant.templateFile) }}
+                                    </div>
+                                    <div class="col-12 col-md-12">
+                                        {{ form_row(variant.promoTemplateFile) }}
+                                    </div>
+                                    <div class="col-12 col-md-12" hidden>
+                                        {{ form_row(variant.isCustomSize) }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {{ form_errors(variant) }}
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="small text-danger no-alias mb-2">
+                No variants added. You can add by clicking "Add Variant"
+            </div>
+        {% endif %}
+        <div class="col-12 col-md-4" hidden>
+            {{ form_row(form.isCustomSize) }}
+        </div>
+        <div class="col-md-12">
+            {{ form_widget(form.variants.vars.button_add) }}
+            {{ form_errors(form.variants) }}
+        </div>
+    </div>
+    {{ form_widget(form) }}
+    {{ form_end(form) }}
+</div>

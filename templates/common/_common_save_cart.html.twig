@@ -1,0 +1,16 @@
+    <!-- Modal Save Cart -->
+    {% component BootstrapModal with { id: 'saveCartModal' ~ lightCart.cartId } %}
+        {% block modal_full_content %}
+            {{ component('SaveCartForm',{
+                cartId: lightCart.cartId,
+            }) }}
+        {% endblock %}
+    {% endcomponent %}
+    <!-- Modal Email Quote -->
+    {% component BootstrapModal with { id: 'emailQuoteModal' ~ lightCart.cartId } %}
+        {% block modal_full_content %}
+            {{ component('SaveQuoteForm',{
+                cartId: lightCart.cartId,
+            }) }}
+        {% endblock %}
+    {% endcomponent %}

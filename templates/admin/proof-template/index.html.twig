@@ -1,0 +1,37 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}
+    Manage Proof Template
+{% endblock %}
+
+{% block pageTitle %}
+    <div class="page-header-icon">
+        <i class="fa-solid fa-cubes"></i>
+    </div>
+    Manage Proof Template
+{% endblock %}
+
+{% block body %}
+    {% block stylesheets %}
+        {{ encore_entry_link_tags('admin') }}
+        {{ encore_entry_link_tags('admin-proof-template') }}
+    {% endblock %}
+
+    <div style="background: white" id="admin-proof-template" {{ react_component('AdminProofTemplate', {
+            initialTemplates: initialTemplates,
+            initialGrommetTemplates: initialGrommetTemplates,
+            initialWireStakeTemplates: initialWireStakeTemplates,
+            variantChoices: variantChoices,
+            frameVariants: frameVariants,
+            grommetColors: grommetColors,
+        }) }}>
+        <div class="loading-proof-template">
+            Initializing ...
+        </div>
+    </div>
+
+    {% block javascripts %}
+        {{ encore_entry_script_tags('admin') }}
+        {{ encore_entry_script_tags('admin-proof-template') }}
+    {% endblock %}
+{% endblock %}

@@ -1,0 +1,234 @@
+#distributor {
+  .main-title {
+    color: #6f4c9e;
+    font-size: 29px;
+    font-weight: 650;
+    margin-top: 21px;
+    margin-bottom: 12px;
+
+    @media (max-width: 768px) {
+      font-size: 20px;
+    }
+  }
+
+  .intro-text {
+    margin: 0 auto;
+    font-size: 17px;
+    line-height: 1.75;
+    color: #1a1919;
+    text-align: center;
+
+    @media (max-width: 768px) {
+      padding: 0 15px;
+    }
+  }
+
+  .section-heading {
+    color: #6f4c9e;
+    font-size: 27px;
+    font-weight: 650;
+    margin: 22px 0 17px;
+    text-align: center;
+    @media (max-width: 768px) {
+      font-size: 20px;
+    }
+  }
+
+  .partner-card {
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 30px 22px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+    height: 100%;
+    text-align: center;
+    transition: all 0.35s ease;
+    cursor: pointer;
+
+    img {
+      height: 46px;
+      margin-bottom: 16px;
+      transition: transform 0.35s ease;
+    }
+
+    h5 {
+      color: #6f4c9e;
+      font-size: 17px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    p {
+      font-size: 14px;
+      color: #1a1919;
+      line-height: 1.6;
+      margin: 0;
+      font-weight: 500;
+    }
+
+    &:hover {
+      background: #6f4c9e47;
+      transform: translateY(-6px);
+      box-shadow: 0 12px 25px rgba(0, 0, 0, 0.12);
+
+      img {
+        transform: scale(1.08);
+      }
+    }
+
+    &.active {
+      background: #ffd6d6;
+      box-shadow: 0 12px 25px rgba(0, 0, 0, 0.12);
+    }
+  }
+
+  .requirements {
+    max-width: 900px;
+    margin: 0 auto;
+    text-align: center;
+    font-size: 18px;
+    line-height: 1.7;
+
+    p {
+      margin-bottom: 6px;
+
+      span {
+        color: #000;
+        font-weight: 450;
+      }
+    }
+  }
+
+  .step-box {
+    height: 100%;
+
+    .step-header {
+      display: flex;
+      align-items: center;
+      background: #d9d9d9;
+
+      .step-number {
+        background: #6f4c9e;
+        color: #ffffff;
+        padding: 10px 14px;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .step-title {
+        padding-left: 14px;
+        font-weight: 600;
+        font-size: 14px;
+      }
+    }
+
+    .step-body {
+      padding: 14px;
+      font-size: 16px;
+      color: #1a1919;
+      line-height: 1.6;
+    }
+  }
+
+  .form-section-title {
+    color: #6f4c9e;
+    font-size: 28px;
+    font-weight: 700;
+    margin: 15px 0 19px;
+    text-align: center;
+    @media (max-width: 768px) {
+      font-size: 22px;
+    }
+  }
+  .distributor-form .row {
+    --bs-gutter-y: 0.4rem;
+  }
+
+  .distributor-form {
+    margin-bottom: 50px;
+
+    select.form-select {
+      color: #646469;
+      font-size: 13px;
+    }
+    .form-control {
+      color: #646469;
+    }
+
+  
+    select.form-select:not([value=""]) {
+      color: #646469; 
+    }
+
+    .form-control::placeholder,
+    .form-select::placeholder {
+      font-size: 13px;
+      color: #ced4da;
+    }
+
+    label {
+      font-size: 12.8px;
+      font-weight: 400;
+      margin-bottom: 4px;
+      &.mt-3 {
+        margin-top: 5px !important;
+      }
+    }
+
+    .form-control,
+    .form-select {
+      font-size: 14px;
+      padding: 5px 10px;
+      border-radius: 4px;
+      margin-bottom: 2px !important;
+      border: 1px solid #ced4da;
+    }
+
+    div.error {
+      color: #e80000;
+      font-size: 12px;
+      position: absolute;
+      top: 0;
+      left: 0;
+      white-space: nowrap;
+    }
+
+    .form-group {
+      margin-bottom: 0px !important;
+      position: relative;
+
+      .error-placeholder {
+        position: relative;
+
+        ul,
+        li {
+          margin: 0;
+          padding: 0;
+          list-style: none;
+        }
+      }
+    }
+
+    .form-submit-wrapper {
+      text-align: center;
+      margin: 30px 0 60px;
+
+      .submit-btn {
+        background: #fff;
+        border: 2px solid #6f4c9e;
+        color: #000;
+        padding: 10px 25px;
+        font-size: 18px;
+        border-radius: 4px;
+
+        &:hover {
+          background: #6f4c9e;
+          color: #fff;
+        }
+      }
+    }
+
+    @media (max-width: 768px) {
+      margin-bottom: 39px;
+    }
+  }
+}

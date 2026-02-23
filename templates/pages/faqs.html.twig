@@ -1,0 +1,103 @@
+{% extends 'base.html.twig' %}
+
+{% set title = metaData.title ?: metaData.pageTitle ~ ' - ' ~ storeInfo.storeTitle %}
+
+{% block title %}{{ title }}{% endblock %}
+{% block metaData %}
+    {% set pageUrl = url('faqs') %}
+    {% set pageImageUrl = storeInfo.isPromoStore
+        ? 'https://static.yardsignplus.com/storage/promo-store/Frequently-Asked-Question-Banner-Mobile.webp' 
+        : 'https://static.yardsignplus.com/faqs_20230104-a7b2bb50-8c29-11ed-87e8-a9cc4794d026.png'
+    %}
+
+    {% include 'common/_page_meta.html.twig' with {
+        title: title,
+        metaData: metaData,
+        pageUrl: pageUrl,
+        pageImageUrl: pageImageUrl,
+        storeInfo: storeInfo
+    } %}
+{% endblock %}
+{% block body %}
+{{ include('common/common_mobile_bar.html.twig',{commonBarText: 'Order Online Or Call Now',commonBarTele: '+1-877-958-1499'}) }}
+    <div class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <picture>
+                    <source srcset="{{storeInfo.isPromoStore ? 'https://static.yardsignplus.com/storage/promo-store/Frequently-Asked-Question-Banner-Mobile.webp' : 'https://static.yardsignplus.com/faqs_20230104-a7b2bb50-8c29-11ed-87e8-a9cc4794d026.png'}}"
+                            media="(max-width: 767px)">
+                    <img fetchpriority="high" width="1905" height="338" class="d-block w-100 h-auto"
+                         src="{{storeInfo.isPromoStore ? 'https://static.yardsignplus.com/storage/promo-store/Frequently-Asked-Question-Banner-Destop.webp' : 'https://static.yardsignplus.com/faqs_20221226-36848d80-84e3-11ed-8e2d-0f7bc69636d2.jpg'}}"
+                         alt="YSP FAQs Banner">
+                </picture>
+            </div>
+        </div>
+    </div>
+    {{ include('common/highlights.html.twig') }}
+    {{ include('common/breadcrumb.html.twig', { breadcrumbs: [
+        { name: 'FAQs', active: true }
+    ]}) }}
+    <section class="ysp-faq-wrapper mb-4 mt-4">
+        <div class="container">
+            <h1 class="text-center">Frequently Asked Questions</h1>
+            <div class="row">
+                <div class="col-12 mb-1">
+                    <p class="faq-add-text">{{ faqsTitle }}</p>
+                </div>
+
+                <div class="faq-search-section col-md-5 m-auto mb-2">
+                    <h3 class="mb-2 text-center"> How can we help you? </h3>
+                    <div class="input-group faq-search">
+                        <div class="d-flex input-group-prepend faq-search-icon-wrap">
+                            <span class="input-group-text bg-white border-right-0 faq-search-icon-box">
+                                <i class="fas fa-search text-muted"></i>
+                            </span>
+                        </div>
+                        <button id="clearSearch"
+                                type="button"
+                                class="btn btn-link text-muted position-absolute d-none"
+                                aria-label="Clear search"
+                        >
+                            <i class="fas fa-times"></i>
+                        </button>
+                        <input type="text" id="faqSearch" class="form-control border-left-0 pl-0" placeholder="Search for answers..." autocomplete="off">
+                            
+                    </div>
+                    <div id="noResult" class="w-100 text-center mt-3 mb-3 text-muted fs-6 fw-500" style="display:none;">No FAQs found for your search.</div>
+                </div>
+                
+                {% for title,faqsList in faqs %}
+                {% set parentAccordionId = random(99,999) %}
+                    <div class="faq-section col-md-12 mb-3">
+                        {% if loop.index != 1 %}
+                        <div class="faq-title">
+                            <h3>{{ title }}</h3>
+                        </div>
+                        {% endif %}
+                        <div class="accordion ysp-accordion mt-3" id="accordionFaq{{ parentAccordionId }}">
+                            {% for question, answer in faqsList %}
+                                {% set index = random(99,999) %}
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="yspAccordion{{ index }}">
+                                        <button class="accordion-button p-2" type="button" data-bs-toggle="collapse"
+                                                data-bs-target="#yspAccord{{ index }}" aria-expanded="true"
+                                                aria-controls="yspAccord{{ index }}">
+                                            {{ question | raw }}
+                                        </button>
+                                    </h2>
+                                    <div id="yspAccord{{ index }}" class="accordion-collapse collapse" aria-labelledby="yspAccordion{{ index }}"
+                                        data-bs-parent="#accordionFaq{{ parentAccordionId }}">
+                                        <div class="accordion-body">
+                                            <p>{{ answer | raw }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+{% endblock %}

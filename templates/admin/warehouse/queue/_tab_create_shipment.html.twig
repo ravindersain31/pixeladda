@@ -1,0 +1,110 @@
+<div class="card-body p-0 table-responsive warehouse-table">
+    <table class="table table-bordered sortable">
+        <thead>
+        <tr>
+            <th class="fit-to-cell">#</th>
+            <th class="fit-to-cell indicator-right" tabindex="0" aria-sort="ascending">Order</th>
+            <th class="fit-to-cell indicator-right" tabindex="0" aria-sort="ascending">Signs</th>
+            <th class="fit-to-cell indicator-right" tabindex="0" aria-sort="ascending">Stakes</th>
+            <th class="fit-to-cell indicator-right" tabindex="0" aria-sort="ascending">State</th>
+            <th class="fit-to-cell indicator-right" tabindex="0" aria-sort="ascending">Shipping Service</th>
+            <th class="fit-to-cell indicator-right" tabindex="0" aria-sort="ascending">Printer</th>
+            <th class="fit-to-cell indicator-right" id="ship-by" tabindex="0" aria-sort="ascending">Ship By</th>
+            <th class="fit-to-cell indicator-right" tabindex="0" aria-sort="ascending">Ship Status</th>
+            <th class="fit-to-cell indicator-right" tabindex="0" aria-sort="ascending">Printed By</th>
+            <th class="fit-to-cell indicator-right" tabindex="0" aria-sort="ascending">Printed At</th>
+            <th>Notes</th>
+            <th class="no-sort">Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% if orders | length <= 0 %}
+            <tr>
+                <td colspan="12" class="text-center">No orders found for the shipment</td>
+            </tr>
+        {% endif %}
+        {% set orderIndex = 1 %}
+        {% for order in orders %}
+            {% set orderShipments = order.orderShipments %}
+            {% set warehouseOrder = order.warehouseOrder %}
+            {% set totalQuantities = order.totalQuantities %}
+            <tr>
+                <td class="fit-to-cell">{{ orders.getPaginationData.firstItemNumber + orderIndex - 1 }}</td>
+                <td class="fit-to-cell">
+                    <a href="{{ url('admin_order_overview', {orderId: order.orderId}) }}"
+                       target="_blank">{{ order.orderId }}</a>
+                </td>
+                <td>{{ totalQuantities['totalQuantity'] }}</td>
+                <td>{{ totalQuantities['frameQuantity'] }}</td>
+                <td class="fit-to-cell">{{ order.shippingAddress.state }}</td>
+                <td class="fit-to-cell">
+                    {% if warehouseOrder and warehouseOrder.shippingService %}
+                        {{ enum.warehouseShippingService(warehouseOrder.shippingService) }}
+                    {% else %}
+                        --
+                    {% endif %}
+                </td>
+                <td class="fit-to-cell">
+                    {% if warehouseOrder is not null and warehouseOrder.printerName %}
+                        {{ enum.warehousePrinterName(warehouseOrder.printerName, true) | raw }}
+                    {% else %}
+                        --
+                    {% endif %}
+                </td>
+                <td class="fit-to-cell" data-sort="{{ warehouseOrder.shipBy | date('U') }}">
+                    {% if warehouseOrder is not null and warehouseOrder.shipBy %}
+                        {{ warehouseOrder.shipBy | date('D m/d/y') }}
+                    {% else %}
+                        --
+                    {% endif %}
+                </td>
+                <td class="fit-to-cell text-capitalize">{{ order.shippingStatus | replace({'_': ' '}) | capitalize }}</td>
+                <td class="fit-to-cell">
+                    {% if orderShipments | length > 0 %}
+                        {% set firstShipment = orderShipments | first %}
+                        {{ firstShipment.printedBy.name | default('--') }}
+                    {% else %}
+                        --
+                    {% endif %}
+                </td>
+                <td class="fit-to-cell">
+                    {% if orderShipments | length > 0 %}
+                        {% set firstShipment = orderShipments | first %}
+                        {{ firstShipment.printedAt ? firstShipment.printedAt | date('M d, Y H:i A') : '--' }}
+                    {% else %}
+                        --
+                    {% endif %}
+                </td>
+                <td>
+                {{ component('AdminWarehouseOrderNotesComponent', {
+                    order,
+                    warehouseOrder,
+                    notes: warehouseOrder.notes | default(''),
+                }) }}
+                </td>
+                <td>
+                    {% if is_granted('order_create_shipment') %}
+                        {{ component('EasyPostShipmentComponent', { order, type: shipmentTypeEnum('delivery') }) }}
+                    {% endif %}
+                </td>
+            </tr>
+            {% set orderIndex = orderIndex + 1 %}
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="mt-4 d-flex justify-content-around">
+        {{ knp_pagination_render(orders) }}
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/gh/tofsjonas/sortable@latest/sortable.min.js"></script>
+
+<script>
+    window.addEventListener('load', function () {
+        const el = document.getElementById('ship-by')
+        if (el) {
+            el.click()
+            el.click()
+        }
+    })
+</script>

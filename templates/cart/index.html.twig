@@ -1,0 +1,149 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    Cart - {{storeInfo.storeTitle}}
+{% endblock %}
+{% block javascripts %}
+    <script src="https://js.braintreegateway.com/web/3.97.3/js/client.min.js"></script>
+    <script src="https://js.braintreegateway.com/web/3.97.3/js/google-payment.min.js"></script>
+    <script src="https://js.braintreegateway.com/web/3.97.3/js/apple-pay.min.js"></script>
+    <script src="https://pay.google.com/gp/p/js/pay.js"></script>
+{% endblock %}
+{% block preStylesheets %}
+    {{ encore_entry_link_tags('cart') }}
+{% endblock %}
+{% block preJavascripts %}
+    {{ encore_entry_script_tags('cart') }}
+{% endblock %}
+{% block body %}
+{{ include('common/common_mobile_bar.html.twig',{commonBarText: 'Order Online Or Call Now',commonBarTele: '+1-877-958-1499'}) }}
+    <div class="page-header">
+        <div class="page-header-content">
+            Shopping Cart
+        </div>
+        {% if items | length > 0 %}
+            <div class="text-center mt-2 mt-md-3 d-flex flex-wrap justify-content-center gap-2">
+                <button class="btn btn-sm btn-ysp-outline save-cart-modal" data-bs-toggle="modal" data-bs-target="#saveCartModal{{ lightCart.cartId }}" type="button">Save Cart</button>
+                <button class="btn btn-sm btn-ysp-outline email-quote-modal" data-bs-toggle="modal" data-bs-target="#emailQuoteModal{{ lightCart.cartId }}" type="button">Email Quote</button>
+                <button class="btn btn-sm btn-ysp-outline ysp-download-btn" type="button" onclick="window.location.href='{{ path('cart_download_quote', { cartId: lightCart.cartId }) }}'"> Download Quote </button>
+                <button class="btn btn-sm btn-ysp-outline" data-bs-toggle="modal" data-bs-target="#clearCartModal" type="button" > Clear Cart </button>
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="modal fade" id="clearCartModal" tabindex="-1" aria-labelledby="clearCartModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="clearCartModalLabel">Delete All Cart Items</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body text-start">
+                    Are you sure? Changes cannot be undone.
+                </div>
+
+                <div class="modal-footer">
+                    <a href="{{ path('new') }}" class="btn btn-primary">Clear Cart</a>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container my-2 my-md-3">
+        {% include 'common/flash.html.twig' %}
+        <div class="row cart-wrapper {% if items | length % 2 %}cart-full-width{% endif %} card-group">
+            {% set cartItems = [] %}
+            {% if items | length > 0 %}
+                {% for item in items %}
+                    {% set template = item.product %}
+                    {% set product = item.product.parent %}
+                    {% set cartItems = cartItems | merge([{
+                        index: loop.index,
+                        item_id: product.sku,
+                        item_name: product.sku ~ ' - ' ~ template.name,
+                        affiliation: ysp.storeName,
+                        currency: ysp.storeCurrency,
+                        discount: 0.00,
+                        item_brand: ysp.storeName,
+                        item_category: product.primaryCategory.name,
+                        price: item.dataKey('totalAmount'),
+                        quantity: item.quantity,
+                        coupon: "",
+                    }]) %}
+                    <div class="cart-item col-12 col-lg-6 ">
+                        <div class="card">
+                            <div class="card-header">
+                                {% if item.dataKey('isSample') %}
+                                    SAMPLE PRODUCT 
+                                {% else %}
+                                    {{ product.sku }}
+                                {% endif %}
+                                {% include 'cart/_header_buttons.html.twig' %}
+                            </div>
+                            <div class="card-body cart-item-collapse collapse show cart-item-body" id="cartItem{{ item.id }}">
+                                {% include 'cart/_item.html.twig' with { item: item } %}
+                            </div>
+                        </div>
+                        {% include 'common/_common_delete_cart.html.twig' %}
+                    </div>
+                {% endfor %}
+                {{ include('cart/partials/_design_another_product.html.twig') }}
+                <div class="col-lg-9 offset-lg-2 col-xxl-6 offset-xxl-3">
+                    {% if freeShipping.free and cart.subTotal > freeShipping.minAmount and cart.totalShipping > 0 %}
+                        <div class="col-12">
+                         {% include 'cart/_get_free_shipping.html.twig' %}
+                        </div>
+                    {% elseif isSampleNeedsFreeShipping and sampleFreeShipping is not null and sampleFreeShipping.free %}
+                        <div class="col-12">
+                          {% include 'cart/_get_free_shipping_simple_order.html.twig'  with { sampleFreeShipping: sampleFreeShipping } %} 
+                        </div>
+                    {% endif %}
+                    {% if not cartNeedsProof(cart) %}
+                        {% include 'cart/partials/_need_proof_form.html.twig' %}
+                    {% endif %}
+                    {{ component('ApplyCouponForm') }}
+                    {# {% if app.user.reward is defined %} #}
+                        <div class="col-12">
+                            <p class="text-end">
+                                You will earn ${{ reward.calculateCartReward(cart) }} in
+                                <a href="{{ path('ysp_rewards') }}" target="_blank">
+                                    YSP Rewards
+                                </a>
+                            <p>
+                        </div>
+                    {# {% endif %} #}
+                    {% if cart.subTotal |number_format(2,'.','') <= 1000 %}
+                        {% include 'checkout/_order_protection.html.twig' with {from: 'cart'} %}
+                    {% endif %}
+                    {% include 'cart/_cart_summary.html.twig' %}
+                </div>
+            {% else %}
+                {% include 'common/_empty_cart.html.twig' %}
+            {% endif %}
+        </div>
+    </div>
+    <script>
+        const cartItems = {{ cartItems | json_encode | raw }};
+        dataLayer.push({
+            event: 'view_cart',
+            ecommerce: {
+                currency: '{{ ysp.storeCurrency }}',
+                value: "{{ cart.totalAmount }}",
+                items: cartItems,
+            }
+        });
+    </script>
+    {% include 'components/_amazon_pay_modal.html.twig' with { 
+        checkoutSession: amazonPay.checkoutSession,
+        payment_cancel: 'cart' 
+    } %}
+    {{ include('common/_common_modal.html.twig') }}
+    {{ include('common/_people_also_purchase_swiper.html.twig') }}
+    {{ include("common/_coupon_banner.html.twig") }}
+    {{ include('common/_common_save_cart.html.twig') }}
+    {% include 'common/_design_preview_modal.html.twig' %}
+{% endblock %}
+
+

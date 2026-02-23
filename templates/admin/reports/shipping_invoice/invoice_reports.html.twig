@@ -1,0 +1,52 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Reports - Shipping Invoice{% endblock %}
+
+{% block pageTitle %}
+    <div class="page-header-icon">
+        <i class="fa-solid fa-cubes"></i>
+    </div>
+    Shipping Invoice Reports
+{% endblock %}
+
+{% block body %}
+    <div class="card mx-auto shadow-none mb-4">
+        <div class="card-header d-flex justify-content-between">
+            <div class="invoice-title-box">
+                Invoice Name: {{ shippingInvoiceFile.file.originalName }}<br>
+                {% if shippingInvoiceFile.generatedAt %}
+                    Invoice Date: {{ shippingInvoiceFile.generatedAt|date('d M Y') }}
+                {% endif %}
+            </div>
+            {% if app.request.get('_route') in ['admin_cogs_shipping_invoice_orders'] %}
+                <div class="invoice-export-box">
+                    <a href="{{ url('admin_cogs_shipping_export_invoice_orders', {invoiceFileId: shippingInvoiceFile.id}) }}"
+                        class="btn btn-primary btn-sm">
+                        <i class="fa fa-download mx-1"></i> Export
+                    </a>
+                </div>
+            {% endif %}
+        </div>      
+
+        <div class="card-body">
+            <ul class="nav nav-tabs" id="invoiceTabs" role="tablist">
+                <li class="nav-item">
+                    <a href="{{ url('admin_cogs_shipping_invoice_orders', {invoiceFileId: shippingInvoiceFile.id}) }}"
+                        class="nav-link {% if app.request.get('_route') in ['admin_cogs_shipping_invoice_orders'] %}active{% endif %}"
+                        type="button">
+                        Invoice Orders
+                    </a>  
+                </li>
+                <li class="nav-item">
+                    <a href="{{ url('admin_cogs_shipping_unmatch_tracking_labels', {invoiceFileId: shippingInvoiceFile.id}) }}"
+                        class="nav-link {% if app.request.get('_route') in ['admin_cogs_shipping_unmatch_tracking_labels'] %}active{% endif %}"
+                        type="button">
+                        Unmatch Tracking Labels
+                    </a>
+                </li>
+            </ul>
+            
+            {% include 'admin/reports/shipping_invoice/tab_contents/' ~ app.request.get('_route') | replace({'cogs_shipping_': '', 'admin_': ''}) ~ '.html.twig' %}
+        </div>
+    </div>
+{% endblock %}

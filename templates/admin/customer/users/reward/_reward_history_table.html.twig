@@ -1,0 +1,95 @@
+<table class="card-body table table-striped mb-0">
+  <thead>
+    <tr>
+      <th>Sr.</th>
+      <th>Order</th>
+      <th>Order Date</th>
+      {# <th>Transaction ID</th> #}
+      <th>Type</th>
+      <th>Status</th>
+      <th>Amount</th>
+      <th>Reward Date</th>
+      <th>Expired On</th>
+      <th class="text-center">Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for key,transaction in transactions %}
+        <tr>
+            <td>
+              {% if transactions.getPaginationData is defined %}
+                {{ transactions.getPaginationData.firstItemNumber + loop.index - 1 }}
+              {% else %}
+                {{ loop.index }}
+              {% endif %}
+            </td>
+            <td>
+              {% if transaction.order is defined and transaction.order.orderId is defined %}
+                  <a href="{{ url('admin_order_overview', { orderId: transaction.order.orderId }) }}">{{ transaction.order.orderId }}</a>
+              {% else %}
+                  -
+              {% endif %}
+            </td>
+            <td>
+              {% if transaction.order is defined and transaction.order.orderId is defined %}
+                  {{ transaction.order.createdAt|date('M d, Y h:i A') }}
+              {% else %}
+                  -
+              {% endif %}
+            </td>
+            <td>
+              {% if transaction.type == 'DEBIT' %}
+                <span class="badge bg-danger">{{ transaction.type }}</span>
+              {% elseif transaction.type == 'CREDIT' %}
+                <span class="badge bg-success">{{ transaction.type }}</span>
+              {% else %}
+                {{ transaction.type }}
+              {% endif %}
+            </td>
+            <td>
+              <span class="badge {{ reward.getBadgeClass(transaction.status) }}">{{ transaction.status }}</span>
+            </td>
+            <td>${{ (transaction.pointsValue * transaction.points)|number_format(2) }}</td>
+            <td>
+              {{ transaction.createdAt|date('M d, Y h:i A') }}
+              {% if transaction.isExpired and transaction.type == 'CREDIT' %}
+                <br><small class="text-danger">Expired</small>
+              {% endif %}
+            </td>
+            <td>
+              {% if transaction.ExpireAt %}
+                {{ transaction.ExpireAt|date('M d, Y h:i A') }}
+              {% else %}
+                -
+              {% endif %}
+            </td>
+            <td class="text-center">
+            {% if is_granted('admin_users_customer_reward_points_view') %}
+                <a href="{{ url('admin_users_customer_reward_points_view', { id: transaction.id }) }}" class="btn btn-blue btn-xs m-0">
+                    view
+                </a>
+            {% endif %}
+            {% if is_granted('admin_users_customer_reward_transaction_remove') %}
+              {% if user is defined %}
+                  <a href="{{ url('admin_users_customer_reward_transaction_remove', { id: transaction.id, userId: user.id }) }}" class="btn btn-danger btn-xs m-0m" onclick="return confirm('Are you sure?')">
+                      Remove
+                  </a>
+              {% endif %}
+            {% endif %}
+            </td>
+        </tr>
+    {% else %}
+        <tr>
+            <td colspan="9">No records</td>
+        </tr>
+    {% endfor %}
+  </tbody>
+  <tfoot>
+    {# <tr>
+      <th scope="row" colspan="2">Total Earned: ${{ user.reward.totalPoints }}</th>
+      <th colspan="2">Total Spend: ${{ user.reward.usedPoints }}</th>
+      <th colspan="2">Total Available: ${{ user.reward.availablePoints }} </th>
+      <th colspan="2">Pending Rewards: ${{ user.reward.pendingPoints }}</th>
+    </tr> #}
+  </tfoot>
+</table>

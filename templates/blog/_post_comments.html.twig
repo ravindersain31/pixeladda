@@ -1,0 +1,51 @@
+<div {{ attributes }}>
+    <div class="card comments mt-2">
+        <div class="card-body">
+            <div class="comments-list">
+                {% if comments | length <= 0 %}
+                    There are currently no comments.
+                {% endif %}
+                {% for comment in comments %}
+                    <div class="comment">
+                        <div class="comment-header">
+                            <strong>By {{ comment.name }}</strong>
+                            <span class="text-muted small">{{ comment.createdAt|date('M d, Y') }}</span>
+                        </div>
+                        <div class="comment-body">
+                            {{ comment.content|nl2br }}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="leave-a-comment">
+                {{ include('common/flash-dismissible.html.twig') }}
+                <h5>Leave a comment</h5>
+                {{ form_start(form, {attr: {
+                    'novalidate': true,
+                    'data-action': 'live#action:prevent',
+                    'data-live-action-param': 'submitComment',
+                }}) }}
+                {{ form_errors(form) }}
+                <div class="row">
+                    <div class="col-md-6">
+                        {{ form_row(form.name) }}
+                    </div>
+                    <div class="col-md-6">
+                        {{ form_row(form.email) }}
+                    </div>
+                    <div class="col-md-12">
+                        {{ form_row(form.comment) }}
+                    </div>
+                    <div class="col-md-12">
+                        <button type="submit" data-loading="action(submitComment)|addAttribute(disabled)"
+                                class="btn btn-ysp-outline">
+                            <span data-loading="action(submitComment)|show" style="display: none">Processing...</span>
+                            <span data-loading="action(submitComment)|hide" style="display: block">Post Comment</span>
+                        </button>
+                    </div>
+                </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+</div>

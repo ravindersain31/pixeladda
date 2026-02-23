@@ -1,0 +1,116 @@
+{{ form_start(form, {attr: {
+    'novalidate': true,
+    'data-action': 'live#action:prevent',
+    'data-live-action-param': 'createParcel',
+}}) }}
+{{ form_errors(form) }}
+{% if form.parcels is defined %}
+    {% for block in form.parcels %}
+        <div class="card shadow-none mb-2 border rounded p-2">
+            <div class="card-body p-0 d-flex justify-content-center align-items-end">
+                <div class="row">
+                    <div class="col-8">
+                        <div class="d-flex">
+                            <div class="input-group flex-nowrap h-100">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text bg-light rounded-0 rounded-start p-2">
+                                        <span>Length  (in)</span>
+                                    </span>
+                                </div>
+                                {{ form_widget(block.children.length) }}
+                            </div>
+                            <div class="input-group flex-nowrap h-100 ms-1">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text bg-light rounded-0 rounded-start p-2">
+                                        <span>Width (in)</span>
+                                    </span>
+                                </div>
+                                {{ form_widget(block.children.width) }}
+                            </div>
+                            <div class="input-group flex-nowrap h-100 ms-1">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text bg-light rounded-0 rounded-start p-2">
+                                        <span>Height (in)</span>
+                                    </span>
+                                </div>
+                                {{ form_widget(block.children.height) }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="d-flex flex-column">
+                            <div class="input-group flex-nowrap h-100">
+                                <div class="input-group-prepend d-flex">
+                                        <span class="input-group-text bg-light rounded-0 rounded-start p-2">
+                                            <span>Weight</span>
+                                        </span>
+                                    {{ form_widget(block.children.unit) }}
+                                </div>
+                                {{ form_widget(block.children.weight) }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-8 mt-1">
+                        <div class="input-group flex-nowrap">
+                            <div class="input-group-prepend">
+                                    <span class="input-group-text bg-light rounded-0 rounded-start p-2">
+                                        <span>Internal Notes</span>
+                                    </span>
+                            </div>
+                            {{ form_widget(block.children.internalNotes) }}
+                        </div>
+                    </div>
+                    <div class="col-4 mt-1">
+                        <div class="input-group flex-nowrap">
+                            <div class="input-group-prepend">
+                                    <span class="input-group-text bg-light rounded-0 rounded-start p-2">
+                                        <span>Shipment Value $</span>
+                                    </span>
+                            </div>
+                            {{ form_widget(block.children.value) }}
+                        </div>
+                    </div>
+                </div>
+                {# {% if loop.index > 1 or orderShipments | length > 0 %} #}
+                    {{ form_widget(block.vars.button_delete) }}
+                {# {% else %}
+                    <div class="btn btn-danger btn-sm ms-2 btn opacity-0">X</div>
+                {% endif %} #}
+
+            </div>
+        </div>
+    {% endfor %}
+    {% if order.shippingStatus is null or order.shippingStatus in ['ready_for_shipment', 'shipment_created', 'label_purchased'] or type.value == 'return' %}
+        <div class="mb-3">
+            {{ form_widget(form.parcels.vars.button_add) }}
+            {% if type.value == 'return' and orderShipmentBatches | length <= 0 %}
+                <span> or </span>
+                <button class="btn btn-link btn-sm p-0" type="button" data-action="live#action"
+                        data-live-action-param="createAllReturnBoxesAsDelivery"
+                        data-loading="action(createParcel)|action(createAllReturnBoxesAsDelivery)|addAttribute(disabled)">
+                    <span data-loading="action(createAllReturnBoxesAsDelivery)|show" style="display: none">Creating All Boxes as Delivery...</span>
+                    <span data-loading="action(createAllReturnBoxesAsDelivery)|hide" style="display: block">Create All Boxes as Delivery</span>
+                </button>
+            {% endif %}
+        </div>
+        {% if type.value == 'return' and orderShipmentBatches | length <= 0 %}
+            <span data-loading="action(createAllReturnBoxesAsDelivery)|show" class="mt-2" style="display: none">
+                Creating All Boxes as Delivery may take longer, don't refresh the page.
+            </span>
+        {% endif %}
+    {% endif %}
+    {% if form.parcels | length > 0 %}
+        <div class="d-block">
+            <button type="submit"
+                    data-loading="action(createParcel)|action(createAllReturnBoxesAsDelivery)|addAttribute(disabled)"
+                    class="btn btn-primary btn-sm mt-2">
+                <span data-loading="action(createParcel)|show" style="display: none">Creating Boxes...</span>
+                <span data-loading="action(createParcel)|hide" style="display: block">Create Boxes</span>
+            </button>
+        </div>
+        <span data-loading="action(createParcel)|show" class="mt-2" style="display: none">
+                This may take longer, don't refresh the page.
+            </span>
+    {% endif %}
+{% endif %}
+{{ form_end(form) }}

@@ -1,0 +1,118 @@
+<section class="customer-details mt-4">
+	{% set RolesEnum = enum('App\\Enum\\RolesEnum') %}
+	{% set WholeSellerEnum = enum('App\\Enum\\WholeSellerEnum') %}
+	<div class="container proof-order-container">
+		<div class="row mb-3">
+			<div class="col-lg-12">
+				<div class="row">
+					<div class="col-lg-9 col-md-7">
+						<div class="account-info">
+							<h4>Welcome
+								<strong>{{ app.user.name }}</strong>
+							</h4>
+							<p class="mt-2 mb-1 text-muted text-small">{{ app.user.email }}</p>
+								{% if storeInfo.isPromoStore  %}
+									{% if is_granted(RolesEnum.WHOLE_SELLER.value) and  app.user.wholeSellerStatus.value == WholeSellerEnum.ACCEPTED.value %}
+										<p class="badge ysp-bg-purple text-white">Wholesaler Account</p>
+									{% else %}
+										<p class="badge ysp-bg-purple text-white">User Account</p>
+									{% endif %}
+								{% endif %}
+							<span class="align-items-center clearfix d-flex mt-2 mb-1 text-small reward-points">
+								<a href="{{ url('ysp_rewards') }}" target="_blank" class="badge ysp-bg-purple text-white">YSP Rewards</a>
+								<span
+									class="d-flex align-items-center mx-1"
+									data-bs-toggle="popover"
+									data-bs-placement="top"
+									data-bs-trigger="hover focus"
+									data-bs-html="true"
+									data-bs-custom-class="reward-info-popover"
+									data-bs-content="YSP Rewards are credits you earn (5% of your order total) to use on future purchases. Max $50 can be applied per order. Excludes shipping."
+								>
+									<span class="reward-info-icon">
+										<i class="fa fa-question"></i>
+									</span>
+								</span>
+								<span class="text-muted">${{ reward.calculateAvailablePoints(app.user.reward)|default(0) }}</span>
+							</span>
+							{% if reward.calculateAvailablePoints(app.user.reward)|default(0) > 0 %}
+								<span class="mt-2 text-small clearfix">
+									<span class="text-muted">Expires:</span>
+									<span class="text-muted">
+										{{ reward.getExpireDate(app.user.reward) }}
+									</span>
+								</span>
+							{% endif %}
+							{% if app.request.get('_route') in ['account_setting'] %}
+								<div class="account-actions d-flex">
+									<a class="btn btn-sgs mt-3" href="{{ path('change_password') }}">
+										<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-key text-sgs-red mr-1">
+											<path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path>
+										</svg>
+										Change Password
+									</a>
+								</div>
+							{% endif %}
+						</div>
+					</div>
+					<div class="col-lg-3 col-md-5">
+						<div class="account-actions">
+							<a href="{{path('my_account')}}" class="btn btn-sgs mr-3">
+								<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-grid text-sgs-red">
+									<rect x="3" y="3" width="7" height="7"></rect>
+									<rect x="14" y="3" width="7" height="7"></rect>
+									<rect x="14" y="14" width="7" height="7"></rect>
+									<rect x="3" y="14" width="7" height="7"></rect>
+								</svg>
+								<span class="ml-1">Dashboard</span>
+							</a>
+							<a href="{{path('app_logout')}}" class="btn btn-sgs" data-controller="saved-addresses" data-action="saved-addresses#clearCheckoutAddressData">
+								<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-log-out text-sgs-red">
+									<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+									<polyline points="16 17 21 12 16 7"></polyline>
+									<line x1="21" y1="12" x2="9" y2="12"></line>
+								</svg>
+								<span>Logout</span>
+							</a>
+							{% if app.request.get('_route') == 'saved_addresses' %}
+								<button type="button" class="btn btn-primary add-new-address-btn" data-bs-toggle="modal" data-bs-target="#addressModal">
+									<i class="fa fa-plus" aria-hidden="true"></i> &nbsp;
+									Add New Address
+								</button>
+							{% endif %}
+							{% if app.request.get('_route') == 'saved_cards' %}
+								<button
+									type="button"
+									class="btn btn-primary add-new-card-btn"
+									data-bs-toggle="modal"
+									data-bs-target="#savedCardModal"
+									data-action="saved-braintree-cards#openModal"
+								>
+									<i class="fa fa-plus" aria-hidden="true"></i>&nbsp;
+									Add New Payment Method
+								</button>
+							{% endif %}
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		{% if storeInfo.isPromoStore and app.user.wholeSellerStatus.value == WholeSellerEnum.PENDING.value and RolesEnum.WHOLE_SELLER.value in app.user.roles %}
+			<div class="alert alert-danger text-center" role="alert">
+				Your Wholesaler account verification is in progress. Please wait for approval.
+			</div>
+		{% endif %}
+
+		{% if storeInfo.isPromoStore and app.user.wholeSellerStatus.value == WholeSellerEnum.REJECTED.value and RolesEnum.WHOLE_SELLER.value in app.user.roles %}
+			<div class="alert alert-danger text-center" role="alert">
+				Your Wholesaler account is Rejected.
+			</div>
+		{% endif %}
+		{{ include('common/flash.html.twig') }}
+		<div class="row mt-2 mb-1">
+			<div class="col-lg-12">
+				<div class="account-info-separator-bar"></div>
+			</div>
+		</div>
+	</div>
+</section>

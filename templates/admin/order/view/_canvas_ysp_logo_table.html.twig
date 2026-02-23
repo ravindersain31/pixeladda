@@ -1,0 +1,81 @@
+{% set show_front = false %}
+{% set show_back = false %}
+{% if item.canvasData is defined %}
+	{% if item.canvasData['front'] is defined and item.canvasData['front'] is not null and item.canvasData['front']['objects'] is defined and item.canvasData['front']['objects']|length > 0 %}
+		{% for object in item.canvasData['front']['objects'] %}
+			{% if object['custom'] is defined and object['custom']['id'] is defined and object['custom']['id'] == 'ysp-logo' %}
+				{% set show_front = true %}
+			{% endif %}
+		{% endfor %}
+	{% endif %}
+	{% if item.canvasData['back'] is defined and item.canvasData['back'] is not null and item.canvasData['back']['objects'] is defined and item.canvasData['front']['objects']|length > 0 %}
+		{% for object in item.canvasData['back']['objects'] %}
+			{% if object['custom'] is defined and object['custom']['id'] is defined and object['custom']['id'] == 'ysp-logo' %}
+				{% set show_back = true %}
+			{% endif %}
+		{% endfor %}
+	{% endif %}
+{% endif %}
+
+{% if show_front or show_back %}
+	<div class="text-center mb-2 d-flex flex-column align-items-center table-responsive">
+		<table class="table table-bordered text-center table-sm">
+			<thead>
+				<tr>
+					{% if show_front %}
+						<th class="small fw-800">Front</th>
+					{% endif %}
+					{% if show_back %}
+						<th class="small fw-800">Back</th>
+					{% endif %}
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+                    {% set front_counter = 1 %}
+				    {% set back_counter = 1 %}
+					<!-- Front Column -->
+					{% if show_front %}
+						<td class="small align-middle">
+							{% for object in item.canvasData['front']['objects'] %}
+								{% if object['custom'] is defined and object['custom']['id'] is defined and object['custom']['id'] == 'ysp-logo' %}
+									{% if object['src'] is defined %}
+										{% if displayType == 'image' %}
+											<img src="{{ object['src'] }}" alt="Front File #{{ front_counter }}" width="30" height="30" class="img-fluid mx-1">
+										{% elseif displayType == 'anchor' %}
+											<a href="{{ object['src'] }}" target="_blank" class="badge bg-primary mx-1 text-white align-middle">
+												File #{{ front_counter }}
+											</a>
+										{% endif %}
+                                        {% set front_counter = front_counter + 1 %}
+									{% endif %}
+								{% endif %}
+							{% endfor %}
+						</td>
+					{% endif %}
+					<!-- Back Column -->
+					{% if show_back %}
+						<td class="small align-middle">
+							{% for object in item.canvasData['back']['objects'] %}
+								{% if object['custom'] is defined and object['custom']['id'] is defined and object['custom']['id'] == 'ysp-logo' %}
+									{% if object['src'] is defined %}
+										{% if displayType == 'image' %}
+											<img src="{{ object['src'] }}" alt="Back File #{{ back_counter }}" width="30" height="30" class="img-fluid mx-1">
+										{% elseif displayType == 'anchor' %}
+											<a href="{{ object['src'] }}" target="_blank" class="badge bg-primary mx-1 text-white align-middle">
+												File #{{ back_counter }}
+											</a>
+										{% endif %}
+										{% set back_counter = back_counter + 1 %}
+									{% endif %}
+								{% endif %}
+							{% endfor %}
+						</td>
+					{% endif %}
+				</tr>
+			</tbody>
+		</table>
+	</div>
+{% else %}
+	No
+{% endif %}

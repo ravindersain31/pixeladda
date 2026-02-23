@@ -1,0 +1,579 @@
+<nav class="sidenav shadow-right sidenav-light">
+    <div class="sidenav-menu">
+        <div class="nav accordion mt-3" id="accordionSidenav">
+            <a href="{{ url('admin_dashboard') }}"
+               class="nav-link {% if app.request.get('_route') in ['admin_dashboard'] %}active{% endif %}">
+                <div class="nav-link-icon"><i class="fas fa-dashboard"></i></div>
+                Dashboard
+            </a>
+            {% if is_granted('admin_dashboard_metrics') %}
+                <a href="{{ url('admin_dashboard_metrics') }}"
+                class="nav-link {% if app.request.get('_route') in ['admin_dashboard_metrics'] %}active{% endif %}">
+                    <div class="nav-link-icon"><i class="fas fa-dashboard"></i></div>
+                    Metrics
+                </a>
+            {% endif %}
+            {% if is_granted('admin_warehouse_queue_by_printer') %}
+                <a href="{{ url('admin_warehouse_queue_by_printer', {printer: 'P1'}) }}"
+                   class="nav-link {% if app.request.get('_route') matches '{^admin_warehouse}' %}active{% endif %}">
+                    <div class="nav-link-icon"><i class="fa fa-warehouse"></i></div>
+                    Order Queue
+                </a>
+            {% endif %}
+            {% set ifRouteNameIsOrder = app.request.get('_route') in ['admin_orders_repeat_orders'] or app.request.get('_route') matches '{^admin_order}' %}
+            {% if is_granted('admin_orders') %}
+                <a class="nav-link {% if not ifRouteNameIsOrder %}collapsed{% else %}active{% endif %}"
+                   href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#collapseOrder"
+                   aria-expanded="{% if not ifRouteNameIsOrder %}false{% endif %}" aria-controls="collapseOrder">
+                    <div class="nav-link-icon"><i class="fa-solid fa-shopping-cart"></i></div>
+                    Orders
+                    <div class="sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                </a>
+                <div class="collapse {% if ifRouteNameIsOrder %}show{% endif %}" id="collapseOrder"
+                     data-bs-parent="#accordionSidenav">
+                    <nav class="sidenav-menu-nested nav accordion" id="accordionProduct">
+                        <a href="{{ url('admin_orders') }}"
+                           class="nav-link {% if app.request.get('_route') in ['admin_orders'] and status is defined and status == 'all' %}active{% endif %}">
+                            All Orders
+                        </a>
+                        <a href="{{ url('admin_orders', {status: 'upload-proof'}) }}"
+                           class="nav-link {% if app.request.get('_route') in ['admin_orders'] and status is defined and status == 'upload-proof' %}active{% endif %}">
+                            Upload Proof
+                        </a>
+                        <a href="{{ url('admin_orders', {status: 'designer-assigned'}) }}"
+                           class="nav-link {% if app.request.get('_route') in ['admin_orders'] and status is defined and status == 'designer-assigned' %}active{% endif %}">
+                            Working on Proofs
+                        </a>
+                        <a href="{{ url('admin_orders', {status: 'proof-uploaded'}) }}"
+                           class="nav-link {% if app.request.get('_route') in ['admin_orders'] and status is defined and status == 'proof-uploaded' %}active{% endif %}">
+                            Waiting On Customer
+                        </a>
+                        <a href="{{ url('admin_orders', {status: 'proof-approved'}) }}"
+                           class="nav-link {% if app.request.get('_route') in ['admin_orders'] and status is defined and status == 'proof-approved' %}active{% endif %}">
+                            Approved Proofs
+                        </a>
+                        <a href="{{ url('admin_orders', {status: 'check-po'}) }}"
+                           class="nav-link {% if app.request.get('_route') in ['admin_orders'] and status is defined and status == 'check-po' %}active{% endif %}">
+                            Check/PO
+                        </a>
+                        <a href="{{ url('admin_orders', {status: 'sent-for-production'}) }}"
+                           class="nav-link {% if app.request.get('_route') in ['admin_orders'] and status is defined and status == 'sent-for-production' %}active{% endif %}">
+                            Ready for Production
+                        </a>
+                        <a href="{{ url('admin_orders', {status: 'ready-for-shipment'}) }}"
+                           class="nav-link {% if app.request.get('_route') in ['admin_orders'] and status is defined and status == 'ready-for-shipment' %}active{% endif %}">
+                            Ready to Ship
+                        </a>
+                        <a href="{{ url('admin_orders', {status: 'shipped'}) }}"
+                           class="nav-link {% if app.request.get('_route') in ['admin_orders'] and status is defined and status == 'shipped' %}active{% endif %}">
+                            Shipped
+                        </a>
+                        <a href="{{ url('admin_orders', {status: 'completed'}) }}"
+                           class="nav-link {% if app.request.get('_route') in ['admin_orders'] and status is defined and status == 'completed' %}active{% endif %}">
+                            Completed
+                        </a>
+                        <a href="{{ url('admin_orders', {status: 'cancelled'}) }}"
+                           class="nav-link {% if app.request.get('_route') in ['admin_orders'] and status is defined and status == 'cancelled' %}active{% endif %}">
+                            Cancelled
+                        </a>
+                        <a href="{{ url('admin_orders', {status: 'today-super-rush-order'}) }}"
+                           class="nav-link {% if app.request.get('_route') in ['admin_orders'] and status is defined and status == 'today-super-rush-order' %}active{% endif %}">
+                            Today Super Rush Order
+                        </a>
+                        <a href="{{ url('admin_orders', {status: 'order-protection-orders'}) }}"
+                           class="nav-link {% if app.request.get('_route') in ['admin_orders'] and status is defined and status == 'order-protection-orders' %}active{% endif %}">
+                            Order Protection List
+                        </a>
+                        <a href="{{ url('admin_orders', {status: 'fraud-orders'}) }}"
+                           class="nav-link {% if app.request.get('_route') in ['admin_orders'] and status is defined and status == 'fraud-orders-list' %}active{% endif %}">
+                            Fraud Orders
+                        </a>
+                        <a href="{{ url('admin_orders_repeat_orders') }}"
+                           class="nav-link {% if app.request.get('_route') in ['admin_orders_repeat_orders'] %}active{% endif %}">
+                            Repeat Orders
+                        </a>
+                    </nav>
+                </div>
+            {% endif %}
+
+            {% if is_granted('admin_categories') %}
+                <a href="{{ url('admin_categories') }}"
+                   class="nav-link {% if app.request.get('_route') matches '{^admin_categor}' %}active{% endif %}">
+                    <div class="nav-link-icon"><i class="fas fa-list"></i></div>
+                    Categories
+                </a>
+            {% endif %}
+            {% if is_granted('admin_invoice_paypal') %}
+                <a href="{{ url('admin_invoice_paypal') }}"
+                   class="nav-link {% if app.request.get('_route') matches '{^admin_invoice_paypal}' %}active{% endif %}">
+                    <div class="nav-link-icon"><i class="fas fa-list"></i></div>
+                    Manage Paypal Invoice
+                </a>
+            {% endif %}
+
+            {% if is_granted('admin_invoice_stripe') %}
+                <a href="{{ url('admin_invoice_stripe') }}"
+                   class="nav-link {% if app.request.get('_route') matches '{^admin_invoice_stripe}' %}active{% endif %}">
+                    <div class="nav-link-icon"><i class="fas fa-receipt"></i></div>
+                    Manage Stripe Invoice
+                </a>
+            {% endif %}
+
+            {% if is_granted('admin_product_types') %}
+                <a href="{{ url('admin_product_types') }}"
+                   class="nav-link {% if app.request.get('_route') matches '{^admin_product_type}' %}active{% endif %}">
+                    <div class="nav-link-icon"><i class="fas fa-list"></i></div>
+                    Product Type
+                </a>
+            {% endif %}
+
+            {% set ifRouteNameIsProduct = app.request.get('_route') in [] or app.request.get('_route') matches '{^(?!admin_product_type)admin_product}' %}
+            {% set productRoutes = ['admin_product_add', 'admin_products'] %}
+            {% if is_granted(productRoutes) %}
+                <a class="nav-link {% if not ifRouteNameIsProduct %}collapsed{% else %}active{% endif %}"
+                   href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#collapseProduct"
+                   aria-expanded="{% if not ifRouteNameIsProduct %}false{% endif %}" aria-controls="collapseProduct">
+                    <div class="nav-link-icon"><i class="fa-solid fa-cubes"></i></div>
+                    Products
+                    <div class="sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                </a>
+                <div class="collapse {% if ifRouteNameIsProduct %}show{% endif %}" id="collapseProduct"
+                     data-bs-parent="#accordionSidenav">
+                    <nav class="sidenav-menu-nested nav accordion" id="accordionProduct">
+                        {% if is_granted('admin_product_add') %}
+                            <a href="{{ url('admin_product_add') }}"
+                               class="nav-link {% if app.request.get('_route') in ['admin_product_add'] %}active{% endif %}">New
+                                Product</a>
+                        {% endif %}
+                        {% if is_granted('admin_products') %}
+                            <a href="{{ url('admin_products') }}"
+                               class="nav-link {% if app.request.get('_route') in ['admin_products'] %}active{% endif %}">All
+                                Products</a>
+                        {% endif %}
+                    </nav>
+                </div>
+            {% endif %}
+            {% set ifRouteNameIsBlog = app.request.get('_route') in [] or app.request.get('_route') matches '{^admin_blog}' %}
+            {% set blogRoutes = ['admin_blog_posts', 'admin_blog_categories', 'admin_blog_comments', 'admin_blog_authors', 'admin_blog_post_new'] %}
+            {% if is_granted(blogRoutes) %}
+                <a class="nav-link {% if not ifRouteNameIsBlog %}collapsed{% else %}active{% endif %}"
+                   href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#collapseBlog"
+                   aria-expanded="{% if not ifRouteNameIsBlog %}false{% endif %}" aria-controls="collapseBlog">
+                    <div class="nav-link-icon"><i class="fa-solid fa-rss"></i></div>
+                    Blog
+                    <div class="sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                </a>
+                <div class="collapse {% if ifRouteNameIsBlog %}show{% endif %}" id="collapseBlog"
+                     data-bs-parent="#accordionSidenav">
+                    <nav class="sidenav-menu-nested nav accordion" id="accordionBlog">
+                        {% if is_granted('admin_blog_posts') %}
+                            <a href="{{ url('admin_blog_posts') }}"
+                               class="nav-link {% if app.request.get('_route') in ['admin_blog_posts'] %}active{% endif %}">
+                                All Posts
+                            </a>
+                        {% endif %}
+
+                        {% if is_granted('admin_blog_post_new') %}
+                            <a href="{{ url('admin_blog_post_new') }}"
+                               class="nav-link {% if app.request.get('_route') in ['admin_blog_post_new'] %}active{% endif %}">
+                                New Post
+                            </a>
+                        {% endif %}
+                        {% if is_granted('admin_blog_categories') %}
+                            <a href="{{ url('admin_blog_categories') }}"
+                               class="nav-link {% if app.request.get('_route') in ['admin_blog_categories'] %}active{% endif %}">
+                                Categories
+                            </a>
+                        {% endif %}
+                        {% if is_granted('admin_blog_comments') %}
+                            <a href="{{ url('admin_blog_comments') }}"
+                               class="nav-link {% if app.request.get('_route') in ['admin_blog_comments'] %}active{% endif %}">
+                                Comments
+                            </a>
+                        {% endif %}
+                        {% if is_granted('admin_blog_authors') %}
+                            <a href="{{ url('admin_blog_authors') }}"
+                               class="nav-link {% if app.request.get('_route') in ['admin_blog_authors'] %}active{% endif %}">
+                                Authors
+                            </a>
+                        {% endif %}
+                    </nav>
+                </div>
+            {% endif %}
+
+            {% set faqRoutes = ['admin_faq_index', 'admin_faq_new', 'admin_faq_type_index', 'admin_faq_type_new'] %}
+            {% set isFaqRoute = app.request.get('_route') in faqRoutes %}
+
+            {% if is_granted(faqRoutes) %}
+                <a class="nav-link {% if not isFaqRoute %}collapsed{% else %}active{% endif %}"
+                href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#collapseFaq"
+                aria-expanded="{{ isFaqRoute ? 'true' : 'false' }}" aria-controls="collapseFaq">
+
+                    <div class="nav-link-icon"><i class="fa-solid fa-question"></i></div>
+                    FAQs
+                    <div class="sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                </a>
+
+                <div class="collapse {% if isFaqRoute %}show{% endif %}" id="collapseFaq"
+                    data-bs-parent="#accordionSidenav">
+
+                    <nav class="sidenav-menu-nested nav accordion" id="accordionFaq">
+                        {% if is_granted('admin_faq_index') %}
+                            <a href="{{ url('admin_faq_index') }}"
+                            class="nav-link {% if app.request.get('_route') == 'admin_faq_index' %}active{% endif %}">
+                                All FAQs
+                            </a>
+                        {% endif %}
+                        {% if is_granted('admin_faq_new') %}
+                            <a href="{{ url('admin_faq_new') }}"
+                            class="nav-link {% if app.request.get('_route') == 'admin_faq_new' %}active{% endif %}">
+                                New FAQ
+                            </a>
+                        {% endif %}
+                        {% if is_granted('admin_faq_type_index') %}
+                            <a href="{{ url('admin_faq_type_index') }}"
+                            class="nav-link {% if app.request.get('_route') == 'admin_faq_type_index' %}active{% endif %}">
+                                FAQ Types
+                            </a>
+                        {% endif %}
+                         {% if is_granted('admin_faq_type_new') %}
+                            <a href="{{ url('admin_faq_type_new') }}"
+                            class="nav-link {% if app.request.get('_route') == 'admin_faq_type_new' %}active{% endif %}">
+                                New FAQ Type
+                            </a>
+                        {% endif %}
+                    </nav>
+                </div>
+            {% endif %}
+
+            {% set ifRouteNameIsReport = app.request.get('_route') in ['admin_history_reports', 'admin_history_reports', 'admin_report_cogs'] or app.request.get('_route') matches '{^admin_report}' %}
+            {% set reportsRoutes = ['admin_report_cogs', 'admin_history_reports'] %}
+            {% if is_granted(reportsRoutes) %}
+                <a class="nav-link {% if not ifRouteNameIsReport %}collapsed{% else %}active{% endif %}"
+                   href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#collapseCogs"
+                   aria-expanded="{% if not ifRouteNameIsReport %}false{% endif %}" aria-controls="collapseCogs">
+                    <div class="nav-link-icon"><i class="fa-solid fa-cubes"></i></div>
+                    Reports
+                    <div class="sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                </a>
+                <div class="collapse {% if ifRouteNameIsReport %}show{% endif %}" id="collapseCogs"
+                     data-bs-parent="#accordionSidenav">
+                    <nav class="sidenav-menu-nested nav accordion" id="accordionCogs">
+                        {% if is_granted('admin_report_cogs') %}
+                            <a href="{{ url('admin_report_cogs') }}"
+                               class="nav-link {% if app.request.get('_route') matches '{^admin_report_cogs}' %}active{% endif %}">
+                                COGs
+                            </a>
+                        {% endif %}
+                        {% if is_granted('admin_history_reports') %}
+                            <a href="{{ url('admin_history_reports') }}"
+                               class="nav-link {% if app.request.get('_route') matches '{^admin_history_reports}' %}active{% endif %}">
+                                Orders History Reports
+                            </a>
+                        {% endif %}
+                        {% if is_granted('admin_report_order_export') %}
+                            <a href="{{ url('admin_report_order_export') }}"
+                                class="nav-link {% if app.request.get('_route') matches '{^admin_report_order_export}' %}active{% endif %}">
+                                Order Export Manager
+                            </a>
+                        {% endif %}
+                    </nav>
+                </div>
+            {% endif %}
+
+            {% if is_granted('admin_customer_photos') %}
+                <a href="{{ url('admin_customer_photos') }}"
+                   class="nav-link {% if app.request.get('_route') matches '{^admin_customer_photos}' %}active{% endif %}">
+                    <div class="nav-link-icon">
+                        <i class="fas fa-images"></i>
+                    </div>
+                    Customer Photos
+                </a>
+            {% endif %}
+            {% if is_granted('admin_community_uploads') %}
+                <a href="{{ url('admin_community_uploads') }}"
+                   class="nav-link {% if app.request.get('_route') matches '{^admin_community_uploads}' %}active{% endif %}">
+                    <div class="nav-link-icon">
+                        <i class="fas fa-images"></i>
+                    </div>
+                    Community Uploads
+                </a>
+            {% endif %}
+            {% if is_granted('admin_search_tags') %}
+                <a href="{{ url('admin_search_tag_list') }}"
+                   class="nav-link {% if app.request.get('_route') matches '{^admin_search_tag_list}' %}active{% endif %}">
+                    <div class="nav-link-icon">
+                        <i class="fas fa-bars-staggered"></i>
+                    </div>
+                    Search Tags
+                </a>
+            {% endif %}
+            {% if is_granted('admin_email_reviews') %}
+                <a href="{{ url('admin_email_reviews') }}"
+                   class="nav-link {% if app.request.get('_route') matches '{^admin_email_reviews}' %}active{% endif %}">
+                    <div class="nav-link-icon">
+                        <i class="fas fa-bars-staggered"></i>
+                    </div>
+                    Email Reviews
+                </a>
+            {% endif %}
+            {% if is_granted('admin_transaction_list') %}
+                <a href="{{ url('admin_transaction_list') }}"
+                   class="nav-link {% if app.request.get('_route') matches '{^admin_transaction_list}' %}active{% endif %}">
+                    <div class="nav-link-icon">
+                        <i class="fas fa-money-bill-trend-up"></i>
+                    </div>
+                    Transactions
+                </a>
+            {% endif %}
+            {% if is_granted('admin_coupon') %}
+                <a href="{{ url('admin_coupon') }}"
+                   class="nav-link {% if app.request.get('_route') matches '{^admin_coupon}' %}active{% endif %}">
+                    <div class="nav-link-icon">
+                        <i class="fas fa-ticket-simple"></i>
+                    </div>
+                    Coupon
+                </a>
+            {% endif %}
+
+            {% if is_granted('admin_contact_us') %}
+                <a href="{{ url('admin_contact_us') }}"
+                   class="nav-link {% if app.request.get('_route') matches '{^admin_contact_us}' %}active{% endif %}">
+                    <div class="nav-link-icon">
+                        <i class="fas fa-headset"></i>
+
+                    </div>
+                    Contact Enquiry &nbsp;
+                    <div class="badge-circle bg-danger text-white">
+                        <span class="badge-content">{{ ysp.getContactUsCount() }}</span>
+                    </div>
+                </a>
+            {% endif %}
+
+            {% if is_granted('admin_bulk_order_index') %}
+                <a href="{{ url('admin_bulk_order_index') }}"
+                   class="nav-link {% if app.request.get('_route') in ['admin_bulk_order_new','admin_bulk_order_show','admin_bulk_order_edit','admin_bulk_order_delete'] or app.request.get('_route') matches '{^admin_bulk_order_index}' %}active{% endif %}">
+                    <div class="nav-link-icon"><i class="fa-solid fa-shopping-cart"></i></div>
+                    Bulk Order Enquiry&nbsp;
+                    <div class="badge-circle bg-danger text-white">
+                        <span class="badge-content">{{ ysp.getBulkOrderCount() }}</span>
+                    </div>
+                </a>
+            {% endif %}
+
+            {% if is_granted('admin_distributor') %}
+                {% set currentRoute = app.request.attributes.get('_route') %}
+
+                {% set isDistributorRoute =
+                    currentRoute starts with 'admin_distributor'
+                    or currentRoute starts with 'admin_distributor'
+                %}
+
+                <a class="nav-link {{ isDistributorRoute ? 'active' : 'collapsed' }}"
+                    href="javascript:void(0);"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#collapseDistributor"
+                    aria-expanded="{{ isDistributorRoute ? 'true' : 'false' }}"
+                    aria-controls="collapseDistributor">
+
+                    <div class="nav-link-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    Distributor&nbsp;
+                    <div class="badge-circle bg-danger text-white">
+                        <span class="badge-content">{{ ysp.getDistributorCount() }}</span>
+                    </div>
+                    <div class="sidenav-collapse-arrow">
+                        <i class="fas fa-angle-down"></i>
+                    </div>
+                </a>
+
+                <div class="collapse {{ isDistributorRoute ? 'show' : '' }}"
+                    id="collapseDistributor"
+                    data-bs-parent="#accordionSidenav">
+
+                    <nav class="sidenav-menu-nested nav">
+                    {% if is_granted('admin_distributor') %}
+                        <a href="{{ path('admin_distributor') }}"
+                            class="nav-link {{ currentRoute == 'admin_distributor' ? 'active' : '' }}">
+                            All Distributors
+                        </a>
+                    {% endif %}
+                    {% if is_granted('admin_distributor_deleted') %}
+                        <a href="{{ path('admin_distributor_deleted') }}"
+                        class="nav-link {{ currentRoute == 'admin_distributor_deleted' ? 'active' : '' }}">
+                            Deleted Requests
+                        </a>
+                    {% endif %}
+                    </nav>
+                </div>
+            {% endif %}
+
+            {% if is_granted('admin_call_requests') %}
+                <a href="{{ url('admin_call_requests') }}"
+                   class="nav-link {% if app.request.get('_route') matches '{^admin_call_requests}' %}active{% endif %}">
+                    <div class="nav-link-icon">
+                        <i class="fas fa-headset"></i>
+
+                    </div>
+                    Call Requests &nbsp;
+                    <div class="badge-circle bg-danger text-white">
+                        <span class="badge-content">{{ ysp.getCallRequestsCount() }}</span>
+                    </div>
+                </a>
+            {% endif %}
+
+            {% if is_granted('admin_fraud') %}
+                <a href="{{ url('admin_fraud') }}"
+                   class="nav-link {% if app.request.get('_route') matches '{^admin_fraud}' %}active{% endif %}">
+                    <div class="nav-link-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                             class="feather feather-users">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="9" cy="7" r="4"></circle>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                        </svg>
+                    </div>
+                    Frauds
+                </a>
+            {% endif %}
+
+            {% if is_granted('admin_subscribers') %}
+                <a href="{{ url('admin_subscribers') }}"
+                   class="nav-link {% if app.request.get('_route') matches '{^admin_subscribers}' %}active{% endif %}">
+                    <div class="nav-link-icon">
+                        <i class="fas fa-envelope-circle-check"></i>
+                    </div>
+                    Subscribers
+                </a>
+            {% endif %}
+            {% if is_granted('admin_users_customers') %}
+                <a href="{{ url('admin_users_customers') }}"
+                   class="nav-link {% if app.request.get('_route') in ['admin_users_customer_reward_points_view','admin_users_customer_reward_points','admin_users_customer_edit','admin_users_customers','admin_users_customer_update_password'] or app.request.get('_route') matches '{^admin_users_customers}' %}active{% endif %}">
+                    <div class="nav-link-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    Customers
+                </a>
+            {% endif %}
+
+            {% set ifRouteNameIsWholeSeller = app.request.get('_route') matches '{^admin_users_whole_seller}' %}
+            {% set wholeSellerRoutes = ['admin_users_whole_seller', 'admin_users_whole_seller_accept', 'admin_users_whole_seller_rejected'] %}
+
+            {% set slug = slug is defined ? slug : 'list' %}
+            {% set ifRouteNameIsWholeSeller = ifRouteNameIsWholeSeller is defined ? ifRouteNameIsWholeSeller : false %}
+
+            {% if is_granted(wholeSellerRoutes) %}
+                <a class="nav-link {% if not ifRouteNameIsWholeSeller %}collapsed{% else %}active{% endif %}"
+                href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#collapseWholeSeller"
+                aria-expanded="{% if ifRouteNameIsWholeSeller %}true{% else %}false{% endif %}"
+                aria-controls="collapseWholeSeller">
+                    <div class="nav-link-icon"><i class="fas fa-users"></i></div>
+                    Wholeseller
+                    <div class="sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                </a>
+
+                <div class="collapse {% if ifRouteNameIsWholeSeller %}show{% endif %}" id="collapseWholeSeller"
+                    data-bs-parent="#accordionSidenav">
+                    <nav class="sidenav-menu-nested nav accordion" id="accordionWholeSeller">
+                        {% if is_granted('admin_users_whole_seller') %}
+                            <a href="{{ path('admin_users_whole_seller', { slug: 'list' }) }}"
+                            class="nav-link {% if slug == 'list' %}active{% endif %}">
+                                All Wholeseller
+                            </a>
+
+                            <a href="{{ path('admin_users_whole_seller', { slug: 'accepted' }) }}"
+                            class="nav-link {% if slug == 'accepted' %}active{% endif %}">
+                                Accepted
+                            </a>
+
+                            <a href="{{ path('admin_users_whole_seller', { slug: 'rejected' }) }}"
+                            class="nav-link {% if slug == 'rejected' %}active{% endif %}">
+                                Rejected
+                            </a>
+                        {% endif %}
+                    </nav>
+                </div>
+            {% endif %}
+            {% if is_granted('admin_generate_qr_code') %}
+                <a href="{{ url('admin_generate_qr_code') }}"
+                class="nav-link {% if app.request.get('_route') matches '{^admin_generate_qr_code}' %}active{% endif %}">
+                    <div class="nav-link-icon"><i class="fas fa-qrcode"></i></div>
+                    Generate Qr Code
+                </a>
+            {% endif %}
+            {% if is_granted('admin_users_update_artwork_image_list') %}
+                <a href="{{ url('admin_users_update_artwork_image_list') }}"
+                class="nav-link {% if app.request.get('_route') matches '{^admin_users_update_artwork_image_list}' %}active{% endif %}">
+                    <div class="nav-link-icon"><i class="fas fa-list"></i></div>
+                    Artwork Images
+                </a>
+            {% endif %}
+            {% if is_granted('admin_proof_template_list') %}
+                <a href="{{ url('admin_proof_template_list') }}"
+                class="nav-link {% if app.request.get('_route') matches '{^admin_proof_template_list}' %}active{% endif %}">
+                    <div class="nav-link-icon"><i class="fa-solid fa-file"></i></div>
+                    Proof Templates
+                </a>
+            {% endif %}
+            {% if is_granted('admin_file_upload_manager') %}
+                <a href="{{ url('admin_file_upload_manager') }}"
+                class="nav-link {% if app.request.get('_route') matches '{^admin_file_upload_manager}' %}active{% endif %}">
+                    <div class="nav-link-icon"><i class="fa-solid fa-file"></i></div>
+                    File Upload Manager
+                </a>
+            {% endif %}
+
+            {% set ifRouteNameIsConfig = app.request.get('_route') in [] or app.request.get('_route') matches '{^admin_config}' %}
+            {% set configRoutes = ['admin_config_stores', 'admin_config_currencies', 'admin_config_roles', 'admin_config_users'] %}
+            {% if is_granted(configRoutes) %}
+                <a class="nav-link {% if not ifRouteNameIsConfig %}collapsed{% else %}active{% endif %}"
+                   href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#collapseSystemConfig"
+                   aria-expanded="{% if not ifRouteNameIsConfig %}false{% endif %}"
+                   aria-controls="collapseSystemConfig">
+                    <div class="nav-link-icon"><i class="fas fa-cogs"></i></div>
+                    Configuration
+                    <div class="sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                </a>
+                <div class="collapse {% if ifRouteNameIsConfig %}show{% endif %}" id="collapseSystemConfig"
+                     data-bs-parent="#accordionSidenav">
+                    <nav class="sidenav-menu-nested nav accordion" id="accordionSystemConfig">
+                        {% if is_granted('admin_config_stores') %}
+                            <a href="{{ url('admin_config_stores') }}"
+                               class="nav-link {% if app.request.get('_route') matches '{^admin_config_store}' %}active{% endif %}">Stores</a>
+                        {% endif %}
+                        {% if is_granted('admin_config_currencies') %}
+                            <a href="{{ url('admin_config_currencies') }}"
+                               class="nav-link {% if app.request.get('_route') matches '{^admin_config_currenc}' %}active{% endif %}">Currency</a>
+                        {% endif %}
+                        {% if is_granted('admin_config_roles') %}
+                            <a href="{{ url('admin_config_roles') }}"
+                               class="nav-link {% if app.request.get('_route') matches '{^admin_config_role}' %}active{% endif %}">Role/Permission</a>
+                        {% endif %}
+                        {% if is_granted('admin_config_users') %}
+                            <a href="{{ url('admin_config_users') }}"
+                               class="nav-link {% if app.request.get('_route') matches '{^admin_config_user}' %}active{% endif %}">Admin
+                                Users</a>
+                        {% endif %}
+                         {% if is_granted('admin_cloud_cache') %}
+                            <a href="{{ url('admin_cloud_cache') }}"
+                               class="nav-link {% if app.request.get('_route') matches '{^admin_cloud_cache}' %}active{% endif %}">Cache Management</a>
+                        {% endif %}
+                    </nav>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    <!-- Sidenav Footer-->
+    <div class="sidenav-footer">
+        <div class="sidenav-footer-content">
+            <div class="sidenav-footer-subtitle">Logged in as:</div>
+            <div class="sidenav-footer-title">{{ app.user.name }}</div>
+            {% if is_granted('IS_IMPERSONATOR') and 'ROLE_SUPER_ADMIN' not in app.user.roles %}
+                <a href="{{ impersonation_exit_path(path('admin_ysp')) }}">Exit Impersonation</a>
+            {% endif %}
+        </div>
+    </div>
+</nav>

@@ -1,0 +1,490 @@
+<div {{ attributes }}>
+    {{ form_start(form, {attr: {
+        'novalidate': true,
+        'data-action': 'live#action:prevent',
+        'data-live-action-param': 'addToCart',
+    }}) }}
+    {{ form_errors(form) }}
+
+    {% set WIRE_STAKE_10X30 %}
+        <b>10"W x 30"H Wire Stake:</b><br/>
+        Increase exposure with our durable wire H-stakes.
+        All signs include corrugated holes or flutes along the
+        top and bottom edges, allowing for easy and instant
+        installation of wire stakes. Simply insert the wire
+        stake directly into the corrugated holes. Then place
+        the wire stake in any soft ground (e.g. grass or dirt)
+        for support. 3.4mm thick, 10 gauge (wire diameter),
+        and 0.14kg weight. Recommended for all standard
+        and custom sizes with a minimum of 10" width.
+    {% endset %}
+
+    {% set WIRE_STAKE_10X30_PREMIUM %}
+        <b>Premium 10"W x 30"H Wire Stake:</b><br/>
+        Increase exposure with our premium, thicker,
+        and greater durability wire U-stakes. All signs
+        include corrugated holes along the top and
+        bottom edges, allowing for easy and instant
+        installation of wire stakes. Simply insert
+        the wire stake directly into the corrugated
+        holes. Then place the wire stake in any soft
+        ground (e.g. grass or dirt) for support.
+        3.4mm thickness near top, 5.0mm thickness at base,
+        1/4” galvanized steel, 10 gauge (wire diameter)
+        near top, 6 gauge near base, and 0.2kg weight.
+        Recommended for all standard and custom
+        sizes with a minimum of 10" width.
+    {% endset %}
+
+    {% set WIRE_STAKE_10X30_SINGLE %}
+        <b>Single 30"H Wire Stake:</b><br/>
+        Increase exposure with our durable single
+        wire stakes. All signs include corrugated
+        holes along the top and bottom edges,
+        allowing for easy and instant installation
+        of wire stakes. Simply insert the single
+        wire stake directly into the corrugated
+        holes. Then place the wire stake in any
+        soft ground (e.g. grass or dirt) for
+        support. 3.4mm thick, 10 gauge (wire
+        diameter). Recommended for all standard
+        and custom sizes requiring only one
+        single stake for support.
+    {% endset %}
+
+    {% set WIRE_STAKE_HELP = {
+        'WIRE_STAKE_10X30': WIRE_STAKE_10X30,
+        'WIRE_STAKE_10X30_PREMIUM': WIRE_STAKE_10X30_PREMIUM,
+        'WIRE_STAKE_10X30_SINGLE': WIRE_STAKE_10X30_SINGLE
+    } %}
+
+    <div class="overflow-x-auto">
+        <table class="table table-bordered overflow-auto wire-stake-table">
+            <thead class="thead-light">
+            <tr class="text-center">
+                <th class="fw-500 bg-priceChart p-1 first-col">Qty</th>
+                {% for key, qty in product['framePricing']['quantities'] %}
+                    <th class="fw-500 bg-priceChart p-1">{{qty}}+</th>
+                {% endfor %}
+            </tr>
+            </thead>
+            <tbody style="max-height: 100px">
+            {% set currentEditItemQuantity = 0 %}
+            {% set quantity = this.totalQuantity %}
+            {% set subTotalAmount = this.getSubtotalAmount|number_format(2, '.', '') %}
+                {% for variant, field in form.variants.vars.form.children %}
+                    {% set currentEditItemQuantity = this.getCurrentItemQuantity(variant) %}
+                    {% if this.isEdit %}
+                        {% set currentEditItemQuantity = currentEditItemQuantity - this.getCurrentEditItemQuantity(variant) %}
+                    {% endif %}
+                    {% set isChecked = (field.vars.value|number_format(0, '.', '')) + currentEditItemQuantity %}
+                    {% set frameQuality = field.vars.attr.quality ?? 'Standard' %}
+                    {% set frameType = field.vars.attr.frameType ?? 'NONE' %}
+                    <tr class="text-center">
+                        <th class="fw-500 bg-priceChart p-1 first-col">{{frameQuality}}</th>
+                        {% for pricing in product.framePricing.frames['pricing_' ~ frameType].pricing %}
+                            {% if isChecked >= pricing.qty.from and isChecked <= pricing.qty.to and field.vars.value > 0 %}
+                                <td class="bg-purple text-white p-1">$
+                                    {{ pricing.usd|number_format(2, '.', '') }}
+                                </td>
+                            {% else %}
+                                <td class="p-1">$
+                                    {{ pricing.usd|number_format(2, '.', '') }}
+                                </td>
+                            {% endif %}
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="card order-sample-form">
+        <div class="form-group mb-0">
+            <div class="title-band-wrapper" data-step="1">
+                <div class="title-band" data-title="style">
+                    <h4>Choose Wire Stake</h4>
+                    <div class="title-band-color bg-light-green">
+                        <h4 class="main-step">Step 1</h4>
+                    </div>
+                    <span class="step-total">
+                        <span class="separator">Total</span>
+                        Qty: {{ quantity }}
+                        <span class="separator">|</span>
+                        <span class="price">Price: ${{ subTotalAmount|number_format(2, '.', '') }}</span>
+                    </span>
+                </div>
+            </div>
+            <div class="field-area pt-3 px-3">
+                <div class="row justify-content-center justify-content-sm-start">
+                    {% set ribbonColor = ['dark-blue', 'blue', 'green'] %}
+                    {% set ribbon = {} %}
+
+                    {% for variant, field in form.variants.vars.form.children %}
+                        {% set currentEditItemQuantity = this.getCurrentItemQuantity(variant) %}
+                        {% if this.isEdit %}
+                            {% set currentEditItemQuantity = currentEditItemQuantity - this.getCurrentEditItemQuantity(variant) %}
+                        {% endif %}
+                        {% set ribbon = {
+                            'WIRE_STAKE_10X30': [
+                                '$' ~ this.getFramePrice((field.vars.value | default(1) + currentEditItemQuantity), 'WIRE_STAKE_10X30') | number_format(2, '.', ''),
+                                'Best Seller',
+                                'Standard'
+                            ],
+                            'WIRE_STAKE_10X30_PREMIUM': [
+                                '$' ~ this.getFramePrice((field.vars.value | default(1) + currentEditItemQuantity), 'WIRE_STAKE_10X30_PREMIUM') | number_format(2, '.', '')
+                            ],
+                            'WIRE_STAKE_10X30_SINGLE': [
+                                '$' ~ this.getFramePrice((field.vars.value | default(1) + currentEditItemQuantity), 'WIRE_STAKE_10X30_SINGLE') | number_format(2, '.', '')
+                            ]
+                        } %}
+
+                        {% set isChecked = field.vars.value ?? 0 %}
+                        <div class="col-6 col-sm-4 col-md-3 col-xxl-3 mb-3 variant-item wire-stake-variants" data-ribbon="{{ ribbon[variant][0] ?? '' }}">
+                            {% if ribbon[variant] is defined %}
+                                {% for ribbonText in ribbon[variant] %}
+                                    <div class="custom-ribbon ribbon-{{variant}} fw-normal {{ ribbonColor[(loop.index0) % ribbonColor|length] }}" style="top: {{ 8 + (loop.index0 * 20) }}px;">
+                                        {{ ribbonText }}
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                            <span class="{% if isChecked > 0 %}check-delivery-date{% else %}d-none{% endif %}">
+                                <svg viewBox="64 64 896 896" focusable="false" data-icon="check"
+                                    width="1em" height="1em" fill="currentColor" aria-hidden="true"
+                                    data-acsb-hidden="true" data-acsb-force-hidden="true">
+                                            <path d="M912 190h-69.9c-9.8 0-19.1 4.5-25.1 12.2L404.7 724.5 207 474a32 32 0 00-25.1-12.2H112c-6.7 0-10.4 7.7-6.3 12.9l273.9 347c12.8 16.2 37.4 16.2 50.3 0l488.4-618.9c4.1-5.1.4-12.8-6.3-12.8z"></path>
+                                </svg>
+                            </span>
+                            {# <div class="order-sample-ribbon" style="background: red">
+                                    Out of Stock
+                                    <span class="fw-400 {% if this.toggle %}text-dark{% else %}text-dark{% endif %}" data-bs-html="true" tabindex="0" data-bs-toggle="popover" data-bs-placement="top" data-bs-trigger="hover" data-bs-custom-class="pickup-popover"
+                                            data-bs-content='
+                                            <div class="popover-content">
+                                                <b>Wire Stakes:</b></br>
+                                                We will be in stock on our 10"W x 30"H wire stakes by August 28, 2024. You may still order wire stakes. We will immediately ship wire stakes once we are back in stock.
+                                            </div>'>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-help-circle"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                                    </span>
+                                </div> #}
+                            <div class="border list-group-item position-relative rounded p-3 h-100 {% if isChecked > 0 %}border-purple{% else %}border-none{% endif %} {% if variant in ribbon|keys and field.vars.name == 'WIRE_STAKE_10X30' %}border-blue purple-fade border-2{% endif %}">
+                                <div class="banner-sizes text-center mt-2">
+                                    <img width="268" height="160" src="{{ field.vars.attr['data-image'] }}" loading="lazy" alt="{{ variant }}"/>
+                                </div>
+                                <div class="text-center fw-500">
+                                    {{ form_label(field) }}
+                                    <div class="input-group-wrapper">
+                                        {{ form_widget(field) }}
+                                        <span class="d-inline-block wire-stake-svg" data-bs-html="true" tabindex="0" data-bs-toggle="popover" data-bs-placement="top" data-bs-trigger="hover" data-bs-custom-class="wire-stake-popover"
+                                            data-bs-content='
+                                                <div class="popover-content">
+                                                    {{ WIRE_STAKE_HELP[variant] ?? '' }}
+                                                </div>'
+                                            >
+                                            <span id="svgContainer">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-help-circle"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                                            </span>
+                                        </span>
+                                    </div>
+                                    {{ form_errors(field) }}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {{ form_errors(form.variants) }}
+        </div>
+        <div class="form-group mb-0">
+            <div class="title-band-wrapper step1" data-step="1">
+                <div class="title-band" data-title="style">
+                    <h4>Choose 
+                        {% if this.toggle is defined and this.toggle == true %}
+                            Pickup
+                        {% else %}
+                            Delivery
+                        {% endif %} 
+                    Date</h4>
+                    <div class="title-band-color bg-dark-yellow">
+                        <h4 class="main-step">Step 2</h4>
+                    </div>
+                    <span class="step-total">
+                        <span class="separator">Total</span>
+                        Qty: {{ quantity }}
+                        <span class="separator">|</span>
+                        <span class="price">Price: ${{ subTotalAmount|number_format(2, '.', '') }}</span>
+                    </span>
+                </div>
+            </div>
+            <div class="field-area py-2 px-4">
+                <div class="row row-gap-2" id="order_sample_shipping">
+                    <div  class="alert alert-wrapper delivery-alert text-center {{ quantity > 0 ? 'd-none' : 'd-block' }}" role="alert">
+                        <p>Please add 1 or more quantity to see delivery dates</p>
+                    </div>
+                    {% for key, choice in form.shipping %}
+                        <label class="custom-shipping-label col-md-3 col-lg-2 col-6 cursor-pointer shipping_{{ key }} {% if choice.vars.attr['data-price'] != 0 %} d-inline-block {% else %} {% if this.getSubtotal >= 50 %} d-inline-block {% else %} d-none {% endif %} {% endif %} {{ quantity > 0 ? 'd-block' : 'd-none' }}">
+                            <span class="shipping-check border list-group-item position-relative rounded {% if (form.shipping.vars.value == choice.vars.attr['data-day']) %}border-purple{% endif %}">
+                                <span class="{% if (form.shipping.vars.value == choice.vars.attr['data-day']) %}check-delivery-date{% else %} d-none{% endif %}">
+                                    <svg viewBox="64 64 896 896" focusable="false" data-icon="check"
+                                         width="1em" height="1em" fill="currentColor" aria-hidden="true"
+                                         data-acsb-hidden="true" data-acsb-force-hidden="true">
+                                        <path d="M912 190h-69.9c-9.8 0-19.1 4.5-25.1 12.2L404.7 724.5 207 474a32 32 0 00-25.1-12.2H112c-6.7 0-10.4 7.7-6.3 12.9l273.9 347c12.8 16.2 37.4 16.2 50.3 0l488.4-618.9c4.1-5.1.4-12.8-6.3-12.8z"></path>
+                                    </svg>
+                                </span>
+                                {{ form_widget(choice) }}
+                                <span class="shipping-price"
+                                      data-price="{{ this.updateShipping['data'][choice.vars.attr['data-date']]['price'] }}"
+                                      data-date="{{ choice.vars.attr['data-date'] }}" hidden></span>
+                                <div class="text-center fw-500">
+                                    <p class="fs-1 ">{{ choice.vars.attr['data-date'] | date('d') }}</p>
+                                    <p class="fs-14 text-secondary">{{ choice.vars.attr['data-date'] | date('F, Y') }}</p>
+                                    <div class="py-1 border-top {% if choice.vars.attr['data-price'] == 0 %}text-green{% else %}text-purple{% endif %} fs-13 fw-600">
+                                        {% if choice.vars.attr['data-price'] == 0 %}
+                                            {% if choice.vars.attr['data-discount'] > 0 %}
+                                            <span class="position-relative discount-shipping">
+                                                FREE +{{choice.vars.attr['data-discount']}}% OFF
+                                            </span>
+                                            <span class="d-inline-block svg text-dark discount-shipping-popover" data-bs-html="true" tabindex="0" data-bs-toggle="popover" data-bs-placement="top" data-bs-trigger="hover"
+                                                data-bs-content=' 
+                                                <div class="popover-content">
+                                                    Choose this delivery date to<br/>
+                                                    receive 5% off your order,<br/>
+                                                    up to $50 in savings!
+                                                </div>'>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-help-circle"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                                            </span>
+                                            {% else %}
+                                                FREE
+                                            {% endif %}
+                                        {% else %}
+                                        {% set price = this.updateShipping['data'][choice.vars.attr['data-date']]['price'] / (quantity ?: 1) %}
+                                        {% set requestPickupDiscount = product['deliveryMethods']['REQUEST_PICKUP']['discount'] / 100 %}
+                                        {% set finalPrice = this.toggle ? (price * requestPickupDiscount) : price %}
+                                        {% set formattedPrice = finalPrice | round(2, 'floor') | number_format(2) %}
+                                        +${{ formattedPrice }}/pc
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </span>
+                        </label>
+                    {% endfor %}
+                </div>
+                <div class="row justify-content-center gap-2 gap-xs-3 gap-sm-3 gap-md-4 {% if quantity <= 0 %} d-none{% endif %}">
+                    <div class="pickup-check d-block mt-2 p-0 {% if this.toggle %}border-purple-small{% else %} border-transparent{% endif %}">
+                        <label class="custom-shipping-label cursor-pointer d-inline">
+                            <span class="{% if this.toggle %}check-delivery-date{% else %} d-none{% endif %}">
+                                <svg viewBox="64 64 896 896" focusable="false" data-icon="check"
+                                        width="1em" height="1em" fill="currentColor" aria-hidden="true"
+                                        data-acsb-hidden="true" data-acsb-force-hidden="true">
+                                    <path d="M912 190h-69.9c-9.8 0-19.1 4.5-25.1 12.2L404.7 724.5 207 474a32 32 0 00-25.1-12.2H112c-6.7 0-10.4 7.7-6.3 12.9l273.9 347c12.8 16.2 37.4 16.2 50.3 0l488.4-618.9c4.1-5.1.4-12.8-6.3-12.8z"></path>
+                                </svg>
+                            </span>
+                            <span class="list-group-item shipping-check d-flex justify-content-center align-items-center pickup-div">
+                                {{form_widget(form.pickup)}}
+                                <div class="text-center fw-400 ">
+                                    <p data-loading="show" disabled>Request Pickup
+                                        <img width="16" height="16" src="{{ asset(storeInfo.isPromoStore ? 'app-images/Loader-ysp.svg' : 'app-images/spinner.svg') }}" alt="Loading Spinner">
+                                    </p>
+                                    <p data-loading="hide" class="{% if this.toggle %}text-dark{% else %}text-primary{% endif %}">Request Pickup</p>
+                                </div>   
+                                <span class="fw-400 {% if this.toggle %}text-dark{% else %}text-dark{% endif %}" data-bs-html="true" tabindex="0" data-bs-toggle="popover" data-bs-placement="top" data-bs-trigger="hover" data-bs-custom-class="pickup-popover"
+                                        data-bs-content=' 
+                                        <div class="popover-content">
+                                            <b>Request Pickup:</b></br>  
+                                            Pickup from our Houston, TX warehouse is
+                                            offered for all delivery dates. Please choose
+                                            your delivery date. We will change your
+                                            order to pickup. Once ready, we will contact
+                                            you. Your delivery fee will be discounted by
+                                            50% (does not apply to same day delivery
+                                            requests).
+                                        </div>'>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-help-circle"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                                </span>
+                            </span>
+                        </label>
+                    </div>
+                    <div class="pickup-check d-block mt-2 p-0 {% if this.isBlindShipping %}border-purple-small{% else %} border-transparent{% endif %}">
+                        <label class="custom-shipping-label cursor-pointer d-inline">
+                            <span class="{% if this.isBlindShipping %}check-delivery-date{% else %} d-none{% endif %}">
+                                <svg viewBox="64 64 896 896" focusable="false" data-icon="check"
+                                        width="1em" height="1em" fill="currentColor" aria-hidden="true"
+                                        data-acsb-hidden="true" data-acsb-force-hidden="true">
+                                    <path d="M912 190h-69.9c-9.8 0-19.1 4.5-25.1 12.2L404.7 724.5 207 474a32 32 0 00-25.1-12.2H112c-6.7 0-10.4 7.7-6.3 12.9l273.9 347c12.8 16.2 37.4 16.2 50.3 0l488.4-618.9c4.1-5.1.4-12.8-6.3-12.8z"></path>
+                                </svg>
+                            </span>
+                            <span class="list-group-item shipping-check d-flex justify-content-center align-items-center pickup-div">
+                                {{form_widget(form.isBlindShipping)}}
+                                <div class="text-center fw-400">
+                                    <p data-loading="show" disabled>Request Blind Shipping
+                                        <img width="16" height="16" src="{{ asset(storeInfo.isPromoStore ? 'app-images/Loader-ysp.svg' : 'app-images/spinner.svg') }}" alt="Loading Spinner">
+                                    </p>
+                                    <p data-loading="hide" class="{% if this.isBlindShipping %}text-dark{% else %}text-primary{% endif %}">Request Blind Shipping</p>
+                                </div>   
+                                <span class="fw-400 {% if this.isBlindShipping %}text-dark{% else %}text-dark{% endif %}" data-bs-html="true" tabindex="0" data-bs-toggle="popover" data-bs-placement="top" data-bs-trigger="hover" data-bs-custom-class="pickup-popover"
+                                        data-bs-content=' 
+                                        <div class="popover-content">
+                                            <b>Request Blind Shipping:</b></br>  
+                                            Blind Shipping offers you to receive
+                                            products without our company name
+                                            listed on the shipping label.
+                                            We will not include a packing slip.
+                                            This is only recommended for resellers.
+                                        </div>'>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-help-circle"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                                </span>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="form-group">
+            <div class="title-band-wrapper step1" data-step="1">
+                <div class="title-band" data-title="style">
+                    <h4>Add Comment</h4>
+                    <div class="title-band-color bg-blue">
+                        <h4 class="main-step">Step 3</h4>
+                    </div>
+                    <span class="step-total">
+                        <span class="separator">Total</span>
+                        Qty: {{ quantity }}
+                        <span class="separator">|</span>
+                        <span class="price">Price: ${{ subTotalAmount|number_format(2, '.', '') }}</span>
+                    </span>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="field-area p-3 ">
+                    {{ form_widget(form.comment) }}
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="title-band-wrapper step1" data-step="1">
+                <div class="title-band" data-title="style">
+                    <h4>Review Order Details</h4>
+                    <div class="title-band-color bg-purple">
+                        <h4 class="main-step">Step 4</h4>
+                    </div>
+                    <span class="step-total">
+                        <span class="separator">Total</span>
+                        Qty: {{ quantity }}
+                        <span class="separator">|</span>
+                        <span class="price">Price: ${{ subTotalAmount|number_format(2, '.', '') }}</span>
+                    </span>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="form-group text-center border-top p-3">
+                    <h5 class="fs-5">Total Amount</h5>
+                    <input type="hidden" id="total-subtotal" value="{{ this.getSubtotal }}">
+                    <div class="fs-3 text-purple fw-600">
+                        $<span id="total-amount">{{  quantity > 0 ? this.totalAmount | round(2, 'floor') | number_format(2, '.', '') : '0.00' }}</span>
+                    </div>
+                </div>
+                {% set data = this.getData() %}
+                {% set items = data.items ?? [] %}
+                {% if items is defined and items and items|length > 0 %}
+                    <div class="review-order-details">
+                        <div class="title-band-wrapper step1" data-step="1">
+                            <div class="row order-review d-flex flex-wrap justify-content-between m-0" data-title="style">
+                                <div class="col-6 col-xs-3 col-sm-3 col-md-6 d-flex flex-column flex-md-row title">
+                                    <div class="title-name flex-fill">
+                                        <span class="desktop">Review Order Details</span>
+                                        <span class="mobile">Wire Stakes</span>
+                                    </div>
+                                    <div class="title-name flex-fill text-md-right">
+                                        ${{ (data.subTotalAmount / data.totalQty) | number_format(2, '.', '') }} / Wire Stake
+                                    </div>
+                                </div>
+                                <div class="col-6 col-xs-3 col-sm-3 col-md-6 d-flex flex-column flex-md-row title justify-content-between">
+                                    <div class="title-name flex-fill">{{ data.totalQty }} Wire Stakes</div>
+                                    <div class="title-name flex-fill text-md-right">
+                                        ${{ subTotalAmount | round(2, 'floor') | number_format(2, '.', '') }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header bg-light d-flex justify-content-between">
+                                <span class="break-down-title">Wire Stakes Cost Breakdown</span>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="accordion accordion-flush" id="wireStakeCollapse">
+                                    {% for key, item in items %}
+                                        {% if item.quantity > 0 %}
+                                            <div class="accordion-item">
+                                                <div class="d-flex row m-0 align-items-center justify-content-between px-2 w-100 accordion-header">
+                                                    <div class="head col-12" id="heading{{ loop.index }}">
+                                                        <button class="accordion-button p-0" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne{{loop.index}}" aria-expanded="false" aria-controls="flush-collapseOne{{loop.index}}">
+                                                            <div class="w-100 item-text d-flex justify-content-between">
+                                                                <span>{{ item.label }}: ${{ item.unitAmount|number_format(2, '.', '') }} | QTY: {{ item.quantity }}</span>
+                                                                <span class="text-end fw-bold">${{ item.unitAmount|number_format(2, '.', '') }}</span>
+                                                            </div>
+                                                            {# <div class="col-3 text-end fw-bold">
+                                                                {{ item.quantity }} Wire Stake
+                                                            </div> #}
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <div id="flush-collapseOne{{loop.index}}" class="accordion-collapse collapse" aria-labelledby="heading{{ loop.index }}" data-bs-parent="#wireStakeCollapse">
+                                                    <div class="accordion-body">
+                                                        <div class="d-flex justify-content-between ps-1">
+                                                            <span>Base Price</span>
+                                                            <span>${{ item.unitAmount|number_format(2, '.', '') }}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                    <div class="d-flex justify-content-between shipping-cost">
+                                        <span>Shipping Cost <small class="text-muted">(
+                                            {% if this.toggle is defined and this.toggle == true %}
+                                                Pickup
+                                            {% else %}
+                                                Delivery
+                                            {% endif %} Date: {{ data.shipping.date | date('M d, Y') }}
+                                        )</small></span>
+                                        {% if data.shipping.amount is defined and data.shipping.amount > 0 %}
+                                            <span>${{ data.shippingCost | round(2, 'floor') | number_format(2) }}</span>
+                                        {% else %}
+                                            <span class="text-success fw-bold">
+                                                FREE
+                                                {% if data.shipping.discount > 0 %}
+                                                    {% set discountAmount = (data.shipping.discount / 100) * subTotalAmount %}
+                                                    {% set cappedDiscountAmount = discountAmount > 50 ? 50 : discountAmount %}
+                                                    -${{ cappedDiscountAmount|number_format(2) }} OFF
+                                                {% endif %}
+                                            </span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                {% endif %}
+
+                {% if flashMessage is not null and flashError == 'danger' %}
+                    <div class="alert mx-4 alert-{{ flashError }}">{{ flashMessage }}</div>
+                {% endif %}
+                <div class="form-group text-center py-30 bg-dark d-flex justify-content-center">
+                    <button type="submit" class="btn px-5 text-white bg-green add-to-cart-button text-uppercase fw-500 d-flex justify-content-center align-items-center gap-1"
+                            data-loading="action(addToCart)|addAttribute(disabled)">
+                        <svg class="cart-icon" width="22px" height="22px" viewBox="0 0 24.00 24.00" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#ffffff" transform="matrix(1, 0, 0, 1, 0, 0)"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" stroke="#CCCCCC" stroke-width="0.288"></g><g id="SVGRepo_iconCarrier"> <path d="M6.29977 5H21L19 12H7.37671M20 16H8L6 3H3M9 20C9 20.5523 8.55228 21 8 21C7.44772 21 7 20.5523 7 20C7 19.4477 7.44772 19 8 19C8.55228 19 9 19.4477 9 20ZM20 20C20 20.5523 19.5523 21 19 21C18.4477 21 18 20.5523 18 20C18 19.4477 18.4477 19 19 19C19.5523 19 20 19.4477 20 20Z" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
+                        <span data-loading="action(addToCart)|show" style="display: none">
+                            {{ editData is not null ? 'Updating' : 'Adding to' }} Cart...
+                        </span>
+                        <span data-loading="action(addToCart)|hide" style="display: block">
+                            {{ editData is not null ? 'Update' : 'Add to' }} Cart
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{ form_end(form) }}
+</div>

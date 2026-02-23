@@ -1,0 +1,78 @@
+<div class="card-body p-0 table-responsive warehouse-table">
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th class="fit-to-cell">#</th>
+            <th class="fit-to-cell">Order</th>
+            <th class="fit-to-cell">Printer</th>
+            <th class="fit-to-cell">Signs</th>
+            <th class="fit-to-cell">Stakes</th>
+            <th class="fit-to-cell">Order Date</th>
+            <th class="fit-to-cell">Delivery Date</th>
+            <th class="fit-to-cell">Ship By</th>
+            <th class="fit-to-cell">Shipping Service</th>
+            <th class="fit-to-cell">Tracking</th>
+            <th class="fit-to-cell">State</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% if orders | length <= 0 %}
+            <tr>
+                <td colspan="12" class="text-center">No orders found</td>
+            </tr>
+        {% endif %}
+        {% for date, warehouseOrder in orders %}
+            {% set order = warehouseOrder.order %}
+            {% set totalQuantities = order.totalQuantities %}
+            <tr>
+                <td>{{ orders.getPaginationData.firstItemNumber + loop.index - 1 }}</td>
+                <td>
+                    <a href="{{ url('admin_order_overview', {orderId: order.orderId}) }}" target="_blank">
+                        {{ order.orderId }}
+                    </a>
+                </td>
+                <td class="fit-to-cell">
+                    {% if order.printerName %}
+                        {{ enum.warehousePrinterName(order.printerName, true) | raw }}
+                    {% endif %}
+                </td>
+                <td>{{ totalQuantities['totalQuantity'] }}</td>
+                <td>{{ totalQuantities['frameQuantity'] }}</td>
+                <td class="fit-to-cell">{{ order.orderAt | date('M d, y') }}</td>
+                <td class="fit-to-cell">{{ order.deliveryDate | date('M d, y') }}</td>
+                <td class="fit-to-cell">{{ warehouseOrder.shipBy | date('M d, y') }}</td>
+                <td class="fit-to-cell">
+                    {% if warehouseOrder and warehouseOrder.shippingService %}
+                        {{ enum.warehouseShippingService(warehouseOrder.shippingService) }}
+                    {% else %}
+                        --
+                    {% endif %}
+                </td>
+                <td class="fit-to-cell">
+                    {% if order.shippingTrackingId %}
+                        <a href="{{ shippingTracking.generateTrackingLink(order.shippingCarrier, order.shippingTrackingId) }}"
+                           target="_blank">
+                            {{ order.shippingTrackingId }}
+                        </a>
+                    {% else %}
+                        --
+                    {% endif %}
+                </td>
+                <td class="fit-to-cell">{{ order.shippingAddress.state }}</td>
+                <td>
+                    <button type="button" class="btn badge bg-primary text-decoration-none text-white"
+                            data-bs-toggle="offcanvas" data-bs-target="#requeue_order_{{ order.orderId }}">
+                        Requeue
+                    </button>
+                    {% include 'admin/warehouse/_requeue_order.html.twig' %}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="mt-4 d-flex justify-content-around">
+        {{ knp_pagination_render(orders) }}
+    </div>
+</div>

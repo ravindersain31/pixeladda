@@ -1,0 +1,67 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Stores Settings{% endblock %}
+{% block pageTitle %}
+    <div class="page-header-icon">
+        <i class="fas fa-dashboard"></i>
+    </div>
+    Stores Settings
+{% endblock %}
+
+{% block body %}
+    <div class="card card-header-actions mx-auto shadow-none">
+        <div class="card-header">
+            List of Stores Settings
+            <div>
+                <a href="{{ url('admin_config_store_add_settings', {id:store.id}) }}" class="btn btn-primary btn-sm">
+                    <i class="fas fa-plus me-2"></i>
+                    Add
+                </a>
+            </div>
+        </div>
+        <div class="table-responsive">
+        <table class="card-body table table-striped">
+            <thead>
+            <tr>
+                <th>Sr.</th>
+                <th>Store</th>
+                <th>Key</th>
+                <th>Value</th>
+                <th>Status</th>
+                <th>Edit</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% if settings | length > 0 %}
+                {% for key,setting in settings %}
+                    <tr>
+                        <td>{{ key + 1 }}</td>
+                        <td>{{ setting.store.name }}</td>                        
+                        <td>{{ setting.settingKey }}</td>                        
+                        <td>{{ setting.value }}</td> 
+                        <td>{% if setting.isEnabled == 1 %} 
+                            <a class="btn btn-success btn-xs">Enabled</a>
+                            {% else %} 
+                            <a class="btn btn-danger btn-xs">Disabled</a>
+                            {% endif %}</td>
+                        <td>
+                            <a href="{{ url('admin_config_store_edit_settings', {id: setting.id}) }}" class="btn btn-info btn-sm">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="6">No records</td>
+                </tr>
+            {% endif %}
+            </tbody>
+        </table>
+        </div>
+        <div class="mt-4">
+            {{ knp_pagination_render(settings) }}
+        </div>
+    </div>
+
+{% endblock %}

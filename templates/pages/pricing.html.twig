@@ -1,0 +1,302 @@
+{% extends 'base.html.twig' %}
+
+{% set title = metaData.title ?: metaData.pageTitle ~ ' - ' ~ storeInfo.storeTitle %}
+
+{% block title %}
+    {{ title }}
+{% endblock %}
+
+{% block metaData %}
+    {% set pageUrl = url('pricing') %}
+    {% set pageImageUrl = storeInfo.isPromoStore
+        ? 'https://static.yardsignplus.com/storage/promo-store/Desktop_Military.webp' 
+        : 'https://static.yardsignplus.com/storage/banners/Military-and-Veterans-Discount-Banner-Desktop.webp' %}
+
+    {% include 'common/_page_meta.html.twig' with {
+        title: title,
+        metaData: metaData,
+        pageUrl: pageUrl,
+        pageImageUrl: pageImageUrl,
+        storeInfo: storeInfo
+    } %}
+{% endblock %}
+
+{% block body %}
+    {{ include('common/common_mobile_bar.html.twig',{commonBarText: 'Order Online Or Call Now',commonBarTele: '+1-877-958-1499'}) }}
+
+    <section class="header-design-one container-fluid header-cart-page" style="background-color: var(--primary-color)">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="d-flex justify-content-center align-items-center">
+                    <h2 class="heading m-0" style="color: #fff; font-weight: 700; padding: 12px !important; text-shadow: -4px 4px 4px #000; font-style: italic; text-transform: uppercase;">
+                        View Pricing
+                    </h2>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {{ include('common/breadcrumb.html.twig', { breadcrumbs: [
+        { name: 'Pricing', active: true }
+    ]}) }}
+
+    <div class="py-2">
+        {{ include('common/custom_search.html.twig') }}
+    </div>
+
+    <div class="container mt-3 mb-4">
+        <div class="row gap-4">
+            <div class="col-12">
+                <div id="pricingContainer">
+                    <div class="position-relative">
+                        <div id="pricingLoader" class="pricing-loader d-none">
+                            <img width="150" height="150" src="{{ asset(storeInfo.isPromoStore ? 'app-images/Loader-ysp.svg' : 'app-images/spinner.svg') }}" alt="Loading Spinner">
+                        </div>
+                        <div class="align-items-center d-flex flex-column flex-md-row flex-wrap justify-content-center justify-content-md-between mb-2 gap-1">
+                            <h4 id="pricingHeading" class="text-secondary text-center text-md-start mb-0">
+                                {% include 'common/_pricing_heading.html.twig' %}
+                            </h4>
+                            {{ form_start(form) }}
+                                <div class="d-flex align-items-center gap-2 flex-column flex-md-row">
+                                    {{ form_label(form.productType) }}
+                                    {{ form_widget(form.productType)}}
+                                </div>
+                            {{ form_end(form) }}
+                        </div>
+
+                        <div id="pricingContent">
+                            <div id="pricingTableContainer">
+                                {% include 'common/_price_table.html.twig' with {
+                                    data: pricing
+                                } %}
+
+                                <h4 class="mb-2 text-secondary mt-4 text-center text-md-start">Frame Pricing</h4>
+                                {% include 'common/_price_table.html.twig' with {
+                                    data: framePricing
+                                } %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-2 price-note">
+                        For questions or to receive a quote, please contact us by calling <a href="tel:+1-877-958-1499">+1-877-958-1499</a>, 
+                        emailing  <a href="mailto:{{storeInfo.storeEmail}}">{{storeInfo.storeEmail}}</a>, or messaging us on our 
+                        <a class="order-page" onclick="javascript:void(Tawk_API.toggle())">live chat</a>. 
+                        We are available 24 hours a day, 7 days a week. Once your order is submitted we will send a proof for your review in 1 hour. 
+                        Once approved we will begin production.
+                    </div>
+
+                     <div class="d-flex justify-content-center mt-2">
+                        <a target="_blank" href="{{ url('shop_now') }}" class="btn btn-ysp-outline-purple text-capitalize">
+                            Shop Now
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if bulkform is defined %}
+        <div class="modal fade" id="bulkOrderPricingModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content">
+
+                    <div class="modal-header bulk-order-request">
+                        <h5 class="modal-title">Bulk Order Request</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+
+                    <div class="modal-body">
+                    {{ form_start(bulkform, {'attr': {'id': 'bulkOrderForm', 'data-controller': "reset-modal-form"}}) }}
+                    <div class="row">
+                        <div class="col-md-4">
+                            {{ form_row(bulkform.firstName) }}
+                        </div>
+                        <div class="col-md-4">
+                            {{ form_row(bulkform.lastName) }}
+                        </div>
+                        <div class="col-md-4">
+                            {{ form_row(bulkform.phoneNumber) }}
+                        </div>
+                        <div class="col-md-4">
+                            {{ form_row(bulkform.email) }}
+                        </div>
+                        <div class="col-md-4">
+                             {{ form_row(bulkform.company, {
+                                label: 'Company'
+                            }) }}
+                        </div>
+                        <div class="col-md-4">
+                            {{ form_row(bulkform.quantity) }}
+                        </div>
+                        <div class="col-md-4">
+                            {{ form_row(bulkform.budget) }}
+                        </div>
+                        <div class="col-md-4 deliveryDate">
+                            <div class="form-group mb-3">
+                                {{ form_label(bulkform.deliveryDate) }}
+                                <div class="input-group">
+                                    {{ form_widget(bulkform.deliveryDate) }}
+                                    <span class="input-group-calender pricing-input-group-calender">
+                                        <i class="fa fa-calendar"></i>
+                                    </span>
+                                </div>
+                                {{ form_errors(bulkform.deliveryDate) }}
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-nowrap">
+                            {{ form_row(bulkform.productInInterested, {
+                                label: 'Interested Products'
+                            }) }}
+                        </div>
+                        <div class="col-12">
+                            {{ form_row(bulkform.comment) }}
+                        </div>
+                        {% if bulkform.recaptcha is defined %}
+                            <div class="col-12 mb-2 text-center">
+                                <div class="d-inline-block">
+                                    {{ form_row(bulkform.recaptcha) }}
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="col-12 mt-1 text-center">
+                        <button type="submit" class="btn btn-sm btn-ysp-outline px-5 py-2">Submit</button>
+                    </div>
+
+                    {{ form_end(bulkform) }}
+                </div>
+
+                    <div class="text-center mt-2">
+                        <p class="mb-1 need-help">Need Help?</p>
+                        <p class="small text-muted">Choose your preferred way to connect with us</p>
+
+                        <div class="contact-box-wrapper row g-3 mt-3 justify-content-center">
+                            <div class="col-12 col-md-4 contact-box-col">
+                                <div class="bulk-contact-box text-center">
+                                    <span class="contact-icon"><i class="far fa-comment"></i></span>
+                                    <button class="btn btn-sm btn-ysp-outline bulk-contact-btn" onclick="javascript:void(Tawk_API.toggle())">Live Chat</button>
+                                </div>
+                            </div>
+
+                            <div class="col-12 col-md-4 contact-box-col">
+                                <div class="bulk-contact-box text-center">
+                                    <span class="contact-icon"><i class="fas fa-phone"></i></span>
+                                    <a href="tel:+1-877-958-1499" class="btn btn-sm btn-ysp-outline bulk-contact-btn">Call Now</a>
+                                </div>
+                            </div>
+
+                            <div class="col-12 col-md-4 contact-box-col">
+                                <div class="bulk-contact-box text-center">
+                                    <span class="contact-icon"><i class="far fa-envelope"></i></span>
+                                    <a href="mailto:sales@yardsignplus.com" class="btn btn-sm btn-ysp-outline bulk-contact-btn">Send Email</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}
+{% block footerJavascripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+    $('#bulkOrderPricingModal').on('shown.bs.modal', function () {
+        const $input = $(this).find('.date-picker');
+
+        if ($input.length && !$input.data('datepicker')) {
+            $input.datepicker({
+                format: 'dd/mm/yyyy',
+                autoclose: true,
+                clearBtn: true,
+                startDate: new Date(new Date().setDate(new Date().getDate() + 1)),
+                todayHighlight: false
+            });
+        }
+    });
+
+    $(document).on('click', '.input-group-calender', function () {
+        const $input = $(this).closest('.input-group').find('.date-picker');
+        if ($input.length) {
+            $input.datepicker('show');
+        }
+    });
+
+    const bulkForm = document.getElementById("bulkOrderForm");
+    if (!bulkForm) return;
+
+    bulkForm.addEventListener("submit", async function(e) {
+        e.preventDefault();
+
+        const emojiFields = [
+            "bulk_order[firstName]",
+            "bulk_order[lastName]",
+            "bulk_order[company]",
+            "bulk_order[comment]",
+            "bulk_order[email]",
+            "bulk_order[productInInterested]"
+        ];
+
+        for (const name of emojiFields) {
+            const input = this.querySelector(`[name="${name}"]`);
+            if (input && !window.hasNoEmoji(input.value)) {
+                alert("Emojis are not allowed in form fields.");
+                input.focus();
+                return;
+            }
+        }
+
+        const submitBtn = this.querySelector('button[type="submit"]');
+        if (submitBtn) submitBtn.disabled = true;
+
+        const raw = Object.fromEntries(new FormData(this));
+        const formData = { bulk_order: {} };
+
+        for (let key in raw) {
+            if (key.startsWith("bulk_order[")) {
+                const cleanKey = key.replace("bulk_order[", "").replace("]", "");
+                formData.bulk_order[cleanKey] = raw[key];
+            } else {
+                formData[key] = raw[key];
+            }
+        }
+
+        formData.bulk_order.deliveryDate = toISODate(formData.bulk_order.deliveryDate);
+
+        try {
+            const response = await fetch("/api/price-create-bulk-order", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(formData),
+            });
+
+            if (!response.ok) {
+                throw new Error("HTTP error " + response.status);
+            }
+
+            const data = await response.json();
+
+            if (data.success) {
+                alert("Your request has been successfully submitted. We will contact you within one hour with more information.");
+                this.reset();
+                $("#bulkOrderPricingModal").modal("hide");
+            } else {
+                alert(data.error || "Failed to submit bulk order");
+            }
+        } catch (err) {
+            alert("Server error while submitting bulk order");
+        } finally {
+            if (submitBtn) submitBtn.disabled = false;
+        }
+    });
+
+    function toISODate(value) {
+        if (!value) return null;
+
+        const [day, month, year] = value.split('/');
+        return year && month && day ? `${year}-${month}-${day}` : null; 
+    }
+});
+</script>
+{% endblock %}

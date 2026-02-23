@@ -1,0 +1,201 @@
+# This file is the entry point to configure your own services.
+# Files in the packages/ subdirectory configure your dependencies.
+
+# Put parameters here that don't need to change on each machine where the app is deployed
+# https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
+parameters:
+  APP_ENV: '%env(resolve:APP_ENV)%'
+  CONTENT_ENV: '%env(resolve:CONTENT_ENV)%'
+  MAILER_CATCHALL_TO: '%env(resolve:MAILER_CATCHALL_TO)%'
+  APP_PROTOCOL: '%env(resolve:APP_PROTOCOL)%'
+  APP_USER_HOST: '%env(resolve:APP_USER_HOST)%'
+  APP_USER_HOSTS: '%env(resolve:APP_USER_HOSTS)%'
+  APP_ADMIN_HOST: '%env(resolve:APP_ADMIN_HOST)%'
+  AWS_S3_BASE_URL: '%env(resolve:AWS_S3_BASE_URL)%'
+
+  AWS_KEY: '%env(resolve:AWS_KEY)%'
+  AWS_SECRET: '%env(resolve:AWS_SECRET)%'
+  AWS_REGION: '%env(resolve:AWS_REGION)%'
+  AWS_S3_BUCKET: '%env(resolve:AWS_S3_BUCKET)%'
+  AWS_DISTRIBUTION_ID: '%env(resolve:AWS_DISTRIBUTION_ID)%'
+
+  BRAINTREE_ENV: '%env(resolve:BRAINTREE_ENV)%'
+  BRAINTREE_MERCHANT_ID: '%env(resolve:BRAINTREE_MERCHANT_ID)%'
+  BRAINTREE_CLIENT_AUTH: '%env(resolve:BRAINTREE_CLIENT_AUTH)%'
+  BRAINTREE_PUBLIC_KEY: '%env(resolve:BRAINTREE_PUBLIC_KEY)%'
+  BRAINTREE_PRIVATE_KEY: '%env(resolve:BRAINTREE_PRIVATE_KEY)%'
+
+  STRIPE_ENV: '%env(resolve:STRIPE_ENV)%'
+  STRIPE_PUB_KEY: '%env(resolve:STRIPE_PUB_KEY)%'
+  STRIPE_SECRET_KEY: '%env(resolve:STRIPE_SECRET_KEY)%'
+  STRIPE_WEBHOOK_KEY: '%env(resolve:STRIPE_WEBHOOK_KEY)%'
+  STRIPE_INVOICE_WEBHOOK_SECRET: '%env(resolve:STRIPE_INVOICE_WEBHOOK_SECRET)%'
+
+  PAYPAL_ENV: '%env(resolve:PAYPAL_ENV)%'
+  PAYPAL_CLIENT_ID: '%env(resolve:PAYPAL_CLIENT_ID)%'
+  PAYPAL_CLIENT_SECRET: '%env(resolve:PAYPAL_CLIENT_SECRET)%'
+  PAYPAL_API_URL: '%env(resolve:PAYPAL_API_URL)%'
+  PAYPAL_BASE_URL: '%env(resolve:PAYPAL_BASE_URL)%'
+
+  GOOGLE_PAY_ENV: '%env(resolve:GOOGLE_PAY_ENV)%'
+  GOOGLE_PAY_MERCHANT_ID: '%env(resolve:GOOGLE_PAY_MERCHANT_ID)%'
+
+  RECAPTCHA_SITE_KEY: '%env(resolve:RECAPTCHA_SITE_KEY)%'
+  RECAPTCHA_SECRET_KEY: '%env(resolve:RECAPTCHA_SECRET_KEY)%'
+
+  GOOGLE_DRIVE_CLIENT_ID: '%env(resolve:GOOGLE_DRIVE_CLIENT_ID)%'
+  GOOGLE_DRIVE_API_KEY: '%env(resolve:GOOGLE_DRIVE_API_KEY)%'
+  GOOGLE_DRIVE_APP_ID: '%env(resolve:GOOGLE_DRIVE_APP_ID)%'
+  DROPBOX_APP_ID: '%env(resolve:DROPBOX_APP_ID)%'
+  ONE_DRIVE_CLIENT_ID: '%env(resolve:ONE_DRIVE_CLIENT_ID)%'
+  GOOGLE_API_KEY: '%env(resolve:GOOGLE_API_KEY)%'
+  GOOGLE_SEARCH_ENGINE_ID: '%env(resolve:GOOGLE_SEARCH_ENGINE_ID)%'
+
+  SHIPPING_EASY_ENV: '%env(resolve:SHIPPING_EASY_ENV)%'
+  SHIPPING_EASY_STORE_KEY: '%env(resolve:SHIPPING_EASY_STORE_KEY)%'
+  SHIPPING_EASY_API_KEY: '%env(resolve:SHIPPING_EASY_API_KEY)%'
+  SHIPPING_EASY_API_SECRET: '%env(resolve:SHIPPING_EASY_API_SECRET)%'
+
+  SLACK_HOOK_SALES: '%env(resolve:SLACK_HOOK_SALES)%'
+  SLACK_HOOK_DESIGNERS: '%env(resolve:SLACK_HOOK_DESIGNERS)%'
+  SLACK_HOOK_ADWORDS: '%env(resolve:SLACK_HOOK_ADWORDS)%'
+  SLACK_HOOK_CSR_DECLINES: '%env(resolve:SLACK_HOOK_CSR_DECLINES)%'
+  SLACK_HOOK_ERROR_LOG: '%env(resolve:SLACK_HOOK_ERROR_LOG)%'
+  SLACK_HOOK_WAREHOUSE_PRINTER_ALERT: '%env(resolve:SLACK_HOOK_WAREHOUSE_PRINTER_ALERT)%'
+  SLACK_HOOK_SHIPPING_EASY: '%env(resolve:SLACK_HOOK_SHIPPING_EASY)%'
+  SLACK_HOOK_ADDRESS_CHANGE: '%env(resolve:SLACK_HOOK_ADDRESS_CHANGE)%'
+  SLACK_HOOK_ORDER_APPROVED: '%env(resolve:SLACK_HOOK_ORDER_APPROVED)%'
+
+  TWILIO_SID: '%env(resolve:TWILIO_SID)%'
+  TWILIO_TOKEN: '%env(resolve:TWILIO_TOKEN)%'
+
+  BING_ADS_DEVELOPER_TOKEN: '%env(resolve:BING_ADS_DEVELOPER_TOKEN)%'
+  BING_ADS_CLIENT_ID: '%env(resolve:BING_ADS_CLIENT_ID)%'
+  BING_ADS_CLIENT_SECRET: '%env(resolve:BING_ADS_CLIENT_SECRET)%'
+  BING_ADS_CUSTOMER_ID: '%env(resolve:BING_ADS_CUSTOMER_ID)%'
+  BING_ADS_ACCOUNT_ID: '%env(resolve:BING_ADS_ACCOUNT_ID)%'
+
+  EASYPOST_ENV: '%env(resolve:EASYPOST_ENV)%'
+  EASYPOST_KEY: '%env(resolve:EASYPOST_KEY)%'
+
+  FACEBOOK_APP_ID: '%env(resolve:FACEBOOK_APP_ID)%'
+  FACEBOOK_APP_SECRET: '%env(resolve:FACEBOOK_APP_SECRET)%'
+  FACEBOOK_ACCESS_TOKEN: '%env(resolve:FACEBOOK_ACCESS_TOKEN)%'
+  FACEBOOK_AD_ACCOUNT_ID: '%env(resolve:FACEBOOK_AD_ACCOUNT_ID)%'
+
+  MERCURE_JWT_SECRET: '%env(resolve:MERCURE_JWT_SECRET)%'
+  MERCURE_PUBLIC_URL: '%env(resolve:MERCURE_PUBLIC_URL)%'
+  MERCURE_URL: '%env(resolve:MERCURE_URL)%'
+  UPS_CLIENT_ID: '%env(UPS_CLIENT_ID)%'
+  UPS_CLIENT_SECRET: '%env(UPS_CLIENT_SECRET)%'
+  UPS_SANDBOX: '%env(bool:UPS_SANDBOX)%'
+
+  KLAVIYO_ENV: '%env(KLAVIYO_ENV)%'
+  KLAVIYO_COMPANY_ID: '%env(KLAVIYO_COMPANY_ID)%'
+
+  AMAZON_PAY_PUBLIC_ID: '%env(resolve:AMAZON_PAY_PUBLIC_ID)%'
+  AMAZON_PAY_ENV: '%env(resolve:AMAZON_PAY_ENV)%'
+  AMAZON_PAY_STORE_ID: '%env(resolve:AMAZON_PAY_STORE_ID)%'
+  AMAZON_PAY_MERCHANT_ID: '%env(resolve:AMAZON_PAY_MERCHANT_ID)%'
+  AMAZON_PAY_PUBLIC_FILE: '%env(resolve:AMAZON_PAY_PUBLIC_FILE)%'
+  AMAZON_ALGO_KEY: '%env(resolve:AMAZON_ALGO_KEY)%'
+  AMAZON_PAY_REGION: '%env(resolve:AMAZON_PAY_REGION)%'
+
+  AFFIRM_PUBLIC_API_KEY: '%env(resolve:AFFIRM_PUBLIC_API_KEY)%'
+  AFFIRM_PRIVATE_API_KEY: '%env(resolve:AFFIRM_PRIVATE_API_KEY)%'
+  AFFIRM_ENV: '%env(resolve:AFFIRM_ENV)%'
+
+  VALKEY_HOST: '%env(resolve:VALKEY_HOST)%'
+  VALKEY_PORT: '%env(resolve:VALKEY_PORT)%'
+  GOOGLE_DRIVE_ENV: '%env(resolve:GOOGLE_DRIVE_ENV)%'
+  GOOGLE_SERVICE_ACCOUNT_ENCRYPTION_KEY: '%env(resolve:GOOGLE_SERVICE_ACCOUNT_ENCRYPTION_KEY)%'
+
+services:
+  # default configuration for services in *this* file
+  _defaults:
+    autowire: true      # Automatically injects dependencies in your services.
+    autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+
+  # makes classes in src/ available to be used as services
+  # this creates a service per class whose id is the fully-qualified class name
+  App\:
+    resource: '../src/'
+    exclude:
+      - '../src/DependencyInjection/'
+      - '../src/Entity/'
+      - '../src/Kernel.php'
+
+  App\Naming\CustomNamer:
+    public: true
+  App\EventListener\ExceptionListener:
+    tags:
+      - { name: kernel.event_listener, event: kernel.exception }
+  store_event_subscriber:
+    class: App\EventSubscriber\StoreEventSubscriber
+    tags:
+      - { name: kernel.event_subscriber }
+  kernel.event_listener.json_request_transformer:
+    class: App\EventListener\JsonRequestTransformerListener
+    tags:
+      - { name: "kernel.event_listener", event: "kernel.request", method: "onKernelRequest", priority: "100" }
+  Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler:
+    arguments:
+      - '%env(DATABASE_URL)%'
+  App\EventSubscriber\MailerEventSubscriber:
+    arguments:
+      $parameterBag: '@parameter_bag'
+    tags:
+      - { name: 'kernel.event_subscriber' }
+  App\Service\SafeMailer:
+    decorates: Symfony\Component\Mailer\MailerInterface
+    arguments:
+      $mailer: '@App\Service\SafeMailer.inner'
+      $slackManager: '@App\Service\SlackManager'
+  App\Service\Ups\AbstractUpsService:
+    abstract: true
+    arguments:
+      $clientId: '%env(UPS_CLIENT_ID)%'
+      $clientSecret: '%env(UPS_CLIENT_SECRET)%'
+      $isSandbox: '%env(bool:UPS_SANDBOX)%'
+  App\Service\Ups\UpsTimeInTransitService:
+    parent: App\Service\Ups\AbstractUpsService
+    autowire: true
+    autoconfigure: true
+  App\Twig\HostBasedUrlExtension:
+    tags:
+      - { name: 'twig.extension' }
+  App\Service\HostBasedRouterService:
+    decorates: 'router.default'
+    arguments:
+      $router: '@App\Service\HostBasedRouterService.inner'
+      $requestStack: '@request_stack'
+      $params: '@parameter_bag'
+
+  App\Service\CacheService:
+    arguments:
+      $defaultPool: '@cache.app'
+      $productPool: '@cache.product'
+      $categoryPool: '@cache.category'
+      $customerPhotosPool: '@cache.customer_photos'
+      $productTypePool: '@cache.product_type'
+      $storePool: '@cache.store'
+
+  Symfony\Component\HttpFoundation\Session\Storage\Handler\RedisSessionHandler:
+    arguments:
+      - '@RedisCluster'
+      - { prefix: 'sessions:', ttl: 604800 } # 1 week in seconds
+
+  RedisCluster:
+    class: RedisCluster
+    arguments:
+      - null  # name can be null
+      - [ '%env(VALKEY_HOST)%:%env(int:VALKEY_PORT)%' ] # array of seed hosts
+      - 1      # timeout (in seconds)
+      - 1      # read_timeout (in seconds)
+      - true   # persistent connection (optional)
+
+  app.redis_provider:
+    class: RedisCluster
+    factory: ['Symfony\Component\Cache\Adapter\RedisAdapter', 'createConnection']
+    arguments:
+      - 'redis://%env(VALKEY_HOST)%:%env(VALKEY_PORT)%?&redis_cluster=1'

@@ -1,0 +1,43 @@
+{% if matchedTemplate %}
+    <div class="proof-template-wrapper text-center mb-3">
+        {% if item.addOns.frame is defined and item.addOns.frame.key != 'NONE' %}
+            {% set matchedFrame = null %}
+            {% for frame in matchedTemplate.proofFrameTemplates %}
+                {% if frame.frameType == item.addOns.frame.key %}
+                    {% set matchedFrame = frame %}
+                {% endif %}
+            {% endfor %}
+
+            {% if matchedFrame and matchedFrame.imageUrl %}
+                <img src="{{ matchedFrame.imageUrl }}" alt="Frame {{ matchedFrame.frameType }}" class="proof-template-img" />
+                {% if item.addOns.sides is defined and item.addOns.sides.key == 'DOUBLE' %}
+                    <img src="{{ matchedFrame.imageUrl }}" alt="Frame {{ matchedFrame.frameType }}" class="proof-template-img" />
+                {% endif %}
+            {% elseif matchedTemplate.imageUrl %}
+                <img src="{{ matchedTemplate.imageUrl }}" alt="Template {{ matchedTemplate.size }}" class="proof-template-img" />
+                {% if item.addOns.sides is defined and item.addOns.sides.key == 'DOUBLE' %}
+                    <img src="{{ matchedTemplate.imageUrl }}" alt="Template {{ matchedTemplate.size }}" class="proof-template-img" />
+                {% endif %}
+            {% endif %}
+        {% else %}
+            {% if matchedTemplate.imageUrl %}
+                <img src="{{ matchedTemplate.imageUrl }}" alt="Template {{ matchedTemplate.size }}" class="proof-template-img" />
+                {% if item.addOns.sides is defined and item.addOns.sides.key == 'DOUBLE' %}
+                    <img src="{{ matchedTemplate.imageUrl }}" alt="Template {{ matchedTemplate.size }}" class="proof-template-img mt-2" />
+                {% endif %}
+            {% endif %}
+        {% endif %}
+    </div>
+
+    <style>
+        .proof-template-img {
+            display: block;
+            max-width: 300px;
+            max-height: 100%;
+            height: auto;
+            width: auto;
+            margin: 0 auto 10px;
+            object-fit: contain;
+        }
+    </style>
+{% endif %}

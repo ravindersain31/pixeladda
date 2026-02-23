@@ -1,0 +1,52 @@
+{# <div class="card-body p-1" {{ stimulus_controller('order-queue', { printer }) }}>
+    {% include 'admin/warehouse/queue/_order_queue_search.html.twig' with { cssClass: ' d-block d-sm-none '} %}
+    <div class="row horizontal-scroll">
+        {% for list in lists %}
+            {% set shipByDate = list.shipBy ? list.shipBy  | date('Y-m-d') : null %}
+            {% include 'admin/warehouse/queue/_ship-by-list.html.twig' with {
+                list,
+                warehouseOrders: ordersShipBy[shipByDate] ?? []
+            } %}
+        {% endfor %}
+        {% if is_granted('warehouse_add_ship_by_list') %}
+            <div class="col-12 col-sm-6 col-md-4 col-lg-2 p-1 pe-3">
+                {{ component('AdminWarehouseShipByList', {
+                    printer: printer,
+                }) }}
+            </div>
+        {% endif %}
+    </div>
+</div> #}
+
+{% block stylesheets %}
+    {{ encore_entry_link_tags('admin') }}
+    {{ encore_entry_link_tags('admin-order-queue') }}
+{% endblock %}
+
+    <style>
+        @media screen and (max-width: 768px) {
+            .ant-picker-panels {
+                flex-direction: column !important;
+            }
+        }
+    </style>
+
+    {% set urls = { admimUrl: url('admin_dashboard'), frontendUrl: url('homepage') } %}
+
+    <div id="admin-order-queue-container" {{ react_component('OrderQueue', {
+        lists: lists2,
+        printer: printer,
+        ordersShipBy: ordersShipBy2,
+        filters: filters,
+        urls: urls
+    }) }}>
+        <div class="loading-product-editor d-flex justify-content-center align-items-center position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-50">
+            <div class="spinner-grow text-primary" role="status"></div>
+        </div>
+
+    </div>
+
+{% block javascripts %}
+    {{ encore_entry_script_tags('admin') }}
+    {{ encore_entry_script_tags('admin-order-queue') }}
+{% endblock %}

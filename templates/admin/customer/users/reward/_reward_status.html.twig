@@ -1,0 +1,16 @@
+{% if transaction.type == 'DEBIT' %}
+    {% if transaction.order.status is defined and transaction.order.status == 'CANCELLED' and transaction.status == 'REFUNDED' %}
+        <br><small class="text-danger">This transaction has been canceled</small>
+        <br><small class="text-success">Reward refunded due to order cancellation</small>
+    {% elseif transaction.order.status is defined and transaction.order.status == 'SHIPPED' and transaction.status == 'COMPLETED' %}
+        <br><small class="text-success">This order has been shipped</small>
+    {% endif %}
+
+{% elseif transaction.type == 'CREDIT' %}
+    {% if transaction.order.status is defined and transaction.order.status == 'CANCELLED' and transaction.status == 'CANCELLED' %}
+        <br><small class="text-danger">This transaction has been canceled</small>
+        <br><small class="text-success">Reward canceled due to order cancellation</small>
+    {% elseif transaction.order.status is defined and transaction.order.status == 'SHIPPED' and transaction.status == 'COMPLETED' %}
+        <br><small class="text-success">This order has been shipped</small>
+    {% endif %}
+{% endif %}

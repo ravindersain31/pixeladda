@@ -1,0 +1,95 @@
+{% extends 'emails/base.html.twig' %}
+{% block title %}Create My Account to Redeem FREE YSP Rewards!{% endblock %}
+{% block subject %}Thank you for your interest in {{storeName}}!{% endblock %}
+{% block body %}
+    {% set images = [
+        {
+            'src': 'https://static.yardsignplus.com/fit-in/500x500/storage/images/Image-1.png',
+            'alt': '18x24 in Health & Safety Sign',
+            'url': url('category_sizes', {slug: 'health-safety', size: '18x24'}),
+            'description': '18x24 in Health & Safety Sign'
+        },
+        {
+            'src': 'https://static.yardsignplus.com/fit-in/500x500/storage/images/Image-2.png',
+            'alt': '9x12 in Protest Sign',
+            'url': url('category_sizes', {slug: 'protest', size: '9x12'}),
+            'description': '9x12 in Protest Sign'
+        },
+        {
+            'src': 'https://static.yardsignplus.com/fit-in/500x500/storage/images/Image-3.png',
+            'alt': '24x18 in Political Sign',
+            'url': url('category_sizes', {slug: 'political', size: '24x18'}),
+            'description': '24x18 in Political Sign'
+        },
+        {
+            'src': 'https://static.yardsignplus.com/fit-in/500x500/storage/images/Image-4.png',
+            'alt': '12x12 in For Sale Sign',
+            'url': url('category_sizes', {slug: 'for-sale', size: '12x12'}),
+            'description': '12x12 in For Sale Sign'
+        },
+        {
+            'src': 'https://static.yardsignplus.com/fit-in/500x500/storage/images/Image-5.png',
+            'alt': '6x24 in Contractor Sign',
+            'url': url('category_sizes', {slug: 'contractor', size: '6x24'}),
+            'description': '6x24 in Contractor Sign'
+        }
+    ] %}
+    <tr style="background-color: #f1f0ff;">
+        <td style="text-align: center;padding: 10px 0;">
+            <table align="center" role="presentation" cellspacing="0" cellpadding="0" border="0" style="width: 100%; max-width: 600px;">
+                <tbody>
+                    <tr>
+                        {% for image in images %}
+                            <td style="padding: 0 5px; text-align: center; width: 120px;">
+                                <a target="_blank" href="{{ image.url }}" style="text-decoration: none;color:black;">
+                                    <img width="100" height="100" class="product-image" src="{{ image.src }}" alt="{{ image.alt }}" style="width: 150px; height: auto; background: #f1f0ff; display: block; margin: 0 auto;">
+                                    <p style="margin: 10px 0; font-size: 13px; line-height: normal; min-height: 30px;">{{ image.description|escape }}</p>
+                                </a>
+                            </td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        {% for image in images %}
+                            <td style="padding: 0 5px; text-align: center; width: 120px;">
+                                <a target="_blank" href="{{ image.url }}" style="display: block;background-color: #44ad0f;color: white !important;border: none;font-size: 11px;cursor: pointer;border-radius: 3px;font-weight: bold;padding: 5px 0px;margin: 0 15px;text-decoration: none;">
+                                    Shop Now
+                                </a>
+                            </td>
+                        {% endfor %}
+                    </tr>
+                </tbody>
+            </table>
+        </td>
+    </tr>
+    <tr style="background: #753dbc; color: white; font-size: 35px; font-style: italic; text-transform: uppercase; line-height: 1.4; text-align: center;">
+        <td colspan="3">
+            <div class="create-account">
+            <p style="margin: 6px; font-size: 18px; font-style: italic; font-weight: 600;">Create My Account Profile To
+                <br>Redeem Free YSP Rewards!</p>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="3" style="text-align: center; padding: 10px 0;">
+            <p style="margin-bottom: 0; color: #753dbc; margin-top: 10px; font-size: 20px; font-weight: 700;">APPLY YOUR FREE YSP REWARDS</p>
+            <p style="font-size: 16px; color: #000000; padding: 0 15px; line-height: 135%; margin: 10px 0;">
+                Please click the button below to create a My Account. You will be able to review your order history, saved
+                designs, submit repeat orders, redeem YSP rewards towards your next order, and much more!
+            </p>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="3" style="text-align: center; padding: 10px 0;">
+            <a href="{{ url('create_account') }}" style="background-color: #44ad0f; color: white !important; font-size: 16px; text-transform: uppercase; text-decoration: none; padding: 10px 20px; display: inline-block; font-weight: bold; border-radius: 6px;">
+                Create My Account
+            </a>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="3" style="border-bottom: 2px solid #753dbc; padding: 10px 0; text-align: center;">
+            <a href="{{ url('category_shop') }}" style="font-size: 25px; text-transform: uppercase; text-decoration: none; font-weight: 600; font-style: normal;color: #753dbc;">
+                Shop Now
+            </a>
+        </td>
+    </tr>
+{% endblock %}

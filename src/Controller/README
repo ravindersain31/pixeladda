@@ -1,0 +1,5 @@
+Don't create controller in the /Controller Directory
+
+For Admin create controller inside the /Admin directory
+
+For Public access create controller inside the /Web Directory

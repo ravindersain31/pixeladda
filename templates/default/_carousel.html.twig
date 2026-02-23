@@ -1,0 +1,24 @@
+<div id="carouselControls" class="carousel home-banner slide" data-bs-ride="carousel">
+    <div class="carousel-inner">
+        {% for key, banner in ysp.getHomePageConstants('BANNERS') %}
+            <div class="carousel-item {% if loop.first %} active {% endif %}">
+                <a href="{{ url(banner.route_name,banner.route_name == 'custom_yard_sign_editor' ? { variant: '24x18' } : {} ) }}">
+                    <picture>
+                        <source srcset="{{ banner.mobile }}" media="(max-width: 991px)">
+                        <img fetchpriority="high" width="1905" height="397" class="d-block w-100 h-auto" src="{{ banner.desktop }}" alt="YSP Banner">
+                    </picture>
+                </a>
+            </div>
+        {% endfor %}
+        {% if ysp.getHomePageConstants('BANNERS') | length > 1 %}
+       <button class="carousel-control-prev" type="button" data-bs-target="#carouselControls" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselControls" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+        {% endif %}
+    </div>
+</div>

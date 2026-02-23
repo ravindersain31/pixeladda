@@ -1,0 +1,104 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Bulk Order List
+{% endblock %}
+{% block pageTitle %}
+	<div class="page-header-icon">
+		<i class="fa-solid fa-shopping-cart"></i>
+	</div>
+	Bulk Order
+{% endblock %}
+
+{% block body %}
+	{% if isFilterFormSubmitted %}
+    
+        Showing results for:
+        <div class="small">
+            {% if filterForm.vars.value.email %}
+                <span><b>Email: </b>{{ filterForm.vars.value.email }}</span>
+            {% endif %}
+        </div>
+    {% endif %}
+	{{ include('common/flash.html.twig') }}
+	<div class="card card-header-actions mx-auto shadow-none">
+		<div class="card-header">
+			List of Bulk Order
+			<div class="card-header-actions">
+				{{ include('admin/bulk_order/component/_filter_bulk_order.html.twig') }}
+				{# <a href="{{ url('admin_users_users_order_export') }}" class="btn text-uppercase btn-primary btn-sm d-none">Export Users</a> #}
+			</div>
+		</div>
+		<div class="table-responsive">
+			<table class="card-body table table-striped mb-0">
+				<thead>
+					<tr>
+						<th>Sr.</th>
+						<th>Name</th>
+						<th>Email</th>
+						<th>Phone</th>
+						<th>Status</th>
+						<th>Site</th>
+						<th>Received On</th>
+						<th>Completed On</th>
+						<th>Action</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for key,bulkOrder in bulkOrders %}
+                 
+							<tr>
+								<td>{{ bulkOrders.getPaginationData.firstItemNumber + loop.index - 1 }}</td>
+								<td>{{ bulkOrder.firstName ~ ' ' ~ bulkOrder.lastName }}</td>
+								<td>{{ bulkOrder.email }}</td>
+								<td>{{ bulkOrder.phoneNumber }}</td>
+								<td>
+									{% if bulkOrder.status == 0 %}
+									<span class="badge bg-success">{{ bulkOrder.statusLabel }}<span>
+									{% elseif bulkOrder.status == 1 %}
+									<span class="badge bg-warning">{{ bulkOrder.statusLabel }}<span>
+									{% endif %}
+								</td>
+								<td>
+									{% if isPromoStore(bulkOrder.storeDomain) and bulkOrder.storeDomain.name is not empty %}
+										{{ bulkOrder.storeDomain.name }}
+									{% else %}
+										{{ bulkOrder.store.shortName }}
+									{% endif %}
+								</td>
+								<td>{{ bulkOrder.createdAt|date }}</td>
+								<td>{{ bulkOrder.updatedAt|date }}</td>
+								
+									<td class="text-right">
+									{% if bulkOrder.status == 0 %}
+										<a class="btn btn-success btn-xs"
+										href="{{ url('admin_bulk_order_update_bulk_enquiry_status', { id: bulkOrder.id, status: 1 }) }}"
+										onclick="return confirm('Are you sure to close this bulk request?')">
+											Completed
+										</a>
+									{% elseif bulkOrder.status == 1 %}
+										<a class="btn btn-warning btn-xs"
+										href="{{ url('admin_bulk_order_update_bulk_enquiry_status', { id: bulkOrder.id, status: 0 }) }}"
+										onclick="return confirm('Are you sure to re open this bulk request?')">
+											Reopen
+										</a>
+									{% endif %}
+
+									<a class="btn btn-primary btn-xs" href="{{ url('admin_bulk_order_show', { id: bulkOrder.id }) }}">View</a>
+
+								</td>
+
+							</tr>
+					{% else %}
+							<tr>
+									<td colspan="6">No records</td>
+							</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</div>
+
+	<div class="mt-4">
+		{{ knp_pagination_render(bulkOrders) }}
+	</div>
+{% endblock %}

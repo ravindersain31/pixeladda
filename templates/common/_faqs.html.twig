@@ -1,0 +1,64 @@
+<section class="ysp-faq-wrapper mb-3 mt-3">
+    <div class="container">
+        <h1 class="text-center">Frequently Asked Questions</h1>
+        <div class="row">
+            <div class="col-12 mb-1">
+                <p class="faq-add-text">{{ faqsTitle }}</p>
+            </div>
+        </div>
+        <div class="row">
+            <!-- Sidebar: Categories -->
+            <div class="col-md-3 mt-3">
+                <div class="list-group bulk-gap-list" id="bulk-order-faq-category-list">
+                    {% set visible_index = 0 %}
+                    {% for title, faqsList in faqs %}
+                        {% if title != 'Frequently Asked Questions' %}
+                            {% set visible_index = visible_index + 1 %}
+                            <a href="#category{{ visible_index }}" class="list-group-item list-group-item-action text-center mb-1  {% if visible_index == 1 %}active{% endif %}" data-bs-toggle="list" role="tab">
+                                {{ title }}
+                            </a>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Main Content: FAQ Accordions -->
+            <div class="col-md-9">
+                <div class="tab-content">
+                    {% set visible_index = 0 %}
+                    {% for title, faqsList in faqs %}
+                        {% if title != 'Frequently Asked Questions' %}
+                            {% set visible_index = visible_index + 1 %}
+                            <div class="tab-pane fade {% if visible_index == 1 %}show active{% endif %}" id="category{{ visible_index }}">
+                                <div class="accordion ysp-accordion mt-3" id="accordionFaq{{ visible_index }}">
+                                    {% for question, answer in faqsList %}
+                                        {% set index = random(99,999) %}
+                                        <div class="accordion-item">
+                                            <h2 class="accordion-header" id="yspAccordion{{ index }}">
+                                                <button class="accordion-button p-2 collapsed" type="button" data-bs-toggle="collapse"
+                                                    data-bs-target="#yspAccord{{ index }}" aria-expanded="false"
+                                                    aria-controls="yspAccord{{ index }}">
+                                                    {{ question | raw }}
+                                                </button>
+                                            </h2>
+                                            <div id="yspAccord{{ index }}" class="accordion-collapse collapse" aria-labelledby="yspAccordion{{ index }}"
+                                                data-bs-parent="#accordionFaq{{ visible_index }}">
+                                                <div class="accordion-body">
+                                                    <p>{{ answer | raw }}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <p class="text-center w-100 mt-3">To learn more please visit our <a class="" href="/faqs">FAQs</a></p>
+        <div class="d-flex justify-content-center get-quote-now-btn">
+            <a class="btn btn-sgs-white text-uppercase text-uppercase" href="/bulk-order-enquiry">Get a Quote Now</a>
+        </div>
+    </div>
+</section>

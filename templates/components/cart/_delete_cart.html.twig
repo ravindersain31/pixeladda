@@ -1,0 +1,18 @@
+<div {{ attributes }} class="delete-cart-modal">
+	<form data-action="live#action:prevent" data-live-action-param="delete">
+    <div class="modal-header">
+        <h1 class="modal-title fs-5" id="deleteCartModalLabel">Delete Cart Item</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+        Are you sure? Changes cannot be undone.
+    </div>
+    <div class="modal-footer">
+        <button type="submit" data-loading="action(delete)|addAttribute(disabled)" class="btn btn-outline-danger">
+            <span data-loading="action(delete)|show" style="display: none">Deleting...</span>
+            <span data-loading="action(delete)|hide" style="display: block">Delete</span>
+        </button>
+         <button type="button" class="btn btn-secondary btn-close-text" data-bs-dismiss="modal">Close</button>
+    </div>
+    </form>
+</div>

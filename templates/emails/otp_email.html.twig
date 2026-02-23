@@ -1,0 +1,52 @@
+{% extends 'emails/base.html.twig' %}
+
+{% block title %}Your One-Time Password (OTP){% endblock %}
+{% block subject %}Your One-Time Password (OTP){% endblock %}
+
+{% block body %}
+<tr>
+    <td colspan="3">
+        <p style="font-size: 16px; color: #000000; padding: 0 50px; line-height: 135%; margin: 25px 0 25px; text-align: left;">
+            Hello {{ user_name|default('Valued Customer') }},
+        </p>
+
+        <p style="font-size: 16px; color: #000000; padding: 0 50px; line-height: 135%; margin: 15px 0 25px; text-align: left;">
+            You requested to sign into your <b>{{ storeInfo.storeName|default('Store') }}</b>  My Account using a One-Time Password.
+        </p>
+
+        <p style="font-size: 16px; color: #000000; padding: 0 50px; line-height: 135%; margin: 15px 0 10px; text-align: left;">
+            Your One Time Password is:
+        </p>
+
+        <!-- OTP BOX -->
+        <table role="presentation" align="center" cellpadding="0" cellspacing="0" style="margin: 20px auto; border-collapse: collapse;">
+            <tr>
+                {% for digit in otp|split('') %}
+                    <td style="border: 1px solid #ddd; padding: 12px 18px; font-size: 22px; font-weight: bold; color: #000000; text-align: center; border-radius: 8px; margin: 0 5px;">
+                        {{ digit }}
+                    </td>
+                {% endfor %}
+            </tr>
+        </table>
+
+        <p style="font-size: 16px; color: #000000; padding: 0 50px; line-height: 135%; margin: 15px 0 25px; text-align: left;">
+            This code is valid for <b>10 minutes</b> and can be used only once.
+        </p>
+
+        <p style="font-size: 16px; color: #000000; padding: 0 50px; line-height: 135%; margin: 25px 0 10px; text-align: left;">
+            If you did not request this, please ignore this email, your account remains secure.
+        </p>
+        <p style="font-size: 16px; color: #000000; padding: 0 50px; line-height: 135%; margin: 25px 0 10px; text-align: left;">
+            For questions please call 
+            <a href="tel:877-958-1499" style="text-decoration: none; color: {{ primaryColor }};">877-958-1499</a> 
+            or email 
+            <a href="mailto:{{storeInfo.storeSupportEmail}}" style="text-decoration: none; color: {{ primaryColor }};">{{storeInfo.storeSupportEmail}}</a>.
+        </p>
+
+        <p style="font-size: 16px; color: #000000; padding: 0 50px; line-height: 135%; margin: 25px 0 25px; text-align: left;">
+            Sincerely,<br>
+           <b>{{ storeInfo.storeName|default('Store Team') }} Support</b>
+        </p>
+    </td>
+</tr>
+{% endblock %}

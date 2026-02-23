@@ -1,0 +1,85 @@
+<div {{ attributes }}>
+    {{ form_start(form, { attr: {
+        'novalidate': true,
+        'data-action': 'live#action:prevent',
+        'data-live-action-param': 'save'
+    }}) }}
+
+    <div class="d-grid">
+        {% set intialNewOrderId = this.generateNewOrderId(order.orderId) %}
+        {% for index, subOrder in form.subOrders %}
+            <div class="card border-light shadow-sm mb-3">
+                <div class="card-header d-flex justify-content-between align-items-center h-25 p-2">
+                    <span class="fw-semibold">Order {{ order.orderId }}
+                        <span class="badge bg-danger">SPLIT {{ intialNewOrderId }}</span>
+                    </span>
+                    <div class="text-end {{ index <= 1 and intialNewOrderId <= 2 ? 'd-none' : '' }}">
+                      {{ form_widget(subOrder.vars.button_delete, {'attr': {'class': 'btn-close'}}) }}
+                    </div>
+                </div>
+                <div class="card-body p-3">
+                    <div class="row g-3">
+                        {% for key,subOrderItem in subOrder.subOrderItems %}
+                            <div class="col-12">
+                                <div class="mb-2">
+                                    {# <label class="form-label fw-bold">Item {{ loop.index }}</label> #}
+                                    {% if loop.index > 1 %}
+                                        <hr class="mt-2">
+                                    {% endif %}
+                                    <div class="row g-2">
+                                        <div class="col">
+                                            {{ form_label(subOrderItem.name, null, { 'label_attr': {'class': 'm-0', 'style': 'font-size: 12px;'}}) }}
+                                            {{ form_widget(subOrderItem.name) }}
+                                            {{ form_errors(subOrderItem.name) }}
+                                        </div>
+                                        <div class="col">
+                                            {{ form_label(subOrderItem.height, null, { 'label_attr': {'class': 'm-0', 'style': 'font-size: 12px;'}}) }}
+                                            {{ form_widget(subOrderItem.height) }}
+                                            {{ form_errors(subOrderItem.height) }}
+                                        </div>
+                                        <div class="col">
+                                            {{ form_label(subOrderItem.width, null, { 'label_attr': {'class': 'm-0', 'style': 'font-size: 12px;'}}) }}
+                                            {{ form_widget(subOrderItem.width) }}
+                                            {{ form_errors(subOrderItem.width) }}
+                                        </div>
+                                        {# <div class="col">
+                                            {{ form_label(subOrderItem.size, null, { 'label_attr': {'class': 'm-0', 'style': 'font-size: 12px;'}}) }}
+                                            {{ form_widget(subOrderItem.size) }}
+                                            {{ form_errors(subOrderItem.size) }}
+                                        </div> #}
+                                        <div class="col">
+                                            {{ form_label(subOrderItem.quantity, null, { 'label_attr': {'class': 'm-0', 'style': 'font-size: 12px;'}}) }}
+                                            {{ form_widget(subOrderItem.quantity) }}
+                                            {{ form_errors(subOrderItem.quantity) }}
+                                        </div>
+                                        <div class="col-auto {% if index <= 1 and key < 1 %} d-none {% endif %}">
+                                            <label class="pt-4">&nbsp;</label>
+                                            {{ form_widget(subOrderItem.vars.button_delete, {'attr': {'class': 'btn btn-outline-danger btn-sm'}}) }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                        {% set intialNewOrderId = intialNewOrderId + 1 %}
+                    </div>
+                    <div class="text-end">
+                        {{ form_widget(subOrder.subOrderItems.vars.button_add, {'attr': {'class': 'btn btn-link btn-sm p-0'}}) }}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <div class="text-start mb-3">
+        {{ form_widget(form.subOrders.vars.button_add, {'attr': {'class': 'btn btn-link p-0'}}) }}
+    </div>
+
+    <div class="mt-2">
+        <button type="submit" data-loading="action(save)|addAttribute(disabled)" class="btn btn-success btn">
+            <span data-loading="action(save)|show" style="display: none">Processing...</span>
+            <span data-loading="action(save)|hide" style="display: inline">Split Order</span>
+        </button>
+    </div>
+
+    {{ form_end(form) }}
+</div>

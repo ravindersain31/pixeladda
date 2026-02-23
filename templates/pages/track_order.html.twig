@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %} 
+{% set title = metaData.title ?: metaData.pageTitle ~ ' - ' ~ storeInfo.storeTitle %}
+
+{% block title %}{{ title }}{% endblock %}{% block metaData %}
+    {% set pageUrl = url('track_order') %}
+    {% set pageImageUrl = null %}
+
+    {% include 'common/_page_meta.html.twig' with {
+        title: title,
+        metaData: metaData,
+        pageUrl: pageUrl,
+        pageImageUrl: pageImageUrl,
+        storeInfo: storeInfo
+    } %}
+{% endblock %}
+{% block body %}
+    {{ include('common/common_mobile_bar.html.twig',{commonBarText: 'Order Online Or Call Now',commonBarTele: '+1-877-958-1499'}) }}
+    {{ include('customer/common/top_section.html.twig',{ section: { name: 'TRACK YOUR ORDER', active: true}}) }}
+
+    <section class="track-order mb-5 mt-4">
+        <div class="container proof-order-container">
+            <div class="row">
+                <div class="col-lg-12"></div>
+            </div>
+            {{ component('TrackOrderForm') }}
+        </div>
+    </section>
+{% endblock %}

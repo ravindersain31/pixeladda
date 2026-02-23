@@ -1,0 +1,25 @@
+services:
+    redis.cache.default:
+        parent: 'cache.adapter.redis'
+        tags:
+            - { name: 'cache.pool', namespace: 'default' }
+    redis.cache.product:
+        parent: 'cache.adapter.redis'
+        tags:
+            - { name: 'cache.pool', namespace: 'product' }
+    redis.cache.category:
+        parent: 'cache.adapter.redis'
+        tags:
+            - { name: 'cache.pool', namespace: 'category' }
+    redis.cache.customer_photos:
+        parent: 'cache.adapter.redis'
+        tags:
+            - { name: 'cache.pool', namespace: 'customer_photos' }
+    redis.cache.product_type:
+        parent: 'cache.adapter.redis'
+        tags:
+            - { name: 'cache.pool', namespace: 'product_type' }
+    redis.cache.store:
+        parent: 'cache.adapter.redis'
+        tags:
+            - { name: 'cache.pool', namespace: 'store' }

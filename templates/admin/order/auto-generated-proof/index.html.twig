@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Generated Proof #{{ order.orderId }} at YardSignPlus</title>
+    {{ include('admin/order/auto-generated-proof/_proof_font_faces.html.twig') }}
+    {{ include('admin/order/auto-generated-proof/_proof_style.html.twig') }}
+</head>
+<body>
+    {{ include('admin/order/auto-generated-proof/_proof_header.html.twig') }}
+    {{ include('admin/order/auto-generated-proof/_proof_order_top_details.html.twig') }}
+    <main class="mb-3">
+        {% for item in order.orderItems %} 
+            {% if not loop.first %} 
+                <hr class="page-divider">  
+            {% endif %} 
+            <div class="row page">
+                <div class="col col-50">
+                    <div class="product-details">
+                        {% set totalQuantity = item.quantity | default('0') %}                
+                        {% set templateTitle = '' %}
+                        {% set templateSize = '' %}
+                        {% set driveName = '' %}
+                        {% set defaultUnit = 'IN' %}
+
+                        {% if item.addOns.sides is defined %} 
+                            {% set templateTitle = item.addOns.sides.displayText  %}
+                        {% endif %}
+
+                        {% if item.itemType == 'DEFAULT' or item.product %}
+                            {% set product = item.product.parent %}
+                            {% set template = item.product %}
+                        {% endif %}
+
+                        {% if product.sku == 'SAMPLE' or product.sku == 'WIRE-STAKE' %}
+                            {% set driveName = product.sku %} 
+                        {% elseif item.metaData.customSize.isSample is defined and item.metaData.customSize.isSample %}
+                            {% set driveName = product.sku %}                         
+                        {% elseif item.metaData.isCustomSize is defined and item.metaData.isCustomSize %}
+                            {% set driveName = 'CUSTOM-SIZE' %} 
+                        {% else %}
+                            {% set driveName = product.sku %}
+                        {% endif %}
+
+                        {% if item.metaData.isCustomSize is defined and item.metaData.isCustomSize %}
+                            {% set templateSize = item.metaData.customSize.templateSize.width ~ 'x' ~ item.metaData.customSize.templateSize.height %} 
+                        {% elseif item.product.parent.sku == 'WIRE-STAKE' %}
+                            {% set templateSize = template.label ?? (template.name ~ ' Wire Stake')  %}
+                            {% set defaultUnit = '' %}
+                        {% else %}
+                            {% set templateSize = template.name %}
+                        {% endif %}
+                        
+                        {% if not loop.first %}
+                            {{ include('admin/order/auto-generated-proof/_proof_order_details.html.twig') }}
+                        {% endif %}
+
+                        {{ include('admin/order/auto-generated-proof/_proof_sections.html.twig')}}
+                    </div>
+                </div> 
+                <div class="col col-50">
+                    <div class="proof-image">
+                        {% set matchedTemplate = null %}
+                        {% for template in proofTemplates %}
+                            {% if template.size == templateSize %}
+                                {% set matchedTemplate = template %}
+                            {% endif %}
+                        {% endfor %}
+
+                        {% set imgTopSpace = '0px' %}
+                        {% if matchedTemplate or (withCustomerDesign and item.metaData.customerDesign is defined and item.metaData.customerDesign) %}
+                            {% if loop.first %}
+                                {% set imgTopSpace = '0px' %}
+                            {% else %}
+                                {% set imgTopSpace = '100px' %}
+                            {% endif %}
+                        {% else %}
+                            {% if templateTitle == 'Double Sided' %}
+                                {% set imgTopSpace = '610px' %}
+                            {% else %}
+                                {% set imgTopSpace = '350px' %}
+                            {% endif %}
+                        {% endif %}
+
+                        <div class="image-box" style="margin-top: {{imgTopSpace}};">
+                            {{ include('admin/order/auto-generated-proof/proof_blocks/_proof_image_features.html.twig') }}
+                        </div>
+                    </div>
+                </div>
+            </div>  
+        {% endfor %}
+    </main>
+    {{ include('admin/order/auto-generated-proof/_proof_footer.html.twig') }}
+</body>
+</html>

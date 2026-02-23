@@ -1,0 +1,125 @@
+<div class="card cart-step">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-12">
+                <h5 class="mb-3">Order Summary</h5>
+                <div class="card-content order-summary mb-3 mb-md-4">
+                    <table class="table table-bordered">
+                        <tbody>
+                        <tr>
+                            <th>SubTotal (Qty {{ cart.data['totalQuantity'] }})</th>
+                            <td class="text-end">${{ cart.subTotal | number_format(2) }}</td>
+                        </tr>
+                        {% if cart.isOrderProtection %}
+                            <tr>
+                                <th>Order Protection</th>
+                                <td class="text-end">+${{ cart.orderProtectionAmount | number_format(2) }}</td>
+                            </tr>
+                        {% endif %}
+                         {% if cart.internationalShippingCharge > 0 %}
+                            <tr>
+                                <th>International Shipping</th>
+                                <td class="text-end">+${{ cart.internationalShippingChargeAmount | number_format(2) }}</td>
+                            </tr>
+                        {% endif %}
+                        {% if cart.coupon %}
+                            <tr>
+                                <th>
+                                    COUPON DISCOUNT
+                                    <br>
+                                    CODE:   <span class='text-muted'>
+                                                                {{ cart.coupon.code }}
+                                                                <a href="{{ url('remove_coupon',{cartId:cart.cartId}) }}" class='btn btn-primary btn-sm'>Remove</a>
+                                                            </span>
+                                </th>
+                                <td class="text-end">
+                                    -${{ cart.couponAmount | number_format(2)}}
+                                </td>
+                            </tr>
+                        {% endif %}
+                        {% if cart.additionalDiscount is defined and cart.additionalDiscount is not empty %}
+                            {% for key,discount in cart.additionalDiscount %}
+                                <tr>
+                                    <th>Discount
+                                        {% if key == 'SUB1500' %}
+                                            <span
+                                                class="d-inline-flex align-items-center ms-1 additional-discount-coupon"
+                                                data-bs-placement="top"
+                                                data-bs-toggle="popover"
+                                                data-bs-trigger="hover focus"
+                                                data-bs-html="true"
+                                                data-bs-content="
+                                                    <div style='font-family: Montserrat, sans-serif !important;'>
+                                                        <h4 style='font-weight: 600;margin-bottom: 5px; color: #000; font-size: 18px!important;'>Coupon Disclaimer</h4>
+                                                        <p style='font-size: 13px;margin-bottom: 5px;'> Orders over <strong>$1500</strong> get <strong>FREE ITEMS</strong> up to <strong>$100</strong> in value!</p>
+                                                        <p style='font-size: 12px;margin-top: 5px;margin-bottom: 0;'> No code necessary. Restrictions may apply. Subject to change or cancellation.</p>
+                                                    </div>
+                                                "
+                                            >
+                                                <span class="apply-coupon-ysp-info-icon">
+                                                    <i class="fa fa-question"></i>
+                                                </span>
+                                            </span><br>
+                                            CODE: <span class='text-muted'>{{discount.name}}</span>
+                                        {% else %}
+                                            <small class="text-capitalize text-muted">
+                                                ({{discount.name}})
+                                            </small>
+                                        {% endif %}
+                                    </th>
+                                    <td class="text-end">-${{discount.amount | number_format(2)}}</td>
+                                </tr>
+                            {% endfor %}
+                        {% endif %}
+                        <tr>
+                            <th>
+                                Shipping
+                                {% if cart.dataKey('shipping')['date'] is defined %}
+                                    <small class="text-capitalize text-muted">({% if cart.data.deliveryMethod.key is defined and cart.data.deliveryMethod.key == 'REQUEST_PICKUP' %}Pickup{% else %}Delivery{% endif %} Date: {{ cart.dataKey('shipping')['date'] | date('M d, Y') }})</small>
+                                {% endif %}
+                            </th>
+                            <td class="text-end">
+                                {% if cart.totalShipping <= 0 %}
+                                    <span class="free-shipping-text">
+                                        FREE
+                                    </span>
+                                {% else %}
+                                    +${{ cart.totalShipping | number_format(2) }}
+                                {% endif %}
+                            </td>
+
+                        </tr>
+                        <tr>
+                            <th>Total</th>
+                            <td class="total-amount"><strong>${{ cart.totalAmount | number_format(2) }}</strong></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    {% if cart.totalAmount > 0 %}
+                        {% include 'common/_express_payment.html.twig' %}
+                    {% endif %}
+
+                    <a href="{{ url('checkout', {cartId: cartId}) }}" class="btn btn-checkout btn-block mt-4">Checkout</a>
+                    <a href="{{ url('shop_now') }}" class="btn btn-ysp-continue-shopping mt-3 btn-block mx-auto"> Continue Shopping </a>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="general-info">
+                    <div class="text-center mt-1 mb-3">
+                        {% if app.user %}
+                            <a href="{{ path('my_account') }}" target="_blank">
+                                My Account
+                            </a>
+                        {% else %}
+                            <a href="{{ path('login') }}" target="_blank">
+                                Login to My Account
+                            </a>
+                        {% endif %}
+                    </div>
+                    {{ include('common/_includePurchaseModel.html.twig') }}
+                </div>
+                <p class="fw-bold text-center mb-2">Our expert designers carefully review each order. We will contact you if any questions.</p>
+            </div>
+        </div>
+    </div>
+</div>

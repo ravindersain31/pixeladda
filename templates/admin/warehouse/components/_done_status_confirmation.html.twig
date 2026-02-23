@@ -1,0 +1,100 @@
+<div class="modal fade" id="done_status_confirmation_{{ order.orderId }}" tabindex="-1"
+     aria-labelledby="push_to_se_{{ order.orderId }}_from_done_label" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header p-2">
+                <h5 class="modal-title h-auto" id="push_to_se_{{ order.orderId }}_from_done_label">
+                    {% if order.isRequestPickup() %}
+                        Pickup Order
+                    {% elseif order.isIsFreightRequired() %}
+                        Freight Order
+                    {% endif %}
+                    <a href="{{ url('admin_order_overview', {orderId: order.orderId}) }}"
+                       target="_blank">
+                        #{{ order.orderId }}
+                    </a>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-start p-0">
+                <table class="table table-striped mb-0">
+                    <tbody>
+                    <tr>
+                        <th>Order Status</th>
+                        <td>{{ enum.orderStatusLabel(order.status) }}</td>
+                    </tr>
+                    <tr>
+                        <th>Payment Status</th>
+                        <td>{{ enum.paymentStatusLabel(order.paymentStatus) }}</td>
+                    </tr>
+                    <tr>
+                        <th>Proof Approved</th>
+                        <td>
+                            {% if order.approvedProof %}
+                                <span class="badge bg-success">Yes</span>
+                                <a href="{{ vich_s3.asset(order.approvedProofFile, 'fileObject') }}"
+                                   class="small" target="_blank">
+                                    <span class="badge bg-light text-dark">
+                                        <i class="fa fa-external-link"></i> View
+                                    </span>
+                                </a>
+                            {% else %}
+                                <span class="badge bg-warning">No</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="p-2">
+                    {% if order.isRequestPickup() %}
+                        <div class="alert alert-warning p-2 text-wrap mb-1">
+                            Are you sure you want to mark this order as picked up? After marking as Pickup Done, the
+                            order status will be updated to <b>Completed</b>, the Order Queue status will be changed to
+                            <b>Done</b>, and the order will be moved to <b>Completed Orders</b>.
+                            {# If you need to push this order to Shippingeasy, use the <b>Push to SE</b> option. #}
+                        </div>
+                    {% elseif order.isIsFreightRequired() %}
+                        <div class="alert alert-warning p-2 text-wrap mb-1">
+                            Are you sure you want to mark this order as Freight Shipping Done? After marking as Freight
+                            Shipping Done, the
+                            order status will be updated to <b>Completed</b>, the Order Queue status will be changed to
+                            <b>Done</b>, and the order will be moved to <b>Completed Orders</b>.
+                        </div>
+                    {% else %}
+                        <div class="alert alert-warning p-2 text-wrap mb-1">
+                            Are you sure you want to mark this order as Done?
+                            Order Queue status will be changed to
+                            <b>Done</b>{% if order.status in ['SENT_FOR_PRODUCTION'] %}, and it will be moved in
+                            <b>Ready to Ship</b> for further shipment process{% endif %}.
+                        </div>
+                    {% endif %}
+                    {% if order.isRequestPickup() %}
+                        <a href="{{ url('admin_order_pickup_done', { orderId: order.orderId, printer: warehouseOrder.printerName, from: 'queue' }) }}"
+                           class="btn btn-primary btn-sm">
+                            Yes, I confirm, Pickup Done
+                        </a>
+                    {% elseif order.isIsFreightRequired() %}
+                        <a href="{{ url('admin_order_freight_done', { orderId: order.orderId, printer: warehouseOrder.printerName, from: 'queue' }) }}"
+                           class="btn btn-primary btn-sm">
+                            Yes, I confirm, Freight Shipping Done
+                        </a>
+                    {% else %}
+                        <a href="{{ url('admin_warehouse_queue_mark_done_and_ready_to_ship', { wid: warehouseOrder.id }) }}"
+                           class="btn btn-primary btn-sm">
+                            Yes, Mark Done & Ready to Ship
+                        </a>
+                    {% endif %}
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">
+                        Cancel
+                    </button>
+                    {% if not order.isRequestPickup() and not order.isIsFreightRequired() %}
+                        <a href="{{ url('admin_warehouse_queue_mark_done', { wid: warehouseOrder.id }) }}"
+                           class="btn btn-link btn-sm px-0">
+                            Mark Done Only
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

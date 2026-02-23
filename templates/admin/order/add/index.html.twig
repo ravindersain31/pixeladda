@@ -1,0 +1,20 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Add Manual Order{% endblock %}
+{% block pageTitle %}
+    <div class="page-header-icon">
+        <i class="fa-solid fa-plus"></i>
+    </div>
+    Add Manual Order
+{% endblock %}
+{% block postJavascripts %}
+    <script defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyApxy-puRWe0-tyK_eH-1NjadBfucNNmks&loading=async&libraries=places"></script>
+{% endblock %}
+
+{% block body %}
+    <div class="card shadow-none">
+        <div class="card-body p-3">
+            {{ include('admin/order/add/_form.html.twig') }}
+        </div>
+    </div>
+{% endblock %}

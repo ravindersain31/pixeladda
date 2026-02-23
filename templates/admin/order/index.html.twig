@@ -1,0 +1,47 @@
+{% extends 'admin/base.html.twig' %}
+{% set ProductEnum = enum('App\\Enum\\ProductEnum') %}
+{% block title %}Orders{% endblock %}
+{% block pageTitle %}
+    <div class="page-header-icon">
+        <i class="fa-solid fa-cubes"></i>
+    </div>
+    {{ statusLabel }} Orders
+{% endblock %}
+
+{% block body %}
+    {% if isFilterFormSubmitted %}
+        Showing results for:
+        <div class="small">
+            {% if filterForm.search.vars.value %}
+                <span><b>Search: </b>{{ filterForm.search.vars.value | base64_decode }}</span>
+            {% endif %}
+            {% if filterForm.fromDate.vars.value and filterForm.endDate.vars.value %}
+                <span><b>Date: </b>{{ filterForm.fromDate.vars.value }} to {{ filterForm.endDate.vars.value }}</span>
+            {% endif %}
+            {% if allowOrderFilterPaymentOption %}
+                {% if filterForm.status.vars.value %}
+                    <span><b>Status: </b>{{ filterForm.status.vars.value }}</span>
+                {% endif %}
+                {% if filterForm.paymentStatus.vars.value %}
+                    <span><b>Payment Status: </b>{{ filterForm.paymentStatus.vars.value }}</span>
+                {% endif %}
+                {% if filterForm.paymentMethod.vars.value %}
+                    <span><b>Payment Method: </b>{{ filterForm.paymentMethod.vars.value }}</span>
+                {% endif %}
+            {% endif %}
+        </div>
+    {% endif %}
+    <div class="card card-header-actions mx-auto shadow-none">
+        <div class="card-header">
+            {{ statusLabel }} Orders
+            <div class="card-header-actions">
+                {{ include('admin/order/_filter_order.html.twig') }}
+            </div>
+        </div>
+        {{ include('admin/order/_order_table.html.twig') }}
+    </div>
+
+    <div class="mt-4">
+        {{ knp_pagination_render(orders) }}
+    </div>
+{% endblock %}

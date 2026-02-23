@@ -1,0 +1,33 @@
+<div {{ attributes }}>
+    {{ form_start(form, {
+        attr: {
+            'novalidate': true,
+            'data-action': 'live#action:prevent',
+            'data-live-action-param': 'saveList'
+        }
+    }) }}
+    <div class="card ms-2 mb-3 shadow-none">
+        <div class="card-body p-2">
+            {% for formList in form.lists %}
+                <div class="row flex-row-reverse">
+                    <div class="col-2 p-0 mt-2 align-content-center">{{ form_widget(formList.vars.button_delete) }}</div>
+                    <div class="col-10">
+                        {{ form_row(formList) }}
+                    </div>
+                </div>
+            {% endfor %}
+            {{ form_widget(form.lists.vars.button_add, {label: '+ Add Ship By List', attr: {class: 'btn btn-outline-secondary btn-sm'}}) }}
+        </div>
+    </div>
+
+    {% if form.lists | length > 0 %}
+        <div class="form-group ms-2 my-2 form-group-submit text-start">
+            <button type="submit" data-loading="action(saveList)|addAttribute(disabled)" class="btn btn-primary">
+                <span data-loading="action(saveList)|show" style="display: none">Creating Ship By List...</span>
+                <span data-loading="action(saveList)|hide" style="display: block">Create Ship By List</span>
+            </button>
+        </div>
+    {% endif %}
+
+    {{ form_end(form) }}
+</div>

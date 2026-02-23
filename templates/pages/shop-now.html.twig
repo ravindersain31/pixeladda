@@ -1,0 +1,90 @@
+{% extends 'base.html.twig' %}
+
+{% set title = metaData.title ?: metaData.pageTitle ~ ' - ' ~ storeInfo.storeTitle %}
+
+{% block title %}{{ title }}{% endblock %}
+{% block metaData %}
+    {% set pageUrl = url('shop_now') %}
+    {% set pageImageUrl = storeInfo.isPromoStore
+        ? 'https://static.yardsignplus.com/storage/promo-store/All-Product-Banner-Desktop.webp' 
+        : 'https://static.yardsignplus.com/shop-now_20221226-273571a0-84e3-11ed-b264-e3cb614aba45.jpg'
+    %}
+
+    {% include 'common/_page_meta.html.twig' with {
+        title: title,
+        metaData: metaData,
+        pageUrl: pageUrl,
+        pageImageUrl: pageImageUrl,
+        storeInfo: storeInfo
+    } %}
+{% endblock %}
+{% block body %}
+
+{{ include('common/common_mobile_bar.html.twig',{commonBarText: 'Order Online Or Call Now',commonBarTele: '+1-877-958-1499'}) }}
+    {{ include('common/_banner.html.twig', {
+        'desktopImg': storeInfo.isPromoStore ? 'https://static.yardsignplus.com/storage/promo-store/All-Product-Banner-Desktop.webp' : 'https://static.yardsignplus.com/shop-now_20221226-273571a0-84e3-11ed-b264-e3cb614aba45.jpg',
+        'desktopAlt': 'YSP Desktop FAQs Banner',
+        'mobileImg': storeInfo.isPromoStore ? 'https://static.yardsignplus.com/storage/promo-store/All-Product-Banner-Mobile.webp' : 'https://static.yardsignplus.com/shop-now_20230104-9c9f8750-8c29-11ed-b2d1-8d0f95879d7a.png',
+        'mobileAlt': 'YSP Mobile FAQs Banner'
+    }) }}
+    {{ include('common/highlights.html.twig') }}
+    {{ include('common/breadcrumb.html.twig', { breadcrumbs: [
+        { name: 'Shop Now', active: true }
+    ]}) }}
+    
+    <div class="page-content container-fluid">
+        <section class="common-sec-horizontal-pad ysp-custom-gallery-wrapper">
+            <div class="row ysp-custom-gallery-grid-wrapper product-content py-md-4 py-1 shop-now">
+                <div class="col-md-1"></div>
+                <div class="col-md-10">
+                    <div class="row">
+                        {% set priorityCategories = [''] %}
+
+                        {% set sortedPriorityItems = priorityCategories
+                            |map(name => allCategories
+                                |filter(c => c.name == name and c.thumbnail is not null)
+                                |first
+                            )
+                            |filter(item => item is not null and item != false)
+                        %}
+
+                        {% set otherItems = allCategories
+                            |filter(c => c.name not in priorityCategories and c.thumbnail is not null)
+                        %}
+
+                        {% set allItems = sortedPriorityItems|merge(otherItems) %}
+
+                        {% for category in allItems %}
+                            {% set categoryImage = storeInfo.isPromoStore ? category.promoThumbnail : category.thumbnail %}
+                            {% if categoryImage %}
+                                <div class="col-6 col-md-4 col-xl-3 product-item position-relative">
+                                    <a href="{{ url('category_shop', {'c': category.slug})}}" class="card home-page-card rounded-top img-wrapper">
+                                        <img  src="{{ categoryImage }}" alt="Custom Outdoor Yard Signs Multiple Sizes Real Home" class="card-img-top img-fluid">
+                                        <div class="text-overlay">
+                                            {% if category.slug == 'big-head-cutouts' %}
+                                                BIG HEADS
+                                            {% else %}
+                                                {{ category.name }}
+                                            {% endif %}
+                                        </div>
+                                    </a>
+                                    {% if category.name in priorityCategories %}
+                                        <div class="custom-ribbon ribbon-24x18 green" style="top: 5px;">
+                                            New
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    <div class="text-center view-all-product">
+                        <a href="{{ url('category_shop',{c: allCategoriesCommaSeparated}) }}" class="btn btn-ysp-outline">
+                            View All Yard Sign Products
+                        </a>
+                    </div>
+                </div>
+                <div class="col-md-1"></div>
+            </div>
+        </section>
+    </div>
+{% endblock %}

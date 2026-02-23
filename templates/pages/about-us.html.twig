@@ -1,0 +1,97 @@
+{% extends 'base.html.twig' %}
+
+{% set title = metaData.title ?: metaData.pageTitle ~ ' - ' ~ storeInfo.storeTitle %}
+
+{% block title %}{{ title }}{% endblock %}
+{% block metaData %}
+    {% set pageUrl = url('about_us') %}
+    {% set pageImageUrl = storeInfo.isPromoStore
+        ? 'https://static.yardsignplus.com/storage/promo-store/About-Banner-Mobile.webp'
+        : 'https://static.yardsignplus.com/about-us_20230104-867ee7b0-8c29-11ed-89cb-152b12637baa.png'
+    %}
+
+    {% include 'common/_page_meta.html.twig' with {
+        title: title,
+        metaData: metaData,
+        pageUrl: pageUrl,
+        pageImageUrl: pageImageUrl,
+        storeInfo: storeInfo
+    } %}
+{% endblock %}
+{% block body %}
+{{ include('common/common_mobile_bar.html.twig',{commonBarText: 'Order Online Or Call Now',commonBarTele: '+1-877-958-1499'}) }}
+    <div class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <picture>
+                    <source srcset="{{ storeInfo.isPromoStore ? 'https://static.yardsignplus.com/storage/promo-store/About-Banner-Mobile.webp' : 'https://static.yardsignplus.com/about-us_20230104-867ee7b0-8c29-11ed-89cb-152b12637baa.png'}}"
+                            media="(max-width: 767px)">
+                    <img fetchpriority="high" width="1905" height="338" class="d-block w-100 h-auto"
+                         src="{{ storeInfo.isPromoStore ? 'https://static.yardsignplus.com/storage/promo-store/About-Banner-Destop.webp' : 'https://static.yardsignplus.com/about-us_20221226-1161bed0-84e3-11ed-8b18-c3009da85bdf.jpg' }}"
+                         alt="YSP Contact Banner">
+                </picture>
+            </div>
+        </div>
+    </div>
+    {{ include('common/highlights.html.twig') }}
+    {{ include('common/breadcrumb.html.twig', { breadcrumbs: [
+        { name: 'About Us', active: true }
+    ]}) }}
+    <div class="page-content container-fluid">
+        <p>
+            We are the leading provider in custom yard signs. Our goal is helping you create easy and affordable signs.
+            We provide the best quality, customer service, and long lasting signs for every need. All of our signs are
+            created in the USA to ensure you have the confidence that they will be designed with care and delivered on
+            time. Our high quality signs always include vibrant colors, durable material, and attention to detail to
+            meet your needs. Our state-of-the-art production facility comprises modern technology to produce signs
+            lightning fast and with laser precision. Our customer service strives for 100% satisfaction with every
+            order.
+        </p>
+        <p>
+            We provide custom yard signs to individuals, groups, schools, organizations, and companies of all sizes. We
+            strive to save money and time with our most affordable, highest quality products in the industry. We are
+            committed to offer custom signs of all designs, including full customizations at the most affordable prices.
+        </p>
+        <p>
+            Design personalized, custom signs for every occasion. We have everything you need for your next event. We
+            provide custom signs with no minimum order requirements or tax. There are no setup or hidden fees. We offer
+            enormous bulk quantity discounts on all products. We have designers available that can create unique
+            templates within the hour. We also have a sales and support team available 24 hours a day, 7 days a week to
+            assist with your needs.
+        </p>
+        <p>
+            We also allow you to design your custom signs exactly how you would like! We offer a broad range of
+            customization options including but not limited to corrugated plastic, multiple sizes, grommets, and wire
+            stakes. We ensure that our printing is nothing short of top quality. Through our customization process, you
+            can turn any design into vibrant, attention-grabbing sensations. Our in-house graphic design and production
+            teams will offer you exceptional service.
+        </p>
+    </div>
+    <section class="common-sec-horizontal-pad ysp-quality-use-wrapper ysp-bg-primary pt-3 pt-sm-4 pb-3 pb-sm-4 mb-3">
+        <div class="row">
+            <div class="col-md-12">
+                <p>WE ONLY USE THE HIGHEST QUALITY MATERIALS AND CUTTING EDGE TECHNOLOGY</p>
+            </div>
+        </div>
+    </section>
+    <section class="common-sec-horizontal-pad ysp-quality-images-wrapper mb-sm-4 pb-4 d-flex justify-content-center align-items-center">
+        <div class="row w-100">
+            <div class="col-md-4 mb-md-0 mb-3">
+                <div class="ysp-common-quality-image">
+                    <img src="https://static.yardsignplus.com/quality_1.png" alt='image 1' />
+                </div>
+            </div>
+            <div class="col-md-4 mb-md-0 mb-3">
+                <div class="ysp-common-quality-image">
+                    <img src="https://static.yardsignplus.com/quality_2.png" alt="image 2" />
+                </div>
+            </div>
+            <div class="col-md-4 mb-md-0">
+                <div class="ysp-common-quality-image">
+                    <img src="https://static.yardsignplus.com/quality_3.png" alt='image 3' />
+                </div>
+            </div>
+        </div>
+    </section>
+    {{ include('common/footer_top.html.twig') }}
+{% endblock %}

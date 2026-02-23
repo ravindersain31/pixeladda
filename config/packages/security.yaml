@@ -1,0 +1,71 @@
+security:
+    # https://symfony.com/doc/current/security.html#registering-the-user-hashing-passwords
+    password_hashers:
+        Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
+    # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
+    providers:
+        admin_user_provider:
+            entity:
+                class: App\Entity\AdminUser
+                property: username
+        app_user_provider:
+            entity:
+                class: App\Entity\AppUser
+                property: username
+    firewalls:
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+        admin:
+            lazy: true
+            provider: admin_user_provider
+            host: '%env(APP_ADMIN_HOST)%'
+            custom_authenticator:
+                - App\Security\AdminAuthenticator
+            remember_me:
+                secret: '%kernel.secret%' # required
+                lifetime: 604800 # 1 week in seconds
+                signature_properties: [ 'password', 'updatedAt' ]
+            logout:
+                path: admin_logout
+            switch_user: { role: ROLE_SUPER_ADMIN, parameter: _login_as, target_route: admin_ysp }
+        main:
+            lazy: true
+            provider: app_user_provider
+            host: '%env(APP_USER_HOSTS)%'
+            custom_authenticator:
+                - App\Security\AppUserAuthenticator
+            remember_me:
+                secret: '%kernel.secret%' # required
+                lifetime: 604800 # 1 week in seconds
+                signature_properties: [ 'password', 'updatedAt' ]
+            logout:
+                path: app_logout
+                target: login
+
+            # activate different ways to authenticate
+            # https://symfony.com/doc/current/security.html#the-firewall
+
+            # https://symfony.com/doc/current/security/impersonating_user.html
+            # switch_user: true
+
+    # Easy way to control access for large sections of your site
+    # Note: Only the *first* access control that matches will be used
+    access_control:
+         - { path: ^/(login|forgot-password|reset-password|robots.txt), roles: PUBLIC_ACCESS, host: '%env(APP_ADMIN_HOST)%', requires_channel: '%env(APP_PROTOCOL)%' }
+         - { path: ^/, roles: ROLE_ADMIN, host: '%env(APP_ADMIN_HOST)%', requires_channel: '%env(APP_PROTOCOL)%' }
+         - { path: ^/customer/, roles: 'ROLE_USER', host: '%env(APP_USER_HOST)%', requires_channel: '%env(APP_PROTOCOL)%' }
+        # - { path: ^/profile, roles: ROLE_USER }
+
+when@test:
+    security:
+        password_hashers:
+            # By default, password hashers are resource intensive and take time. This is
+            # important to generate secure password hashes. In tests however, secure hashes
+            # are not important, waste resources and increase test times. The following
+            # reduces the work factor to the lowest possible values.
+            Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface:
+                algorithm: auto
+                cost: 4 # Lowest possible value for bcrypt
+                time_cost: 3 # Lowest possible value for argon
+                memory_cost: 10 # Lowest possible value for argon

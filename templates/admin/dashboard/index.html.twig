@@ -1,0 +1,83 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Dashboard{% endblock %}
+{% block pageTitle %}
+<div>
+    <div>
+        <div class="page-header-icon">
+            <i class="fas fa-dashboard"></i>
+        </div>
+        Dashboard
+    </div>
+    <p class="m-0 mt-1 small">
+        <span class="text-blue">{{ "now"|date("l") }}</span>
+        {{ "now"|date("M d, Y h:i A") }}
+    </p>
+    </div>
+{% endblock %}
+
+{% block body %}
+    <div class="card shadow-sm border-0 mt-4">
+        <div class="card-body py-4 px-5">
+            {% set hour = "now"|date("H") %}
+            {% if hour < 12 %}
+                {% set greeting = 'Good Morning' %}
+            {% elseif hour < 17 %}
+                {% set greeting = 'Good Afternoon' %}
+            {% else %}
+                {% set greeting = 'Good Evening' %}
+            {% endif %}
+
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h4 class="mb-1 text-dark">Welcome back, {{ app.user.name }}! 👋</h4>
+                    <p class="text-muted mb-0">Here's what’s happening today...</p>
+                </div>
+                <div class="text-end">
+                    <h5 class="mb-1 text-success">{{ greeting }}, {{ app.user.name }}!</h5>
+                    <small class="text-muted">Hope you're having a great day!</small>
+                </div>
+            </div>
+
+            <!-- Optional: Add additional dashboard widgets/cards here -->
+            <hr class="my-4">
+            <div class="row">
+                <!-- Example card -->
+
+                <!-- Repeat more cards as needed -->
+            </div>
+        </div>
+    </div>
+    {% set allowedRoles = ['ROLE_ADMIN', 'ROLE_SUPER_ADMIN', 'ROLE_CSR'] %}
+    {% if app.user.roles|filter(r => r in allowedRoles)|length > 0 %}
+        <div class="card mt-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span>CSR Discount Codes</span>
+            </div>
+            <div class="card-body">
+                <p class="mb-3">Share the following codes with customers according to the noted guidelines.</p>
+                <div class="row">
+                    {% for sectionTitle, items in couponSections %}
+                        <div class="col-md-6">
+                            <h6 class="text-uppercase text-primary small mb-2">{{ sectionTitle }}</h6>
+
+                            <ul class="mb-3">
+                                {% for item in items %}
+                                    <li>
+                                        <strong>{{ item.code }}</strong>: 
+                                        {{ item.discount }}% off
+                                        {% if item.minQty %}
+                                            , {{ item.minQty }} minimum order quantity
+                                        {% else %}
+                                            , no minimum order quantity
+                                        {% endif %}
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

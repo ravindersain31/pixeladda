@@ -1,0 +1,14 @@
+{% if pricing is not empty %}
+    {% include 'common/_price_table.html.twig' with {
+        data: pricing
+    } %}
+{% else %}
+    <div class="alert alert-info">No pricing data available for this product.</div>
+{% endif %}
+
+{% if framePricing is not empty %}
+    <h4 class="mb-2 text-secondary mt-4 text-center text-md-start">Frame Pricing</h4>
+    {% include 'common/_price_table.html.twig' with {
+        data: framePricing
+    } %}
+{% endif %}

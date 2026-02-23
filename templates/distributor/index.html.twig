@@ -1,0 +1,433 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Become an Authorized Distributor
+{% endblock %}
+
+{% block body %}
+
+	<section class="header-design-one container-fluid header-cart-page" style="background-color: var(--primary-color)">
+		<div class="row">
+			<div class="col-md-12">
+				<div class="d-flex justify-content-center align-items-center">
+					<h2 class="heading" style="color: #fff; font-weight: 700; padding: 12px !important; text-shadow: -4px 4px 4px #000; font-style: italic; text-transform: uppercase;">
+						BECOME AN AUTHORIZED DISTRIBUTOR
+					</h2>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<div class="container" id="distributor">
+		<h1 class="main-title text-center">
+			Join Our Distributor Program at Yard Sign Plus
+		</h1>
+
+		<p class="intro-text">
+			We are looking for passionate and driven individuals or businesses to partner with us as distributors
+            of our high-quality yard signs. As a distributor, you'll have the opportunity to sell our products
+            in your region, benefit from competitive pricing, and receive marketing support to help grow your sales.
+		</p>
+
+		<h2 class="section-heading">Why Partner with Us?</h2>
+
+		<div class="row g-4 text-center">
+
+			<div class="col-md-3">
+				<div class="partner-card">
+					<img src="https://static.yardsignplus.com/assets/yard-sale-icon-6954b9fd22745518259676.webp">
+					<h5>Exclusive Products</h5>
+					<p>High-quality, performance-driven yard signs trusted by businesses.</p>
+				</div>
+			</div>
+
+			<div class="col-md-3">
+				<div class="partner-card">
+					<img src="https://static.yardsignplus.com/assets/competitive-pricing-icon-6954b8b5b2e27402864090.webp">
+					<h5>Competitive Pricing</h5>
+					<p>Attractive wholesale prices to help you maximize profits.</p>
+				</div>
+			</div>
+
+			<div class="col-md-3">
+				<div class="partner-card">
+					<img src="https://static.yardsignplus.com/assets/flexible-terms-icon-6954b8b612335922391365.webp">
+					<h5>Flexible Terms</h5>
+					<p>
+						We offer flexible terms tailored to your business needs,
+                        including volume discounts and payment plans.
+					</p>
+				</div>
+			</div>
+
+			<div class="col-md-3">
+				<div class="partner-card">
+					<img src="https://static.yardsignplus.com/assets/comprehensive-support-icon-6954b8b46ddb5796575843.webp">
+					<h5>Comprehensive Support</h5>
+					<p>
+						Access to training, marketing materials,
+                        and dedicated support from our team.
+					</p>
+				</div>
+			</div>
+
+		</div>
+
+		<h2 class="section-heading">What We Require from Our Distributors</h2>
+
+		<div class="requirements">
+			<p>
+				<span>Business License and Legal Entity</span>
+				– A valid business registration.</p>
+			<p>
+				<span>Sales and Marketing Experience</span>
+				– A proven track record in sales, especially in sports or apparel.</p>
+			<p>
+				<span>Financial Capacity</span>
+				– Ability to place and fulfill orders, with payment made via credit or wire transfer.</p>
+			<p>
+				<span>Commitment</span>
+				– A commitment to promoting and selling our products in your designated territory.</p>
+		</div>
+
+		<h2 class="section-heading">How to Get Started</h2>
+
+		<div class="row g-4 mb-1">
+
+			<div class="col-md-4">
+				<div class="step-box">
+					<div class="step-header">
+						<div class="step-number">STEP 1</div>
+						<div class="step-title">Fill Out the Distributor Form</div>
+					</div>
+					<div class="step-body">
+						Fill out the distributor application form below with your business details.
+					</div>
+				</div>
+			</div>
+
+			<div class="col-md-4">
+				<div class="step-box">
+					<div class="step-header">
+						<div class="step-number">STEP 2</div>
+						<div class="step-title">Application Review</div>
+					</div>
+					<div class="step-body">
+						Submit the form and any necessary supporting documentation.
+					</div>
+				</div>
+			</div>
+
+			<div class="col-md-4">
+				<div class="step-box">
+					<div class="step-header">
+						<div class="step-number">STEP 3</div>
+						<div class="step-title">Onboarding Process</div>
+					</div>
+					<div class="step-body">
+						Our team will review your application and get in touch with you shortly.
+					</div>
+				</div>
+			</div>
+
+		</div>
+		{{ include('common/flash.html.twig') }}
+
+		<h2 class="form-section-title">Distributor Application Form</h2>
+
+		{{ form_start(form, {
+            action: path('distributor_form'),
+            attr: {
+                class: 'distributor-form',
+                autocomplete: 'off'
+            }
+        }) }}
+
+		<div
+			class="row g-3">
+
+			<div class="col-md-6">
+				<div class="form-group">
+					{{ form_label(form.companyName) }}
+					{{ form_widget(form.companyName, {'attr': {'class': 'form-control', 'tabindex': 1}}) }}
+					<div class="error-placeholder">{{ form_errors(form.companyName) }}</div>
+				</div>
+			</div>
+
+			<div class="col-md-6">
+				<div class="form-group">
+					<label>Business Type</label>
+					{{ form_widget(form.businessType, {'attr': {'class': 'form-select', 'tabindex': 2}}) }}
+					<div class="error-placeholder">{{ form_errors(form.businessType) }}</div>
+				</div>
+			</div>
+
+			<div class="col-md-6">
+				<div class="form-group">
+					<label>Phone Number</label>
+					{{ form_widget(form.phoneNumber, {'attr': {'class': 'form-control', 'tabindex': 3}}) }}
+					<div class="error-placeholder">{{ form_errors(form.phoneNumber) }}</div>
+				</div>
+			</div>
+
+			<div class="col-md-6">
+				<div class="form-group">
+					<label>Email Address</label>
+					{{ form_widget(form.email, {'attr': {'class': 'form-control', 'tabindex': 4}}) }}
+					<div class="error-placeholder">{{ form_errors(form.email) }}</div>
+				</div>
+			</div>
+
+			<div class="col-md-6">
+				<div class="form-group">
+					<label>City</label>
+					{{ form_widget(form.city, {'attr': {'class': 'form-control', 'tabindex': 5}}) }}
+					<div class="error-placeholder">{{ form_errors(form.city) }}</div>
+				</div>
+			</div>
+
+			{% if form.state is defined %}
+				<div class="col-md-6">
+					<div class="form-group">
+						<label>State</label>
+						{{ form_widget(form.state, {'attr': {'class': 'form-select', 'tabindex': 6}}) }}
+						<div class="error-placeholder">{{ form_errors(form.state) }}</div>
+					</div>
+				</div>
+			{% endif %}
+
+			{% if form.country is defined %}
+				<div class="col-md-6">
+					<div class="form-group">
+						<label>Country</label>
+						{{ form_widget(form.country, {'attr': {'class': 'form-select', 'tabindex': 7}}) }}
+						<div class="error-placeholder">{{ form_errors(form.country) }}</div>
+					</div>
+				</div>
+			{% endif %}
+
+			<div class="col-md-6">
+				<div class="form-group">
+					<label>Zip Code</label>
+					{{ form_widget(form.zipCode, {'attr': {'class': 'form-control', 'tabindex': 8}}) }}
+					<div class="error-placeholder">{{ form_errors(form.zipCode) }}</div>
+				</div>
+			</div>
+
+			<div class="col-md-6">
+				<div class="form-group">
+					<label>Business Website</label>
+					{{ form_widget(form.businessWebsite, {'attr': {'class': 'form-control', 'tabindex': 9}}) }}
+					<div class="error-placeholder">{{ form_errors(form.businessWebsite) }}</div>
+				</div>
+			</div>
+
+			<div class="col-md-6">
+				<div class="form-group">
+					<label>Expected Monthly Order Volume</label>
+					{{ form_widget(form.expectedMonthlyOrderVolume, {'attr': {'class': 'form-control', 'tabindex': 10}}) }}
+					<div class="error-placeholder">{{ form_errors(form.expectedMonthlyOrderVolume) }}</div>
+				</div>
+			</div>
+
+			<div class="col-md-6">
+				<div class="form-group">
+					<label>Sales Experience</label>
+					{{ form_widget(form.salesExperience, {'attr': {'class': 'form-control', 'tabindex': 11}}) }}
+					<div class="error-placeholder">{{ form_errors(form.salesExperience) }}</div>
+				</div>
+			</div>
+
+			<div class="col-md-6">
+				<div class="form-group">
+					<label>Additional Comments or Questions</label>
+					{{ form_widget(form.additionalComments, {'attr': {'class': 'form-control', 'tabindex': 12}}) }}
+					<div class="error-placeholder">{{ form_errors(form.additionalComments) }}</div>
+				</div>
+			</div>
+
+		</div>
+
+		{% if form.recaptcha is defined %}
+			<div class="col-12 d-flex justify-content-center mt-3">
+				<div class="form-group recaptcha-wrapper">
+					{{ form_row(form.recaptcha, {'attr': {'tabindex': 13}}) }}
+				</div>
+			</div>
+		{% endif %}
+
+		<div class="form-group mt-3 form-group-submit text-center">
+			<button type="submit" class="btn">Submit</button>
+		</div>
+
+		{{ form_end(form) }}
+
+
+	</div>
+
+{% endblock %}
+{% block footerJavascripts %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+
+        const form = $('.distributor-form');
+        $.validator.addMethod("strictEmail", function (value, element) {
+            return this.optional(element) || /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value);
+        }, "Please enter a valid email address");
+
+
+        form.validate({
+            ignore: [],
+            errorPlacement: function (error, element) {
+                var placement = element.closest('.form-group').find('.error-placeholder');
+                if (placement.length) {
+                    $(placement).html(error);
+                } else {
+                    error.insertAfter(element);
+                }
+            },
+            rules: {
+                "distributor[companyName]": {
+                    required: true,
+                    minlength: 2
+                },
+                "distributor[phoneNumber]": {
+                    required: true,
+                    minlength: 10
+                },
+                "distributor[email]": {
+                    required: true,
+                    strictEmail: true
+                },
+                "distributor[city]": {
+                    required: true,
+                    minlength: 2,
+                    maxlength: 50
+                },
+                "distributor[country]": {
+                    required: true
+                },
+                "distributor[state]": {
+                    required: true
+                },
+                "distributor[zipCode]": {
+                    required: true,
+                    minlength: 5,
+                    maxlength: 10,
+                },
+                "distributor[businessType]": {
+                    required: true
+                },
+                "distributor[businessWebsite]": {
+                    required: false,
+                    url: true
+                },
+                "distributor[recaptcha][token]": {
+                    required: {
+                    depends: function () {
+                        return $('.recaptcha-wrapper:visible').length > 0;
+                    }
+                }
+                },
+                "distributor[salesExperience]": {
+                    required: false,
+                    maxlength: 500
+                },
+                "distributor[additionalComments]": {
+                    required: false,
+                    maxlength: 500
+                }
+            },
+            messages: {
+                "distributor[companyName]": "Company name is required.",
+                "distributor[phoneNumber]": {
+                    required: "Phone number is required.",
+                    minlength: "Phone number must be at least 10 digits"
+                },
+                "distributor[email]": "Please enter a valid email address.",
+                "distributor[city]": {
+                    required: "City is required.",
+                    minlength: "City must be at least 2 characters.",
+                    maxlength: "City cannot exceed 50 characters."
+                },
+                "distributor[country]": "Country is required.",
+                "distributor[state]": "State is required.",
+                "distributor[zipCode]": {
+                    required: "Zip code is required.",
+                    minlength: "Zip code must be at least 5 digits.",
+                    maxlength: "Zip code cannot exceed 10 digits."
+                },
+                "distributor[businessType]": "Select business type.",
+                "distributor[businessWebsite]": {
+                    required: "Business website is required.",
+                    url: "Please enter a valid URL (e.g., https://example.com)"
+                },
+                'distributor[recaptcha][token]': {
+                    required: 'Please verify you are not a robot.'
+                },
+
+                "distributor[salesExperience]": {
+                    maxlength: "Sales experience cannot exceed 500 characters."
+                },
+
+                "distributor[additionalComments]": {
+                    maxlength: "Additional comments cannot exceed 500 characters."
+                }
+            },
+
+            submitHandler: function (formElement, event) {
+                event.preventDefault();
+
+                const $btn = $(formElement).find('button[type="submit"]');
+                $btn.prop('disabled', true).text('Processing...');
+                formElement.submit();
+
+            }
+        });
+
+
+        $('#distributor_country').on('change', function () {
+            const countryId = $(this).val();
+            const stateSelect = $('#distributor_state');
+            stateSelect.html('<option value="">-- Select State --</option>');
+            fetch (`/api/get-states/${countryId}`).then(res => res.json()).then(states => {
+                states.forEach(s => {
+                    stateSelect.append(`<option value="${s.id}">${s.name}</option>`);
+                });
+            });
+        });
+
+
+        $('input[name="distributor[phoneNumber]"]').on('input', function (e) {
+            let digits = e.target.value.replace(/\D/g, '');
+            let formatted = '';
+            if (digits.length > 0) {
+                formatted = '(' + digits.substring(0, 3);
+            }
+            if (digits.length >= 4) {
+                formatted += ') ' + digits.substring(3, 6);
+            }
+            if (digits.length >= 7) {
+                formatted += '-' + digits.substring(6, 10);
+            }
+            e.target.value = formatted;
+        });
+
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const alert = document.querySelector('.alert');
+        const error = document.querySelector('.error');
+
+        if (alert) {
+            alert.scrollIntoView({behavior: 'smooth', block: 'center'});
+        }
+        if (error) {
+            error.scrollIntoView({behavior: 'smooth', block: 'center'});
+        }
+    });
+</script>
+
+{% endblock %}

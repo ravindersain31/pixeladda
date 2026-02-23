@@ -1,0 +1,27 @@
+<nav class="main-nav-bar navbar navbar-expand-lg bg-body-tertiary desktop-only">
+    <div class="container-fluid nav-toggler-container">
+        <button aria-label="offcanvas toggler" onclick="javascript:void(0);" class="nav-link">
+            <button class="nav-link navbar-toggler gap" type="button" data-bs-toggle="offcanvas"
+                    data-bs-target="#offcanvasNavbar"
+                    aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-menu"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+                <span class="toggler-text">All</span>
+            </button>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            {% set flagCategories = [''] %}
+            <div class="navbar-nav">
+                {% for category in categoriesList %}
+                    <a class="nav-link position-relative{% if app.request.get('slug') == category.slug %} active{% endif %}" href="{{ url('category', {slug: category.slug}) }}">{{ category.name }}
+                        {% if category.name in flagCategories %}
+                            <span class="position-absolute translate-middle badge rounded-pill" style="top: 14px; right: -20px; font-size: 9px; background: #1C824C">
+                                New
+                            </span>
+                        {% endif %}
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</nav>          
+

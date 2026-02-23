@@ -1,0 +1,56 @@
+<table class="table table-bordered mb-3">
+    <tbody>
+    <tr>
+        <th>Transaction Id</th>
+        <td>{{ transaction.transactionId }}</td>
+        <th>Amount</th>
+        <td>${{ transaction.amount | number_format(2) }}</td>
+    </tr>
+    <tr>
+        <th>Date</th>
+        <td>{{ transaction.updatedAt | date('M d, Y') }}</td>
+        <th>Time</th>
+        <td>{{ transaction.updatedAt | date('H:i A') }}</td>
+    </tr>
+    <tr>
+        <th>Status</th>
+        <td>{{ transaction.status | badgePaymentStatus(true) }}</td>
+        <th>Gateway</th>
+        <td>{{ enum.paymentStatusLabel(transaction.paymentMethod) }}</td>
+    </tr>
+    <tr>
+        <th>Refunded Amount</th>
+        <td>${{ transaction.refundedAmount | number_format(2) }}</td>
+        <th>Balance Amount</th>
+        <td>${{ (transaction.amount - transaction.refundedAmount) | number_format(2) }}</td>
+    </tr>
+    {% if transaction.proofFile %}
+        <tr>
+            <th>Proof Document</th>
+            <td colspan="3">
+                {% if vich_s3.asset(transaction.proofFile, 'fileObject') %}
+                    <a href="{{ vich_s3.asset(transaction.proofFile, 'fileObject') }}" class="btn btn-sm btn-primary" target="_blank">
+                            View File
+                    </a>
+                {% endif %}
+            </td>
+        </tr>
+        <tr>
+            <th>Po Number</th>
+            <td>
+                {{ transaction.metaData.poNumber }}
+            </td>
+            <th>Payment Reference Number</th>
+            <td>
+                {{ transaction.metaData.paymentReferenceNumber }}
+            </td>
+        </tr>
+        <tr>
+            <th>Other Details</th>
+            <td colspan="3">
+                {{ transaction.comment }}
+            </td>
+        </tr>
+    {% endif %}
+    </tbody>
+</table>

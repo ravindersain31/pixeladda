@@ -1,0 +1,93 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Purchase Order - {{storeInfo.storeTitle}}{% endblock %}
+{% block metaData %}
+    <link rel="canonical" href="{{ url('purchase_order') }}" />
+    {% include 'common/_default_schema.html.twig' %}
+{% endblock %}
+{% block body %}
+    {{ include('common/common_mobile_bar.html.twig',{commonBarText: 'Order Online Or Call Now',commonBarTele: '+1-877-958-1499'}) }}
+    <div class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <picture>
+                    <source srcset="{{ storeInfo.isPromoStore ? 'https://static.yardsignplus.com/storage/promo-store/Purchase-Order-Banner-Mobile.webp' : 'https://static.yardsignplus.com/purchase-orders_20230104-fdcb0e60-8c29-11ed-ba64-e13be3cf48fe.png' }}"
+                            media="(max-width: 765px)">
+                    <img fetchpriority="high" width="1905" height="338" class="d-block w-100 h-auto"
+                         src="{{ storeInfo.isPromoStore ? 'https://static.yardsignplus.com/storage/promo-store/Purchase-Order-Banner-Destop.webp' : 'https://static.yardsignplus.com/purchase-order_20221224-fda59eb0-83b4-11ed-9f69-2f764913b12d.jpg' }}"
+                         alt="YSP Purchase Order Banner">
+                </picture>
+            </div>
+        </div>
+    </div>
+    {{ include('common/highlights.html.twig') }}
+    {{ include('common/breadcrumb.html.twig', { breadcrumbs: [
+        { name: 'Purchase Order', active: true }
+    ]}) }}
+    <div class="page-content container my-4 purchase-order">
+        <div class="ysp-common-text-wrapper">
+            <h5>Instructions on How to Submit Payment:</h5>
+            <p>You may pay for Purchase Orders (POs) via credit card, PayPal, or mailing us a check. If mailing a check,
+                please read below under <b>“Payment Method”</b> on how to send us a check. Please note that your order
+                will not go into production until we receive payment for the order, unless NET terms are approved.
+                Please read below under <b>“Payment Terms”</b> on how NET terms work and are approved. The delivery date
+                on the order may be subject to change based on when payment is received, or NET terms are approved (if
+                applicable).</p>
+        </div>
+        <div class="ysp-common-text-wrapper">
+            <h5>Instructions on How to Submit a Valid Purchase Order:</h5>
+            <p class="mb-3">If you are a school, government organisation, or institution please email us an official PO to <a
+                        href="mailto: {{storeInfo.storeEmail}}">{{storeInfo.storeEmail}}</a> with your order number clearly
+                written on the PO. Once we receive the PO, our Sales Management will further review your submission and
+                contact you within 48 hours on processing your order.</p>
+            <p class="mb-4">Once a digital proof has been approved (if applicable) and we receive payment for the PO, or NET terms
+                are approved (if applicable), your order will go into production.</p>
+        </div>
+        <div class="ysp-common-text-wrapper">
+            <h5>Your Purchase Order Must Contain the Following Details:</h5>
+
+            <ol>
+                <li>PO Number</li>
+                <li>Order Number (if order has already been submitted on our website)</li>
+                <li>Contact Information (email address and phone number of the person responsible for approving the
+                    proof, if applicable)
+                </li>
+                <li>Contact Information (email address and phone number of the person responsible for completing payment
+                    when due)
+                </li>
+            </ol>
+        </div>
+        <div class="ysp-common-text-wrapper">
+            <h5>Additional Information:</h5>
+            <ol class="mt-0">
+                <li class="mb-3">
+                    <b>Payment Terms:</b> All POs are required to be paid upfront before we begin processing your order.
+                    If approved by our Sales Management, we may grant NET terms. NET terms vary for each PO. For granted
+                    NET terms, payment is due within the specified NET days from the date of shipment.
+                </li>
+                <li class="mb-3">
+                    <b>Payment Method:</b> You may pay by credit card, PayPal, or check. All checks must be mailed to us
+                    at the mailing address listed below. If you are sending us a check, please ensure you have the
+                    correct respective order number and PO number mentioned on the Memo of the check. All checks must be
+                    payable to <br><b>{{storeInfo.storeName}}</b>
+                </li>
+                <li>
+                    <b>Mailing Address:</b>
+                    Mail all checks to the address listed below
+                    <br><br>
+                    <b>{{storeInfo.storeName}}</b><br>
+                    16107 Kensington Dr<br>
+                    Suite 314<br>
+                    Sugar Land, TX 77479<br><br>
+                </li>
+                <li class="mb-3">
+                    Orders that are not paid within approved NET terms (if applicable for PO) will be subject to a
+                    collection fee of 20% on top of the original order amount.
+                </li>
+                <li class="mb-3">
+                    <a href="{{ url('terms_and_conditions') }}">Click here</a> to view Terms and Conditions
+                </li>
+            </ol>
+        </div>
+    </div>
+{% endblock %}

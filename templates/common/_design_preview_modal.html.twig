@@ -1,0 +1,191 @@
+<div class="modal fade" id="designPreviewModal" tabindex="-1" aria-labelledby="designPreviewModalLabel" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable h-100">
+        <div class="modal-content shadow-lg">
+            <div class="modal-header">
+                <h5 class="modal-title" id="designPreviewModalLabel">
+                    <i class="fas fa-eye me-2"></i>Review & Approve Your Design
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <div class="alert alert-info mb-4">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Please review your design carefully.</strong> Approval triggers immediate production.
+                </div>
+
+                <div id="design-preview-items">
+                    {% for item in cart.cartItems %}
+                        {% set index = loop.index %}
+                        {% set templateSize = 
+                            item.data.isCustomSize is defined and item.data.isCustomSize 
+                            ? item.data.customSize.templateSize.width ~ 'x' ~ item.data.customSize.templateSize.height 
+                            : (item.product.label ?? item.product.name)
+                        %}
+
+                        <div class="card {{ not loop.last ? 'mb-4' : '' }} shadow-sm design-card" data-item-id="{{ item.id }}">
+                            <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                                <span class="fw-bold">Item {{ index }}</span>
+                                {% if item.data.isCustomSize is defined and item.data.isCustomSize %}
+                                    <span class="badge bg-primary fs-6">CUSTOM SIZE - {{ item.data.customSize.templateSize.width }}x{{ item.data.customSize.templateSize.height }}</span>
+                                {% else %}
+                                    <span class="badge bg-primary fs-6">{{ item.product.parent.sku }} - {{ item.product.label ?? item.product.name }}</span>
+                                {% endif %}
+                            </div>
+
+                            <div class="card-body p-sm-0">
+                                {% set hasCustomDesign = false %}
+                                {% for side, data in item.canvasData %}
+                                    {% if data.objects is defined and data.objects is not empty %}
+                                        {% for obj in data.objects %}
+                                            {% if obj['custom']['type'] is defined and obj['custom']['type'] == 'custom-design' %}
+                                                {% set hasCustomDesign = true %}
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endif %}
+                                {% endfor %}
+
+                                {% if item.canvasData['front'] is defined 
+                                    and item.canvasData['front'] == null 
+                                    and not hasCustomDesign 
+                                    and item.data.isCustom %}
+
+                                    <div class="text-center mb-3 preview-block">
+                                        {% set addons = item.data['addons'] %}
+                                        {% if addons.sides is defined and addons.sides.key == 'DOUBLE' %}
+                                            <div class="d-flex justify-content-center">
+                                                <img src="{{ item.data['image'] }}" class="preview-double-image mx-1">
+                                                <img src="{{ item.data['image'] }}" class="preview-double-image mx-1">
+                                            </div>
+                                        {% else %}
+                                            <img src="{{ item.data['image'] }}" class="img-fluid preview-single-image">
+                                        {% endif %}
+                                    </div>
+
+                                {% elseif item.canvasData['front'] is defined 
+                                    and item.canvasData['front']['version'] is defined 
+                                    and not hasCustomDesign 
+                                    and item.data.isCustom %}
+
+                                    <div class="text-center mb-3 preview-block">
+                                        {% set addons = item.data['addons'] %}
+                                        {% if addons.sides is defined and addons.sides.key == 'DOUBLE' %}
+                                            <div class="d-flex justify-content-center">
+                                                <img src="{{ item.data['image'] }}" class="preview-double-image mx-1">
+                                                <img src="{{ item.data['image'] }}" class="preview-double-image mx-1">
+                                            </div>
+                                        {% else %}
+                                            <img src="{{ item.data['image'] }}" class="img-fluid preview-single-image">
+                                        {% endif %}
+                                    </div>
+                                {% else %}
+                                    <div class="canvas-auto-wrapper" id="cart-canvas-{{ item.id }}" 
+                                        {{ react_component('CartItemSinglePreview', {
+                                            'canvasData': item.canvasData,
+                                            'itemId': item.id,
+                                            'item': {
+                                                image: item.data.image,
+                                                name: templateSize,
+                                                addons: item.dataKey('addons'),
+                                            }
+                                        }) }}>
+                                        
+                                        <div class="loading-product-editor text-center p-4">
+                                            <div class="spinner-border text-primary"></div>
+                                            <p class="mt-2">Initializing Item Preview...</p>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="modal-footer row gx-2">
+                <div class="col-12 col-sm-auto mb-2 mb-sm-0">
+                    <button type="button" class="btn btn-secondary w-100" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>Cancel
+                    </button>
+                </div>
+                <div class="col-12 col-sm-auto">
+                    <button type="button" class="btn btn-success w-100" id="approveDesignBtn">
+                        <i class="fas fa-check me-2"></i>Approve Design & Continue
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+#designPreviewModal .modal-dialog {
+    max-height: 90vh;
+}
+
+#designPreviewModal .modal-content {
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+}
+
+#designPreviewModal .modal-body {
+    overflow-y: auto !important;
+}
+
+.design-card {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.canvas-auto-wrapper {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+    position: relative;
+    background: #fafafa;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.canvas-auto-wrapper .canvas-container {
+    min-width: 100% !important;
+    min-height: 150px !important;
+}
+
+.canvas-auto-wrapper canvas {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100% !important;
+    max-height: 450px !important;
+    object-fit: contain;
+}
+
+.canvas-auto-wrapper img,
+.preview-single-image,
+.preview-double-image {
+    width: 100%;
+    height: auto;
+    max-height: 45% !important;
+    object-fit: contain;
+}
+
+.loading-product-editor {
+    min-height: 260px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+@media (max-width: 576px) {
+    #designPreviewModalLabel {
+        font-size: 1rem;
+    }
+    .canvas-auto-wrapper .canvas-container {
+        min-width: 100% !important;
+        min-height: 100% !important;
+    }
+    #designPreviewModal .alert-info {
+        font-size: 13px;
+    }
+}
+</style>

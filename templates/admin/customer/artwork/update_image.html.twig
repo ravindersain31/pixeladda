@@ -1,0 +1,38 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Update Artwork Image{% endblock %}
+
+{% block pageTitle %}
+<div class="page-header-icon">
+    <i class="fas fa-edit"></i>
+</div>
+Update Artwork Image
+{% endblock %}
+
+{% block body %}
+    <div class="alert alert-danger p-2 text-center">
+        <i class="fa fa-exclamation-triangle"></i>
+        This needs to be updated by only a person who has knowledge of artwork images. 
+        Changing these values<br> incorrectly may break your artwork references. 
+        If you are not sure, please contact your developer/manager.
+    </div>
+    {{ include('common/flash.html.twig') }}
+    <div class="card shadow-none">
+        <div class="card-body">
+            {{ form_start(form) }}
+                <div class="mb-3">
+                    {{ form_label(form.old_image_name) }}
+                    {{ form_widget(form.old_image_name, {'attr': {'class': 'form-control'}}) }}
+                </div>
+                <div class="mb-3">
+                    {{ form_label(form.new_image_name) }}
+                    {{ form_widget(form.new_image_name, {'attr': {'class': 'form-control'}}) }}
+                </div>
+                <button type="submit" class="btn btn-primary">Update</button>
+                <a href="{{ path('admin_users_update_artwork_image_url', {'id': artwork.id}) }}" class="btn btn-success">
+                    Convert GIF → PNG
+                </a>
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}

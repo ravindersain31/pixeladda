@@ -1,0 +1,31 @@
+<div class="saved-card-item d-flex align-items-center justify-content-between p-3 mb-2 rounded shadow-sm border"
+    data-action="click->saved-braintree-cards-checkout#selectCard"
+>
+    <div class="d-flex align-items-center gap-2">
+        <input
+            type="radio"
+            name="saved_card"
+            value="{{ card.token }}"
+            class="form-check-input saved-card-radio"
+            {% if card.isDefault %}checked{% endif %}
+        >
+
+        <i class="fas fa-credit-card text-secondary"></i>
+
+        <div>
+            <div class="fw-semibold">
+                {{ card.cardType }} •••• {{ card.last4 }}
+            </div>
+            <div class="text-muted small">
+                Expires {{ card.expMonth }}/{{ card.expYear }}
+                {% if card.isDefault %}
+                    <span class="badge badge-indigo-soft text-ysp-purple text-uppercase">Default</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+	<a href="javascript:void(0);" class="text-danger delete-card-btn" title="Delete Card" data-id="{{ card.id }}" data-action="saved-braintree-cards-checkout#delete">
+		<i class="fas fa-trash"></i>
+	</a>
+</div>

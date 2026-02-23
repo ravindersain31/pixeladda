@@ -1,0 +1,89 @@
+<div {{ attributes }}>
+    <div class="row justify-content-center">
+        <div class="col-lg-5 mt-4" id="orderNumberForm">
+            <div class="card">
+                <div class="card-body">
+                    {{ form_start(form, {attr: {
+                        'novalidate': true,
+                        'data-action': 'live#action:prevent',
+                        'data-live-action-param': 'trackOrder',
+                    }}) }}
+                    {% if isSuccessful %}
+                        <div class="alert alert-info">{{ flashMessage }}</div>
+                    {% endif %}
+                    {{ form_errors(form) }}
+
+                    <div id="track-order-form" class="text-left" novalidate="novalidate">
+                        <div class="form-group">
+                            <div class="form-group">
+                                {{ form_row(form.orderId) }}
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="form-group">
+                                {{ form_row(form.trackingId) }}
+                            </div>
+                        </div>
+
+                        <div class="form-separator">
+                            <span>OR</span>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="form-group">
+                                {{ form_row(form.email) }}
+                            </div>
+                        </div>
+
+                        <div class="form-group mt-4">
+                            <div class="form-group">
+                                {{ form_row(form.telephone) }}
+                            </div>
+                        </div>
+
+                        <div class="form-group d-flex justify-content-center">
+                            <div class="g-recaptcha" data-sitekey="{{ ysp.getEnv('RECAPTCHAV2_SITEKEY') }}"></div>
+                        </div>
+
+                        <div class="form-group text-center mt-4">
+                            <button type="submit" data-loading="action(trackOrder)|addAttribute(disabled)"
+                                    class="btn track-order-submit">
+                                <span data-loading="action(trackOrder)|show" style="display: none">Searching...</span>
+                                <span data-loading="action(trackOrder)|hide" style="display: block">Submit</span>
+                            </button>
+                        </div>
+                    </div>
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+        {% if orders | length > 0 %}
+            <div class="col-12 mt-4">
+                <table class="table table-bordered">
+                    <tr>
+                        <th>#</th>
+                        <th>Order Number</th>
+                        <th>Order Total</th>
+                        <th>Order Status</th>
+                        <th>Order Date</th>
+                        <th></th>
+                    </tr>
+                    {% for order in orders %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td>{{ order.orderId }}</td>
+                            <td>${{ order.totalAmount | number_format(2) }}</td>
+                            <td>{{ order.status | badgeOrderStatus | raw }}</td>
+                            <td>{{ order.orderAt | date('M d, Y') }}</td>
+                            <td>
+                                <a href="{{ path('track_order_details', {oid: order.orderId}) }}"
+                                   class="btn btn-ysp-outline" target="_blank">Track</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        {% endif %}
+    </div>
+</div>

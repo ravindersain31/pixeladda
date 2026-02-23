@@ -1,0 +1,40 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}{{ fraud.id is defined and fraud.id ? 'Update Fraud' : 'Add Fraud' }}{% endblock %}
+{% block pageTitle %}
+    <div class="page-header-icon">
+        <i class="fas fa-dashboard"></i>
+    </div>
+    {{ fraud.id is defined and fraud.id ? 'Update Fraud' : 'Add Fraud' }}
+{% endblock %}
+
+{% block body %}
+    <div class="card card-header-actions mx-auto shadow-none">
+        <div class="card-header">
+        {{ fraud.id is defined and fraud.id ? 'Update Fraud' : 'Add New Fraud' }}
+            <div>
+                <a href="{{ path('admin_fraud') }}" class="btn btn-light btn-sm">
+                    <i class="fas fa-arrow-left me-2"></i>
+                    List
+                </a>
+            </div>
+        </div>
+        <div class="card-body">
+            {{ component('FraudForm',{
+                form:form,
+                fraud:fraud,
+            }) }}
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const inputs = document.querySelectorAll('[id^="fraud_"]');
+            inputs.forEach((input) => {
+
+                input.addEventListener('keyup', (e) => {
+                    input.dispatchEvent(new Event('change', {bubbles: true}));
+                });
+            });
+        });
+    </script>
+{% endblock %}

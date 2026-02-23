@@ -1,0 +1,276 @@
+{% extends 'base.html.twig' %}
+
+{% set categoryName = category.name %}
+{% block title %}{{ category.seoMeta.title | default(categoryName ~ ' Yard Signs - Custom Lawn Signs - Ships Overnight') | raw }}{% endblock %}
+{% set defaultMetaDescription = categoryName ~ ' Custom Yard Signs, Free shipping on $50+, overnight delivery. Digital proof in 1hr. Order today!' %}
+{% block metaData %}
+    <meta property="og:title" content="{{ (category.seoMeta.title | default(categoryName ~ ' Yard Signs - Custom Lawn Signs - Ships Overnight')) | raw }}">
+    <meta property="og:description" content="{{ (category.seoMeta.description | default(defaultMetaDescription)) | raw }}">
+    <meta property="title" content="{{ (category.seoMeta.title | default(categoryName ~ ' Yard Signs - Custom Lawn Signs - Ships Overnight')) | raw }}">
+    <meta name="description" content="{{ (category.seoMeta.description | default(defaultMetaDescription)) | raw }}">
+    <meta name="keywords" content="{{ (category.seoMeta.keywords | default(categoryName ~ ' custom yard signs, ' ~ categoryName ~ ' yard signs')) | raw }}">
+    <link rel="canonical" href="{{ url('category', {slug: category.slug}) }}" />
+{% endblock %}
+
+{% block body %}
+    {% set MobileBanner  = storeInfo.isPromoStore ? vich_s3.asset(category, 'promoMobileBannerFile') : vich_s3.asset(category, 'mobileBannerFile') %}
+    {% set DesktopBanner  = storeInfo.isPromoStore ? vich_s3.asset(category, 'promoBannerFile') : vich_s3.asset(category, 'bannerFile') %}
+    {% set marketingCategories = {'business-signs': 'Business Sign'} %}
+    {% set breadcrumbs = category.parent is not null
+        ? [{ name: category.parent.name, link: url('category', { slug: category.parent.slug }) }, { name: category.name, active: true }]
+        : [{ name: category.name, active: true }]
+    %}
+
+    {{ include('common/common_mobile_bar.html.twig',{commonBarText: 'Order Online Or Call Now',commonBarTele: '+1-877-958-1499'}) }}
+    {% if isMobile() %}
+        {{ include('common/breadcrumb.html.twig', { breadcrumbs: breadcrumbs }) }}
+        <div class="overnight-delivery-text"><button type="button" class="ysp-delivery-calendar-btn fw-600 text-white mt-0 fs-13" data-bs-toggle="modal" data-bs-target="#ysp-delivery-calendar">Overnight Delivery&nbsp;</button>Available</div>
+    {% endif %}
+    {% if parent is defined and parent is not null %}
+        {% if MobileBanner is null and DesktopBanner is null %}
+            <div class="page-header">
+                <div class="page-header-content">
+                    {{category.name}}
+                </div>
+            </div>
+        {% else %}
+            {{ include('common/_banner.html.twig',{ desktopImg: DesktopBanner, mobileImg: MobileBanner}) }}
+        {% endif %}
+    {% else %}
+        {{ include('common/_banner.html.twig',{ desktopImg: DesktopBanner, mobileImg: MobileBanner}) }}
+    {% endif %}
+    {{ include('common/drawerPurchaseOrder.html.twig') }}
+    {% if not isMobile() %}
+        {{ include('common/breadcrumb.html.twig', { breadcrumbs: breadcrumbs }) }}
+    {% endif %}
+    <div class="py-2">
+        {{ include('common/custom_search.html.twig') }}
+    </div>
+    <div class="pay-later-sec-banner d-flex border-sm-top pb-2 pb-sm-0">
+        {{ include('common/paylater.html.twig') }}
+    </div>
+    <div class=" select-template-to-fully-customize common-sec-horizontal-pad mb-2">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="pay-latter-text-wrapper ysp-template-custom-text">
+                        <div class="custom-mock-wrap">
+                            <h1>{{ category.seoMeta.headerTag | default(category.name ~ ' Custom Yard Signs') }}</h1>
+                            {% if category.slug == 'yard-letters' %}
+                                <h2 class="right-text d-sm-block text-custom">Fully Customize Your Message with Our Easy-to-Use Templates</h2>
+                            {% else %}
+                                <h2 class="right-text d-sm-block text-custom">Create Your Own Custom {{ marketingCategories[category.slug] is defined ? marketingCategories[category.slug] : 'Outdoor Yard Sign' }}! 
+                                    Select Any Template to Fully Customize!</h2>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% set schemaItemList = [] %}
+    {% set lastItemPosition = 1 %}
+    {% set categoryDescription = '' %}
+    {% if category.description and (category.description | striptags | length) > 50 %}
+        {% set categoryDescription = category.description | striptags %}
+    {% else %}
+        {% set categoryDescription = include('common/category-description/default.html.twig', {
+            categoryName: category.name
+        }) | striptags %}
+    {% endif %}
+    {% set shopperApprovedRating = getShopperApprovedRating() %}
+
+    <div class="container-fluid products-common-block">
+        <div class="collapse category-description" id="categoryDescription">
+            <div class="card">
+                <div class="card-body category-description-content">
+                    {% if category.description and (category.description | striptags | length) > 50 %}
+                        {{ category.description | raw }}
+                    {% else %}
+                        {% include 'common/category-description/default.html.twig' with {'categoryName': category.name} %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+            {% set products = ysp.categoryProducts(ysp.storeId, category, [], 36) %}
+            
+                <div class="product-block border-bottom">
+                <button class="btn btn-light category-description-button d-block mb-2 d-sm-none" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#categoryDescription" aria-expanded="false" aria-controls="categoryDescription">
+                    Product Information
+                </button>
+                <div class="d-flex justify-content-between align-items-center">
+                        <span></span>
+                        <button class="btn btn-light category-description-button d-none d-sm-block" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#categoryDescription" aria-expanded="false" aria-controls="categoryDescription">
+                            Product Information
+                        </button>
+                </div>
+                <div class="row product-list">
+                {% set isCustom = category.slug == 'custom-signs' %}
+                {% set customImage = storeInfo.isPromoStore ? "	https://static.yardsignplus.com/product/img/CUSTOM/692ea135b6beb023851400.webp":  "https://static.yardsignplus.com/product/img/CUSTOM/68e895a937b78694760714.webp" %}
+                {% set customImageBHC = storeInfo.isPromoStore ? "https://static.yardsignplus.com/storage/editor/6915955340549825287294-1-6943e0dc73675652974529.webp":  "https://static.yardsignplus.com/product/img/BHC-CUSTOM/fit-in/980x736/68906d35d4846092311243.webp" %}
+                {% set customImageDC = storeInfo.isPromoStore ? "https://static.yardsignplus.com/product/img/DC-CUSTOM/6916fad0e2bde969328232.webp":  "https://static.yardsignplus.com/storage/images/fit-in/980x736/shop-Die-Cut.webp" %}
+                {% set customImageHF = storeInfo.isPromoStore ? "https://static.yardsignplus.com/product/img/HF-CUSTOM/69141f8542c18909554286.webp":  "https://static.yardsignplus.com/storage/images/fit-in/980x736/shop-Hand-Fans.webp" %}
+                {% if isCustom %}
+                    {{ include('product/_custom_product_card.html.twig',{
+                        product: ysp.getDefaultCustomProduct,
+                        buttonText: 'Customize Now',
+                        customImageUrl: customImage
+                    }) }}
+
+                    {{ include('product/_custom_product_card.html.twig',{
+                        product: ysp.getDefaultCustomProduct('CUSTOM-SIGN'),
+                        buttonText: 'Customize Now',
+                    }) }}
+
+                    {{ include('product/_custom_product_card.html.twig', {
+                        product: ysp.getDefaultCustomProduct('BHC-CUSTOM'),
+                        buttonText: 'Customize Now',
+                        customImageUrl: customImageBHC
+                    }) }}
+
+                    {{ include('product/_custom_product_card.html.twig',{
+                        product: ysp.getDefaultCustomProduct('DC-CUSTOM'),
+                        buttonText: 'Customize Now',
+                        customImageUrl: customImageDC
+                    }) }}
+
+                    {% if ysp.isEnableProduct('HF-CUSTOM') %}                                
+                        {{ include('product/_custom_product_card.html.twig', {
+                            product: ysp.getDefaultCustomProduct('HF-CUSTOM'),
+                            buttonText: 'Customize Now', 
+                            customImageUrl: customImageHF
+                        }) }}
+                    {% endif %}
+
+                    {% set ribbonColor = ['blue', 'green', 'blue'] %}
+                    {% set ribbon = {'24x18': ['Best Seller', 'Standard'], '18x12': ['Best Seller']} %}
+                    {% for product in products %}
+                        {% set productUrl = url('custom_yard_sign_editor', {
+                            variant: product.slug
+                        }) %}
+                        {% set productImage = null %}
+                        {% if product.displayImageName is defined and product.displayImageName %}
+                            {% set productImage = "https://static.yardsignplus.com/product/fit-in/800x800/img/" ~ product.displayImageName %}
+                        {% elseif product.imageName is defined and product.imageName %}
+                            {% set productImage = "https://static.yardsignplus.com/product/fit-in/800x800/img/" ~ product.imageName %}
+                        {% endif %}
+
+                        {% set schemaItemList = schemaItemList | merge([{
+                            "@type": "ListItem",
+                            "position": lastItemPosition,
+                            "item": {
+                                "@type": "Product",
+                                "@id": productUrl ~ "#product",
+                                "name": product.name,
+                                "url": productUrl,
+                                "image": [productImage],
+                                "description": product.seoMeta.description ?? category.seoMeta.description ?? defaultMetaDescription,
+                                "sku": product.sku,
+                                "brand": {
+                                    "@type": "Brand",
+                                    "name": 'Yard Sign Plus'
+                                },
+                                "offers": {
+                                    "@type": "AggregateOffer",
+                                    "priceCurrency": 'USD',
+                                    "lowPrice": product.lowestPrice,
+                                    "highPrice": product.highestPrice,
+                                    "offerCount": products|length|default(1) + 5,
+                                    "availability": "https://schema.org/InStock",
+                                    "url": productUrl
+                                },
+                                "aggregateRating": {
+                                    "@type": "AggregateRating",
+                                    "ratingValue": shopperApprovedRating,
+                                    "reviewCount": reviewCount(),
+                                    "bestRating": "5",
+                                    "worstRating": "1"
+                                }
+                            }
+                        }]) %}
+                        <div class="col-6 col-md-3 col-xl-3 product-item item-{{ product.name }}">
+                            {% if ribbon[product.name] is defined %}
+                                {% for ribbonText in ribbon[product.name] %}
+                                    <div class="custom-ribbon ribbon-{{product.name}} {{ ribbonColor[(loop.index0) % ribbonColor|length] }}" style="top: {{ 5 + (loop.index0 * 25) }}px;">
+                                        {{ ribbonText }}
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                            {{ include('product/_product_card.html.twig') }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                {% if products is not empty and not isCustom %}
+                    {% for key, product in products %}
+                        {% set productUrl = url('editor', {
+                            category: product.primaryCategory.slug,
+                            productType: product.productType.slug,
+                            sku: product.sku
+                        }) %}
+
+                        {% set productImage = vich_s3.asset(product, 'imageFile') %}
+
+                        {% set schemaItemList = schemaItemList | merge([{
+                            "@type": "ListItem",
+                            "position": lastItemPosition,
+                            "item": {
+                                "@type": "Product",
+                                "@id": productUrl ~ "#product",
+                                "name": product.name,
+                                "url": productUrl,
+                                "image": [productImage],
+                                "description": product.seoMeta.description ?? category.seoMeta.description ?? defaultMetaDescription,
+                                "sku": product.sku,
+                                "brand": {
+                                    "@type": "Brand",
+                                    "name": 'Yard Sign Plus'
+                                },
+                                "offers": {
+                                    "@type": "AggregateOffer",
+                                    "priceCurrency": 'USD',
+                                    "lowPrice": product.lowestPrice,
+                                    "highPrice": product.highestPrice,
+                                    "offerCount": product.variants|length|default(1),
+                                    "availability": "https://schema.org/InStock",
+                                    "url": productUrl
+                                },
+                                "aggregateRating": {
+                                    "@type": "AggregateRating",
+                                    "ratingValue": shopperApprovedRating,
+                                    "reviewCount": reviewCount(),
+                                    "bestRating": "5",
+                                    "worstRating": "1"
+                                }
+                            }
+                        }]) %}
+                        <div class="col-6 col-md-4 col-xl-3 product-item {% if key >= 4 %} d-none d-sm-block {% endif %}">
+                            {% include 'product/_product_card.html.twig' %}
+                        </div>
+                        {% set lastItemPosition = lastItemPosition + 1 %}
+                    {% endfor %}
+                {% endif %}
+                </div>
+            </div>
+            
+
+        <div class="text-center my-3 view-all-product">
+            {% set slug = category.parent is not null ? category.parent.slug : category.slug %}
+            {% set url_params = {c: slug} %}
+
+            {% if category.parent is not null %}
+                {% set url_params = url_params|merge({sc: category.slug}) %}
+            {% endif %}
+
+            {% set url = url('category_shop', url_params) %}
+
+            <a href="{{ url }}" class="btn btn-ysp-outline">
+                View All {{ marketingCategories[category.slug] is defined ? marketingCategories[category.slug] : category.name ~ ' Yard Sign' }}s
+            </a>
+        </div>
+    </div>
+    {{ include('common/_delivery_calendar.html.twig') }}
+    {% include 'common/_category_schema.html.twig' %}
+{% endblock %}

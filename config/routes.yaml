@@ -1,0 +1,52 @@
+health_controller:
+  resource: ../src/Controller/HealthController.php
+  type: attribute
+
+admin_controllers:
+  resource:
+    path: ../src/Controller/Admin
+    namespace: App\Controller\Admin
+  host: '%APP_ADMIN_HOST%'
+  name_prefix: admin_
+  type: attribute
+
+admin_geo_api_controllers:
+  controller: App\Controller\Api\GEOController::states
+  host: '%APP_ADMIN_HOST%'
+  path: /api/geo/states/{countryCode}
+
+web_api_controllers:
+  resource:
+    path: ../src/Controller/Api
+    namespace: App\Controller\Api
+  type: attribute
+  host: "{domain}"
+  requirements:
+    domain: "%APP_USER_HOSTS%"
+  defaults:
+    domain: "%APP_USER_HOST%"
+  prefix: /api
+
+web_cron_controllers:
+  resource:
+    path: ../src/Controller/Cron
+    namespace: App\Controller\Cron
+  type: attribute
+  host: "{domain}"
+  requirements:
+    domain: "%APP_USER_HOSTS%"
+  defaults:
+    domain: "%APP_USER_HOST%"
+  prefix: /cron
+
+web_controllers:
+  resource:
+    path: ../src/Controller/Web
+    namespace: App\Controller\Web
+  host: "{domain}"
+  requirements:
+    domain: "%APP_USER_HOSTS%"
+  defaults:
+    domain: "%APP_USER_HOST%"
+  type: attribute
+

@@ -1,0 +1,54 @@
+<div class="table-responsive">
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>Payment Method</th>
+            <th>YSP TID</th>
+            <th>Amount</th>
+            <th>Status</th>
+            <th>Last Updated</th>
+            <th class="text-end">Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% set transactions = order.transactions %}
+        {% if transactions | length > 0 %}
+            {% for transaction in transactions %}
+                <tr>
+                    <td>
+                        {{ transaction.paymentMethod | replace({'_': ' '}) }}
+                        {% if transaction.isPaymentLink %}
+                            <small class="badge bg-light text-dark">PL</small>
+                        {% endif %}
+                    </td>
+                    <td>{{ transaction.transactionId | upper }}</td>
+                    <td>
+                        ${{ (transaction.amount - transaction.refundedAmount) | number_format(2) }}
+                        {% if transaction.refundedAmount > 0 %}
+                            <small class="d-flex">Refunded: ${{ transaction.refundedAmount | number_format(2) }}</small>
+                        {% endif %}
+                    </td>
+                    <td>{{ transaction.status | badgePaymentStatus | raw }}</td>
+                    <td>{{ transaction.updatedAt | date('m/d/Y h:i A') }}</td>
+                    <td class="text-end">
+                        {% include 'admin/order/view/_view_transaction.html.twig' with { transaction } %}
+                        {% if transaction.isPaymentLink and transaction.status in ['INITIATED', 'PROCESSING', 'REDIRECTED_TO_GATEWAY'] %}
+                            <a href="{{ url('admin_order_transaction_cancel', {transactionId: transaction.transactionId}) }}" class="badge bg-danger text-white text-decoration-none" onclick="return confirm('Are you sure?')">Cancel</a>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        {% else %}
+            <tr>
+                <td colspan="6" class="text-center">No transactions for this order.</td>
+            </tr>
+        {% endif %}
+        </tbody>
+    </table>
+</div>
+{% if order.status != 'CANCELLED' %}
+    <div class="mt-4 transaction-actions">
+        {{ include('admin/order/view/_create_payment_link.html.twig') }}
+        {{ include('admin/order/view/_charge_card.html.twig') }}
+    </div>
+{% endif %}

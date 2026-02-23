@@ -1,0 +1,32 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Edit Blog Author{% endblock %}
+{% block pageTitle %}
+    <div class="page-header-icon">
+        <i class="fas fa-dashboard"></i>
+    </div>
+    Edit Blog Author
+{% endblock %}
+
+{% block body %}
+    <div class="card card-header-actions mx-auto shadow-none">
+        <div class="card-header">
+            Edit Blog Author
+            <div>
+                <a href="{{ url('admin_blog_authors') }}" class="btn btn-light btn-sm">
+                    <i class="fas fa-arrow-left me-2"></i>
+                    List
+                </a>
+            </div>
+        </div>
+        <div class="card-body">
+            {{ form_start(form) }}
+            {{ form_row(form.name) }}
+            {{ form_row(form.nickname) }}
+            {{ form_row(form.bio) }}
+            {{ form_row(form.avatarFile) }}
+            {{ form_end(form) }}
+        </div>
+    </div>
+
+{% endblock %}

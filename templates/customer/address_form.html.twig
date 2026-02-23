@@ -1,0 +1,71 @@
+<div class="row">
+
+    {{ form_row(form.addressTag, {
+        attr: {
+            'data-action': 'change->saved-addresses#toggleOtherType',
+            'data-saved-addresses-target': 'typeSelect'
+        }
+    }) }}
+
+    <div data-saved-addresses-target="otherTagHolder" class="d-none">
+        {{ form_row(form.otherAddressTag) }}
+    </div>
+
+    <div class="col-12 col-sm-6">
+        {{ form_row(form.shippingAddress.firstName) }}
+    </div>
+
+    <div class="col-12 col-sm-6">
+        {{ form_row(form.shippingAddress.lastName) }}
+    </div>
+
+    <div class="col-12">
+        {{ form_row(form.shippingAddress.addressLine1) }}
+    </div>
+
+    <div class="col-12">
+        {{ form_row(form.shippingAddress.addressLine2) }}
+    </div>
+
+    <div class="col-12 col-sm-6">
+        {{ form_row(form.shippingAddress.city) }}
+    </div>
+
+    <div class="col-12 col-sm-6">
+        {{ form_row(form.shippingAddress.state) }}
+    </div>
+
+    <div class="col-12 col-sm-6">
+        {{ form_row(form.shippingAddress.country, {
+            'attr': {
+                'autocomplete': 'country',
+                'data-action': 'change->checkout#onCountrySelect'
+            }
+        }) }}
+    </div>
+
+    <div class="col-12 col-sm-6">
+        {{ form_row(form.shippingAddress.zipcode) }}
+    </div>
+
+    <div class="col-12 col-sm-6">
+        {{ form_row(form.shippingAddress.phone) }}
+    </div>
+
+    <div class="col-12 col-sm-6">
+        {{ form_row(form.shippingAddress.email) }}
+    </div>
+
+    <div class="col-12">
+        {{ form_row(form.isDefault) }}
+    </div>
+    <div class="d-flex justify-content-end pt-3 submit-btn-col text-end border-top">
+        <button type="submit"
+                class="btn btn-primary btn-ysp-outline d-flex align-items-center"
+                data-action="saved-addresses#submit"
+                id="saveAddressBtn">
+            <span class="spinner-border spinner-border-sm me-2 d-none" role="status" aria-hidden="true" id="saveAddressLoader"></span>
+            <span id="saveAddressBtnText">Save Address</span>
+        </button>
+    </div>
+</div>

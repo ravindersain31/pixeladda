@@ -1,0 +1,110 @@
+{% extends 'base.html.twig' %}
+{% block title %}YSP Order Protection{% endblock %}
+
+{% block metaData %}
+    <link rel="canonical" href="{{ url('order_protection') }}" />
+    {% include 'common/_default_schema.html.twig' %}
+{% endblock %}
+
+{% block body %}
+{{ include('common/common_mobile_bar.html.twig', {commonBarText: 'Order Online Or Call Now', commonBarTele: '+1-877-958-1499'}) }}
+
+<section class="header-design-one container-fluid header-cart-page ">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="d-flex justify-content-center align-items-center">
+                <h2 class="heading-title">Order Protection</h2>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="container py-4 ysp-order-protection">
+    <div class="text-center mb-4">
+        <h3 class="text-sgs-purple fs-4 fw-semibold">Order Protection – Peace of Mind for Your Order</h3>
+    </div>
+    {% set guaranteed_delivery %}
+        <img src="{{ asset('app-images/images/order-protection-01.png') }}" alt="Order Protection Icon" class="order-protection-icon">
+    {% endset %}
+    {% set guaranteed_product %}
+        <img src="{{ asset('app-images/images/order-protection-02.png') }}" alt="Order Protection" class="order-protection-icon">
+    {% endset %}
+    {% set guaranteed_service %}
+        <img src="{{ asset('app-images/images/order-protection-03.png') }}" alt="Order Protection" class="order-protection-icon">
+    {% endset %}
+    {% set guaranteed_satisfaction %}
+        <img src="{{ asset('app-images/images/order-protection-04.png') }}" alt="Order Protection" class="order-protection-icon">
+    {% endset %}
+
+    <div class="row g-3 justify-content-center mb-5">
+            {% set categories = [
+            {
+                head: 'Coverage for Lost Shipments',
+                paragraph: 'If your package never arrives, we\'ll replace it at no extra cost.'
+            },
+            {
+                head: 'Coverage for Damaged Shipments',
+                paragraph: 'If your items arrive broken or unusable, we\'ll send a replacement quickly.'
+            },
+            {
+                head: 'Coverage for Stolen Packages',
+                paragraph: 'If your package is marked "delivered" but you never received it, we\'ll help replace it after verification.'
+            }
+        ] %}
+
+        {% for category in categories %}
+            <div class="col-12 col-sm-6 col-md-4">
+                <div class="category-card p-4 rounded shadow-sm h-100 text-center">
+                    <div class="mb-2 ">
+                        <h3 class="card-title fw-bold mt-1">{{ category.head }}</h3>
+                        <p class="card-text text-dark">{{ category.paragraph }}</p>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    <div class="row">
+        <div class="col-md-6 mb-4 mb-md-0 pe-md-4">
+            {% set benefits = [
+                {'icon': guaranteed_delivery, 'title': 'Guaranteed Delivery', 'desc': "If your order is delivered late, we'll issue a full shipping refund. If no longer needed, we'll take it back & issue a full refund."},
+                {'icon': guaranteed_product, 'title': 'Guaranteed Product', 'desc': "If your order is incorrect or damaged, we'll exchange it."},
+                {'icon': guaranteed_service, 'title': 'Guaranteed Service', 'desc': "We'll prioritize your concerns & resolve any issue in less than 24 hours."},
+                {'icon': guaranteed_satisfaction, 'title': 'Guaranteed Satisfaction', 'desc': "If you're not 100% satisfied with your order, we'll take it back & issue a full refund."}
+            ] %}
+            {% for benefit in benefits %}
+                <div class="d-flex mb-4 align-items-start">
+                    <div class="icon-box me-3">
+                        {{ benefit.icon|raw }}
+                    </div>
+                    <div>
+                        <h5 class="fw-bold mb-1 heading-step-title benefits-step-title">{{ benefit.title }}</h5>
+                        <p class="text-muted mb-0">{{ benefit.desc }}</p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        <div class="col-md-6 ps-md-4">
+            <h2 class="fw-bold mb-4 heading-step-title benefits-step-title">How it Works</h2>
+            {% set howTo = [
+                {'title': 'Select Order Protection in Cart or at Checkout.'},
+                {'title': 'Email Concern if Any to', 'email': 'support@yardsignplus.com'},
+                {'title': 'Receive Resolution in 1 Hour.'}
+            ] %}
+            {% for step in howTo %}
+                <div class="d-flex mb-2">
+                    <ul class="text-muted mb-0 benefits-step-title ps-3">
+                        <li>{{ step.title }}
+                            {% if step.email is defined %}
+                                <a href="mailto:{{ step.email }}">{{ step.email }}</a>
+                            {% endif %}
+                        </li>
+                    </ul>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="d-flex justify-content-center shop-now-btn">
+        <a href="{{ url('shop_now') }}" target="_blank" class="btn btn-ysp-white my-2 px-4">Shop Now</a>
+    </div>
+</div>
+{% endblock %}

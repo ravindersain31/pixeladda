@@ -1,0 +1,74 @@
+{% set tabs = {
+    'sdpl': {
+        'label': '<span class="new-tag">NEW</span> <span class="tab-green">See Design Pay Later</span>',
+    },
+    'description': {
+        'label': 'Product Description',
+    },
+    'faqs': {
+        'label': 'FAQs',
+    },
+    'customer-photos': {
+        'label': 'Customer Photos',
+    },
+    'repeat-order': {
+        'label': 'Repeat Orders',
+    },
+    'digital-proof': {
+        'label': 'FREE Digital Proof',
+    },
+    'order-sample': {
+        'label': 'Order Samples',
+    },
+} %}
+<div class="page-header mt-2 border-1 border-bottom">
+    <nav>
+        <div class="nav nav-tabs" id="editor-ph-tabs" role="tablist">
+            {% for tabId, tab in tabs %}
+                <button class="nav-link {% if loop.index == 1 %}dis-active{% endif %}" id="editor-ph-{{ tabId }}-tab"
+                        data-bs-toggle="tab" data-bs-target="#editor-ph-{{ tabId }}" type="button" role="tab"
+                        aria-controls="editor-ph-{{ tabId }}" aria-selected="true" aria-labelledby="{{ tabId }}">
+                    {{ tab.label | raw }}
+                </button>
+            {% endfor %}
+            <button class="nav-link" type="button" aria-labelledby="Assistance" role="tab">
+                For assistance call <a class="text-primary" href="tel: +1-877-958-1499">+1-877-958-1499</a> or begin 
+                <span class="text-primary" style="cursor: pointer;" onclick="Tawk_API.toggle()">Live Chat</span>
+            </button>
+        </div>
+    </nav>
+    <div class="tab-content" id="editor-ph-tabs-content">
+        {% for tabId, tab in tabs %}
+            <div class="tab-pane fade {% if loop.index == 1 %}dis-show dis-active{% endif %}" id="editor-ph-{{ tabId }}"
+                 role="tabpanel" aria-labelledby="editor-ph-{{ tabId }}-tab">
+                {% include 'editor/page-header/_' ~ tabId ~ '.html.twig' %}
+            </div>
+        {% endfor %}
+    </div>
+</div>
+<script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', function () {
+        $(function () {
+            var $navTabs = $('.nav.nav-tabs');
+            $navTabs.on('scroll', function (event) {
+                let scrollValue = $(this).scrollLeft();
+                if (scrollValue > 50) {
+                    if (!$navTabs.hasClass('tab-scroll-arrow')) {
+                        $navTabs.addClass('tab-scroll-arrow');
+                    }
+                } else {
+                    if ($navTabs.hasClass('tab-scroll-arrow')) {
+                        $navTabs.removeClass('tab-scroll-arrow');
+                    }
+                }
+
+            });
+        });
+        const currentUrl = window.location.href;
+        const orderSample = document.getElementById("editor-ph-order-sample-tab");
+
+        if (currentUrl.includes("smp")){
+            orderSample.click();
+        }
+    })
+</script>

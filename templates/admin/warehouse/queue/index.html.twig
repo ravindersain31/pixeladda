@@ -1,0 +1,101 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Order Queue{% endblock %}
+{% block pageTitle %}
+    <div class="page-header-icon">
+        <i class="fas fa-warehouse"></i>
+    </div>
+    Order Queue
+{% endblock %}
+
+{% block body %}
+    <div class="card card-header-actions mx-auto shadow-none">
+        <div class="card-header p-0 h-100 border-0 flex-column-reverse flex-sm-row">
+            <nav class="w-75 nav-tab-scroll">
+                <div class="flex-nowrap nav nav-tabs ps-2 pe-2 pt-2" role="tablist">
+                    {% for key, print in warehouse.getPrintersWithCount(app.request.get('wq')) %}
+                        <a href="{{ url('admin_warehouse_queue_by_printer', {printer: key}) }}"
+                            id="printerName-{{ key }}"
+                            data-printer-key="{{ key }}"
+                            class="nav-link {% if printer is defined and key == printer %}active{% endif %}"
+                            style="color: {{ print.color }}"
+                            type="button">
+                            <span>{{ print.label }}</span>
+                            <span class="badge bg-gray-400">{{ print.orderCount }}</span>
+                        </a>
+                    {% endfor %}
+                    {% if is_granted('warehouse_queue_unassigned') %}
+                        <a href="{{ url('admin_warehouse_queue_unassigned') }}"
+                            class="nav-link {% if app.request.get('_route') == 'admin_warehouse_queue_unassigned' %}active{% endif %}"
+                            type="button">
+                            <span>Unassigned</span>
+                            <span class="badge bg-gray-400">{{ warehouse.getUnassignedCount() }}</span>
+                        </a>
+                    {% endif %}
+                    {% if is_granted('warehouse_queue_create_shipment') %}
+                        <a href="{{ url('admin_warehouse_queue_create_shipment') }}"
+                            class="nav-link {% if app.request.get('_route') == 'admin_warehouse_queue_create_shipment' %}active{% endif %}"
+                            type="button">
+                            <span>Create Shipment</span>
+                            <span class="badge bg-gray-400">{{ warehouse.getCreateShipmentCount() }}</span>
+                        </a>
+                    {% endif %}
+                    {% if is_granted('warehouse_queue_ready_to_ship') %}
+                        <a href="{{ url('admin_warehouse_queue_ready_to_ship') }}"
+                           class="nav-link {% if app.request.get('_route') == 'admin_warehouse_queue_ready_to_ship' %}active{% endif %}"
+                           type="button">
+                            Ready to Ship
+                            <span class="badge bg-gray-400">{{ warehouse.getReadyToShipCount() }}</span>
+                        </a>
+                    {% endif %}
+                    {# {% if is_granted('admin_warehouse_queue_ready_to_print') %}
+                        <a href="{{ url('admin_warehouse_queue_ready_to_print') }}"
+                           class="nav-link {% if app.request.get('_route') == 'admin_warehouse_queue_ready_to_print' %}active{% endif %}"
+                           type="button">
+                            Ready for Shipment 
+                            <span class="badge bg-gray-400">{{ warehouse.getReadyForShipmentCount() }}</span>
+                        </a>
+                    {% endif %} #}
+                    {#                    {% if is_granted('warehouse_queue_shipping_easy') %} #}
+                    {#                        <a href="{{ url('admin_warehouse_queue_shipping_easy') }}" #}
+                    {#                           class="nav-link {% if app.request.get('_route') == 'admin_warehouse_queue_shipping_easy' %}active{% endif %}" #}
+                    {#                           type="button"> #}
+                    {#                            Entered into Shippingeasy #}
+                    {#                        </a> #}
+                    {#                    {% endif %} #}
+                    {#                    {% if is_granted('warehouse_queue_ready_shipping_easy') %} #}
+                    {#                        <a href="{{ url('admin_warehouse_queue_ready_shipping_easy') }}" #}
+                    {#                           class="nav-link {% if app.request.get('_route') == 'admin_warehouse_queue_ready_shipping_easy' %}active{% endif %}" #}
+                    {#                           type="button"> #}
+                    {#                            Ready for Production #}
+                    {#                        </a> #}
+                    {#                    {% endif %} #}
+                    {% if is_granted('warehouse_queue_label_printed') %}
+                        <a href="{{ url('admin_warehouse_queue_label_printed') }}"
+                            class="nav-link {% if app.request.get('_route') == 'admin_warehouse_queue_label_printed' %}active{% endif %}"
+                            type="button">
+                            Label Printed
+                            <span class="badge bg-gray-400">{{ warehouse.getOrdersCountWithPreTransitStatus() }}</span>
+                        </a>
+                    {% endif %}
+                </div>
+            </nav>
+            <div class="d-flex align-items-center gap-2 flex-wrap p-2 order-queue-filters">
+                {% if printer is defined and printer %}
+                    <div class="flex-shrink-0">
+                        <button type="button" class="btn btn-sm btn-primary" id="toggle-filter-button">
+                            Show Filters
+                        </button>
+                    </div>
+                {% endif %}
+                <div class="flex-grow-1">
+                    {% include 'admin/warehouse/queue/_order_queue_search.html.twig' with { cssClass: '' } %}
+                </div>
+            </div>
+        </div>
+        <div class="overflow-hidden">
+            {% set routeName = app.request.get('_route') %}
+            {% include 'admin/warehouse/queue/_tab_' ~ routeName | replace({'admin_warehouse_queue_' : ''}) ~ '.html.twig' ignore missing %}
+        </div>
+    </div>
+{% endblock %}

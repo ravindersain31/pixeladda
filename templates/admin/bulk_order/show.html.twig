@@ -1,0 +1,82 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Bulk Order{% endblock %}
+
+{% block stylesheets %}
+    {{ encore_entry_link_tags('admin-editor') }}
+    {{ encore_entry_link_tags('admin') }}
+{% endblock %}
+
+{% block pageTitle %}
+    <div class="page-header-icon">
+        <i class="fas fa-dashboard"></i>
+    </div>
+    ENQUIRY ID: #{{ bulk_order.id }}
+{% endblock %}
+
+{% block body %}
+<div class="card shadow-sm p-4">
+    <table class="table table-bordered table-striped">
+        <tr>
+            <th>Name</th>
+            <td>{{ bulk_order.firstName ~ ' ' ~ bulk_order.lastName }}</td>
+        </tr>
+        <tr>
+            <th>Company Name</th>
+            <td>{{ bulk_order.company ?: '-' }}</td>
+        </tr>
+        <tr>
+            <th>Email</th>
+            <td>{{ bulk_order.email }}</td>
+        </tr>
+        <tr>
+            <th>Phone</th>
+            <td>{{ bulk_order.phoneNumber }}</td>
+        </tr>
+        <tr>
+            <th>Products Interested In</th>
+            <td>{{ bulk_order.productInInterested ?: '-' }}</td>
+        </tr>
+        <tr>
+            <th>Quantity</th>
+            <td>{{ bulk_order.quantity ?: '-' }}</td>
+        </tr>
+        <tr>
+            <th>Budget</th>
+            <td class="text-capitalize">{{ bulk_order.budget ?: '-' }}</td>
+        </tr>
+        <tr>
+            <th>Comment</th>
+            <td>{{ bulk_order.comment ?: '-' }}</td>
+        </tr>
+        <tr>
+            <th>Received On</th>
+            <td>{{ bulk_order.createdAt ? bulk_order.createdAt|date('F j, Y H:i') : '-' }}</td>
+        </tr>
+       <tr>
+            <th>Status</th>
+           <td>
+                {% if bulk_order.status == 0 %}
+                    <span class="badge bg-success text-dark">OPEN</span>
+                {% elseif bulk_order.status == 1 %}
+                    <span class="badge bg-warning text-white">CLOSED</span>
+            
+                {% endif %}
+            </td>
+
+        </tr>
+        <tr>
+            <th>Site</th>
+            <td>{{ bulk_order.store.name ?? 'N/A' }}</td>
+        </tr>
+        <tr>
+            <th>Delivery Date</th>
+            <td>{{ bulk_order.deliveryDate ? bulk_order.deliveryDate|date('F j, Y') : '-' }}</td>
+        </tr>
+        <tr>
+            <th>Completed On</th>
+            <td>{{ bulk_order.updatedAt ? bulk_order.updatedAt|date('F j, Y H:i') : '-' }}</td>
+        </tr>
+    </table>
+</div>
+{% endblock %}

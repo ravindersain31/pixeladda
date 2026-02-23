@@ -1,0 +1,5 @@
+{% if savedCards|length > 0 %}
+    {% for card in savedCards %}
+        {{ include('/checkout/saved-cards/_card.html.twig', { card: card }) }}
+    {% endfor %}
+{% endif %}

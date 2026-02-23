@@ -1,0 +1,93 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Dashboard{% endblock %}
+{% block pageTitle %}
+<div>
+    <div>
+        <div class="page-header-icon">
+            <i class="fas fa-dashboard"></i>
+        </div>
+        Dashboard
+    </div>
+    <p class="m-0 mt-1 small">
+        <span class="text-blue">{{ "now"|date("l") }}</span>
+        {{ "now"|date("M d, Y h:i A") }}
+    </p>
+    </div>
+{% endblock %}
+
+{% block body %}
+    {% for groupType, group in widgetGroup %}
+        <h5 class="mb-3">{{ group.title }}</h5>
+        <div class="row">
+            {% for widgetName, widget in group.widgets %}
+                {% set dataUrl = url('admin_dashboard_marketing_widget_value', { widgetName }) %}
+                <div class="col-xl-3 col-md-6 mb-4 {{group.title}}" {{ stimulus_controller('admin-dashboard', { dataUrl }) }}>
+                    {% if widget.url is defined %}
+                    <a href="{{ widget.url }}" class="text-decoration-none">
+                        {% endif %}
+                        <div class="card shadow h-100 py-2 {{widget.class ?? ''}}">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="small fw-bold text-capitalized mb-1">
+                                            {{ widget.title }}
+                                            {% if widgetName == "DailyCapacity" %}
+                                                <button type="button" class="btn p-0 text-primary border-0" data-bs-toggle="modal" data-bs-target="#dailyCapacity">
+                                                    <i class="fa-solid fa-pen-to-square"></i>
+                                                </button>
+                                                {% component BootstrapModal with { id: 'dailyCapacity' } %}
+                                                    {% block modal_full_content %}
+                                                        <div class="modal-header border-0">
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body pt-0">
+                                                            {{ component('DailyCapacityForm',{
+                                                                value: widget.result
+                                                            })}}
+                                                        </div>
+                                                    {% endblock %}
+                                                {% endcomponent %}
+                                            {% endif %}
+                                        </div>
+                                        <div class="h5 mb-0 fw-bold text-gray-800">
+                                            {% if widget.subTitles is defined %}
+                                                {% for subtitle, widget2 in widget.subTitles %}
+                                                    {% set dataUrl2 = url('admin_dashboard_marketing_widget_value', { widgetName:subtitle }) %}
+                                                    <div {{ stimulus_controller('admin2-dashboard', { dataUrl2 }) }}>
+                                                        <span class="d-flex justify-content-between">
+                                                            {{ widget2.title }}
+                                                            <span class="text-nowrap d-flex">
+                                                                {% if widget2.currency is defined %}{{widget2.currency}}{% endif %}
+                                                                <span class="widget-value" {{ stimulus_target('admin2-dashboard', 'widget2') }}>
+                                                                    <i class="fa fa-spinner fa-spin"></i>
+                                                                </span>
+                                                        </span>
+                                                    </div>
+                                                {% endfor %}
+                                            {% else %}
+                                                <span class="d-flex">
+                                                    <span>{% if widget.currency is defined %}{{ widget.currency }}{% endif %}</span>
+                                                    <span class="widget-value 12" {{ stimulus_target('admin-dashboard', 'widget') }}>
+                                                        <i class="fa fa-spinner fa-spin"></i>
+                                                    </span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="{{ widget.icon }} fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% if widget.url is defined %}
+                    </a>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    {% endfor %}
+    {% if is_granted('admin_dashboard_last7days_sales_report') %}
+        {% include 'admin/dashboard/_last7days_sales_table.html.twig' %}
+    {% endif %}
+{% endblock %}

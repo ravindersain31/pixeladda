@@ -1,0 +1,60 @@
+<div class="text-start offcanvas offcanvas-end" tabindex="-1"
+     id="requeue_order_{{ order.orderId }}"
+     aria-labelledby="requeue_order_{{ order.orderId }}_label">
+    <div class="offcanvas-header p-2">
+        <div class="heading-offcanvas d-flex justify-content-center align-items-center">
+            Requeue Order
+            <a href="{{ url('admin_order_overview', {orderId: order.orderId}) }}"
+               target="_blank">
+                #{{ order.orderId }}
+            </a>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body p-2 pt-0">
+        <table class="table table-striped mb-0">
+            <tbody>
+            <tr>
+                <th>Order Status</th>
+                <td>{{ enum.orderStatusLabel(order.status) }}</td>
+            </tr>
+            <tr>
+                <th>Payment Status</th>
+                <td>{{ enum.paymentStatusLabel(order.paymentStatus) }}</td>
+            </tr>
+            <tr>
+                <th>Warehouse Status</th>
+                <td>{{ enum.warehouseOrderStatus(warehouseOrder.printStatus) }}</td>
+            </tr>
+            <tr>
+                <th>Proof Approved</th>
+                <td>
+                    {% if order.approvedProof %}
+                        <span class="badge bg-success">Yes</span>
+                        <a href="{{ vich_s3.asset(order.approvedProofFile, 'fileObject') }}"
+                           class="small" target="_blank">
+                                    <span class="badge bg-light text-dark">
+                                        <i class="fa fa-external-link"></i> View
+                                    </span>
+                        </a>
+                    {% else %}
+                        <span class="badge bg-warning">No</span>
+                    {% endif %}
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="card shadow-none mt-2 mb-3">
+            <div class="card-body p-2">
+                <div class="alert alert-warning p-2">
+                    Are you sure you want to requeue this order to the warehouse printers?
+                </div>
+                {{ component('AdminWarehouseRequeueOrderComponent', {
+                    warehouseOrder,
+                }) }}
+            </div>
+        </div>
+
+        {{ component('AdminWarehouseOrderLog', { warehouseOrder }) }}
+    </div>
+</div>

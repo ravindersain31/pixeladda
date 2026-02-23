@@ -1,0 +1,82 @@
+{% if product is defined and product is not null %}
+    {% if product.sku == 'CUSTOM' %}
+        {% set productUrl = url('custom_yard_sign_editor', {
+            variant: '24x18'
+        }) %}
+    {% elseif product.sku == 'DC-CUSTOM' %}
+        {% set productUrl = url('custom_die_cut_editor', {
+            variant: '24x18'
+        }) %}
+    {% elseif product.sku == 'BHC-CUSTOM' %}
+        {% set productUrl = url('custom_big_head_cutouts_editor', {
+            variant: '24x18'
+        }) %}
+    {% elseif product.sku == 'HF-CUSTOM' %}
+        {% set productUrl = url('custom_hand_fans_editor', {
+            variant: '24x18'
+        }) %}
+    {% else %}
+        {% set productUrl = url('editor', {
+            category: product.primaryCategory.slug,
+            productType: product.productType.slug,
+            sku: product.sku
+        }) %}
+    {% endif %}
+    <div class="col-6 col-lg-4 col-xxl-3 product-item pe-xl-1 ps-xl-1 mb-1 p-xl-1">
+        <a href="{{ productUrl }}" class="card">
+            <div class="card-body">
+                <div class="postion-relative p-2">
+
+                    {% set productImage = customImageUrl is defined and customImageUrl ? customImageUrl : vich_s3.asset(product, 'imageFile') %}
+                    {% if productImage is null %}
+                        <img width="246" height="184" class="product-image"
+                            src="https://static.yardsignplus.com/product_20230111-6de62290-9187-11ed-b6a5-3b2cfcc48b44.png"
+                            alt="...">
+                    {% else %}
+                        <img width="246" height="184" class="lazy product-image" src="{{ productImage | lazyDefaultImage }}"
+                            data-src="{{ productImage }}" alt="{{ product.name }}">
+                    {% endif %}
+
+                </div>
+                <h3 class="card-text p-1 p-sm-2">
+                    {% if prefixName is defined and prefixName %}
+                        {{ prefixName }}
+                    {% else %}
+                        Custom Outdoor Yard Sign Multiple Sizes
+                    {% endif %}
+                    {{ product.name }}
+                </h3>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item border-0">
+                    <span class="badge d-inline-flex align-items-center px-1 py-0 rounded-pill custom-badge-super-rush">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-lightning-fill me-1" viewBox="0 0 16 16">
+                            <path d="M11.3 1L4 9h4l-1 6 7-8H9l2.3-6z"/>
+                        </svg>
+                        Overnight Delivery
+                    </span>
+                </li>
+                {{ include('common/_product_pricing_chart.html.twig') }}
+                <li class="list-group-item border-0">
+                    <div class="product-meta-data">
+                        <div class="product-price">${{ product.lowestPrice | number_format(2) }}</div>
+                        <div class="product-min-qty">Min 1</div>
+                        <div class="product-rating-star">
+                            {% for item in 0..4 %}
+                                <span class="star" data-rating="1"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-star"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></span>
+                            {% endfor %}
+                        </div>
+                        <div class="product-rating-count">({{ product.reviewCount }})</div>
+                    </div>
+                </li>
+            </ul>
+            <div class="card-button">
+                {% if buttonText is defined %}
+                    <button class="btn btn-primary btn-block btn-customize-now">
+                        {{ buttonText }}
+                    </button>
+                {% endif %}
+            </div>
+        </a>
+    </div>
+{% endif %}

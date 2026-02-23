@@ -1,0 +1,38 @@
+<div class="table-responsive">
+    <table class="card-body table table-striped mb-0 transaction-table">
+    <thead>
+    <tr>
+        <th>Sr.</th>
+        <th>Transaction ID</th>
+        <th>Gateway</th>
+        <th>Amount</th>
+        <th class="text-center">Status</th>
+        <th class="text-center">Date Time</th>
+        <th class="text-center">Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+            {% for key,transaction in transactions %}
+        <tr>
+            <td>{{ transactions.getPaginationData.firstItemNumber + loop.index - 1 }}</td>
+            <td>{{transaction.transactionId | upper}}</td>
+            <td>{{ transaction.paymentMethod|default("-")|replace({'_': ' '}) }}</td>
+            <td>${{transaction.amount| default("-") }}</td>
+            <td class="badges-status">{{ transaction.status | badgePaymentStatus | raw }}</td>
+            <td class="text-center">{{ transaction.createdAt | date('m/d/Y h:i A') }}</td>
+            <td class="text-center">
+                <a href="{{ url('admin_order_overview', {orderId: transaction.order.orderId}) }}"
+                    class="btn btn-dark btn-xs text-nowrap my-1 my-md-0">
+                    View Order
+                </a>
+                {% include 'admin/order/view/_view_transaction.html.twig' with { order:transaction.order } %}
+            </td>   
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="9">No records</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+    </table>
+</div>

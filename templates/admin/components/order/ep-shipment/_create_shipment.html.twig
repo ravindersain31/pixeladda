@@ -1,0 +1,198 @@
+<div class="mt-2 border-top">
+    {% set isMissingTrackingIdForAnyBox = false %}
+    {% set isMissingFromLabelPrinting = false %}
+    {% for batchNum, orderShipmentsInBatch in orderShipmentBatches %}
+        <h5 class="mt-2">
+            {{ type.label }} Boxes
+            {% if orderShipmentBatches | length > 1 %}<small>(Batch: {{ loop.index }})</small>{% endif %}
+        </h5>
+        {% if orderShipmentsInBatch | length > 0 %}
+            <table class="table table-bordered mt-1 mb-0">
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Carrier</th>
+                    <th>Tracking ID</th>
+                    <th class="text-center">Length</th>
+                    <th class="text-center">Width</th>
+                    <th class="text-center">Height</th>
+                    <th class="text-center">Weight</th>
+                    {% if orderShipmentsInBatch | length > 1 %}
+                        <th class="text-center">Item Type</th>
+                    {% endif %}
+                    <th class="text-center">&nbsp;</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% set isMissingTrackingIdForBoxInBatch = false %}
+                {% for shipment in orderShipmentsInBatch %}
+                    {% set parcelMeta = shipment.getMetaDataKey('parcel') %}
+                    {% set parcel = parcelMeta['created'] %}
+                    {% if shipment.trackingId is null %}
+                        {% set isMissingTrackingIdForAnyBox = true %}
+                        {% set isMissingTrackingIdForBoxInBatch = true %}
+                    {% endif %}
+                    {% if shipment.printedBy is null %}
+                        {% set isMissingFromLabelPrinting = true %}
+                    {% endif %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>
+                            {% if shipment.carrier == 'UPSDAP' %}
+                                UPS
+                            {% else %}
+                                {{ shipment.carrier | default('-') }}
+                            {% endif %}
+                            {% if shipment.service %}
+                                - {{ shipment.service }}
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span data-toggle="tooltip" data-placement="top" title="{{ shipment.status }}">
+                                {{ shipment.trackingId | default('-') }}
+                            </span>
+                            {% if shipment.status != 'unknown' %}
+                                <a href="{{ url('shipment_track', {trk: shipment.trackingId }) }}" target="_blank">
+                                    <i class="fa fa-external-link"></i>
+                                </a>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">{{ parcel.length }}"</td>
+                        <td class="text-center">{{ parcel.width }}"</td>
+                        <td class="text-center">{{ parcel.height }}"</td>
+                        <td class="text-center">{{ parcel.weight }} Oz</td>
+                        {% if orderShipmentsInBatch | length > 1 %}
+                            <td class="text-center">
+                                {% set itemType = shipment.getMetaDataKey('shippedItemType') %}
+                                <select name="shippedItemType" class="form-select form-select-sm w-auto m-auto"
+                                        data-action="live#action"
+                                        data-live-action-param="shippedItemSelector"
+                                        data-live-shipment-param="{{ shipment.id }}"
+                                        data-live-itemType-param=""
+                                        onchange="this.dataset.liveItemTypeParam=this.value"
+                                        style="padding-right: 1.375rem;">
+                                    <option value="">-- Select --</option>
+                                    <option value="signs" {{ itemType == 'signs' ? 'selected' : '' }}>Signs</option>
+                                    <option value="stakes" {{ itemType == 'stakes' ? 'selected' : '' }}>Stakes</option>
+                                    <option value="both" {{ itemType == 'both' ? 'selected' : '' }}>Both</option>
+                                </select>
+                            </td>
+                        {% endif %}
+                        <td class="text-center">
+                            {% set postageLabel = shipment.postageLabel %}
+                            {% if postageLabel %}
+                                <button class="btn badge bg-secondary text-white" data-action="live#action"
+                                        data-live-action-param="printSingleLabel"
+                                        data-live-shipment-param="{{ shipment.id }}">
+                                    {% if shipment.printedAt is null %}
+                                        Print Label
+                                    {% else %}
+                                        <div class="d-flex flex-column">
+                                            <span>Reprint ({{ shipment.printedAt | date('m/d h:i A') }})</span>
+                                        </div>
+                                    {% endif %}
+                                </button>
+                            {% endif %}
+                            {# TODO: delete parcel #}
+                            <button class="btn btn-link p-0 btn-sm d-none" data-action="live#action"
+                                    data-live-action-param="deleteParcelforce"
+                                    data-live-id-param="{{ shipment.id }}">
+                                <span data-loading="action(deleteParcelforce)|show" style="display: none">Deleting...</span>
+                                <span data-loading="action(deleteParcelforce)|hide" style="display: block">Delete</span>
+                            </button>
+                        </td>
+                    </tr>
+                    {% if shipment.internalNotes %}
+                        <tr>
+                            <td colspan="5">
+                                {{ shipment.internalNotes }}
+                            </td>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+            </table>
+            <div class="action-buttons">
+                {% set firstShipmentInBatch = orderShipmentsInBatch | first %}
+                {% if firstShipmentInBatch.trackingId is null %}
+                    <button
+                            data-action="live#action"
+                            data-live-action-param="deleteParcels"
+                            data-loading="action(deleteParcels)|addAttribute(disabled)"
+                            data-live-batch-param="{{ firstShipmentInBatch.batchNum }}"
+                            class="btn btn-link p-0 btn-sm">
+                        <span data-loading="action(deleteParcels)|show" style="display: none">Deleting Boxes...</span>
+                        <span data-loading="action(deleteParcels)|hide" style="display: block">Delete Boxes</span>
+                    </button>
+                {% else %}
+                    <button
+                            data-action="live#action"
+                            data-live-action-param="refundParcels"
+                            data-loading="action(refundParcels)|addAttribute(disabled)"
+                            data-live-batch-param="{{ batchNum }}"
+                            class="btn btn-link p-0 btn-sm">
+                        <span data-loading="action(refundParcels)|show"
+                              style="display: none">Cancelling Shipment...</span>
+                        <span data-loading="action(refundParcels)|hide" style="display: block">Cancel Shipment</span>
+                    </button>
+                {% endif %}
+            </div>
+        {% endif %}
+
+        {% include 'admin/components/order/ep-shipment/_shipping_services.html.twig' with { batch: batchNum, orderShipments: orderShipmentsInBatch } %}
+    {% endfor %}
+
+    {% if not isMissingTrackingIdForAnyBox %}
+        {% include 'admin/components/order/ep-shipment/_create_shipment_box.html.twig' %}
+
+        {% if orderShipmentBatches | length > 0 %}
+            <div class="d-block text-center">
+                {% set pdfLabelKey = type.value == 'delivery' ? 'postageLabelAllPdf' : 'postageReturnLabelAllPdf' %}
+                {% set postageLabelPDFUrl = order.getMetaDataKey(pdfLabelKey) %}
+                <button class="btn btn-secondary" data-action="live#action"
+                        data-live-action-param="printAllLabelInPDF"
+                        data-loading="action(printAllLabelInPDF)|action(createParcel)|addAttribute(disabled)">
+                    {% if postageLabelPDFUrl %}
+                        <span data-loading="action(printAllLabelInPDF)|show" style="display: none">
+                            Reprinting All Labels...
+                        </span>
+                        <span data-loading="action(printAllLabelInPDF)|hide" style="display: block">
+                            Reprint All Labels
+                        </span>
+                    {% else %}
+                        <span data-loading="action(printAllLabelInPDF)|show" style="display: none">
+                            Printing All Labels...
+                        </span>
+                        <span data-loading="action(printAllLabelInPDF)|hide" style="display: block">
+                            Print All Labels
+                        </span>
+                    {% endif %}
+                </button>
+                {% if postageLabelPDFUrl %}
+                    <div class="d-block mt-2">
+                        <button class="btn btn-link p-0" data-action="live#action" data-live-reprint-param="true"
+                                data-live-action-param="printAllLabelInPDF"
+                                data-loading="action(printAllLabelInPDF)|action(createParcel)|addClass(disabled)">
+                            Regenerate PDF & Print
+                        </button>
+                    </div>
+                {% endif %}
+            </div>
+
+            {% if type.value == 'delivery' %}
+                <div class="text-center p-2">
+                    <p class="mb-2">Once the shipping label is printed, click Mark Shipped</p>
+                    {% if isMissingFromLabelPrinting %}
+                        <button class="btn btn-primary btn-sm" disabled="disabled">Mark Shipped</button>
+                    {% else %}
+                        <button class="btn btn-primary btn-sm" data-action="live#action"
+                                data-live-action-param="markShipped"
+                                data-loading="action(markShipped)|action(createParcel)|addAttribute(disabled)">
+                            <span data-loading="action(markShipped)|show" style="display: none">Shipping...</span>
+                            <span data-loading="action(markShipped)|hide" style="display: block">Mark Shipped</span>
+                        </button>
+                    {% endif %}
+                </div>
+            {% endif %}
+        {% endif %}
+    {% endif %}
+</div>

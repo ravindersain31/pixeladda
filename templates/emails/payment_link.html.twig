@@ -1,0 +1,29 @@
+{% extends 'emails/base.html.twig' %}
+{% block title %}PAYMENT REQUEST FOR ORDER #{{ order.orderId }}{% endblock %}
+{% block subject %}PAYMENT REQUEST FOR ORDER #{{ order.orderId }}{% endblock %}
+{% block body %}
+    <table class="payment-request" style="width: 100%;max-width: 100%;margin: auto;text-align: center;font-family: sans-serif;background-color: #ffffff;">
+        <tr>
+            <td colspan="3">
+                <p style="font-size: 26px; font-weight: bold; color: #000000; padding: 0 50px; margin: 8px 0 10px;" class="user-name">
+                    Hi {{ order.billingAddress.firstName }} {{ order.billingAddress.lastName }}
+                </p>
+                <p class="off-desc ys-mob-ryt-lft-pad15"
+                   style="font-size: 16px; color: #000000; padding: 0 50px; line-height: 135%; margin: 0 0 20px;">
+                   You have a pending payment of ${{ transaction.amount }}. Transaction ID #{{transaction.transactionId}} for Order ID #{{order.orderId}}. <br> Please complete the payment immediately to avoid any delay in your order.
+                </p>
+                <p class="off-desc ys-mob-ryt-lft-pad15" style="font-size: 16px; color: #000000; padding: 0 50px; line-height: 135%;">{{transaction.metaDataKey('customerNote')}}</p>
+            </td>
+        </tr>
+        <tr class="payment-button">
+            <td>
+                <a href="{{ paymentLinkUrl }}" class="ysp-common-btn-sm" style="background-color: #28a745;color: #fff;font-size: 32px;text-transform: uppercase;text-decoration: none;padding: 18px 30px;display: inline-block;font-weight: normal;border-radius: 10px;margin: 0px 0px 25px 0px;line-height: 1.5;" target="_blank">CLICK HERE TO COMPLETE PAYMENT</a>
+            </td>
+        </tr>
+        <tr class="requested-payment-info-table">
+            <td>
+                {% include 'emails/common/_order_info_table.html.twig' %}
+            </td>
+        </tr>
+    </table>
+{% endblock %}

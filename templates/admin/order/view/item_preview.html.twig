@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Yard Sign Plus{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <script data-search-pseudo-elements defer
+            src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/js/all.min.js"
+            crossorigin="anonymous"></script>
+    {% block stylesheets %}
+        {{ encore_entry_link_tags('admin-preview') }}
+        {{ encore_entry_link_tags('admin') }}
+    {% endblock %}
+</head>
+<body>
+{% if item.metaData.isCustomSize is defined and item.metaData.isCustomSize %}
+    {% set templateSize = item.metaData.customSize.templateSize.width ~ 'x' ~ item.metaData.customSize.templateSize.height %}
+{% else %}
+    {% set templateSize = item.product.name %}
+{% endif %}
+
+{% set productImage = vich_s3.asset(item.product, 'imageFile') %}
+
+<div id="product-editor-container" {{ react_component('AdminItemPreview', {
+    'canvasData': canvasData,
+    'itemId': item.id,
+    'item': {
+        name: templateSize,
+        orderId: order.orderId,
+        addons: item.addOns,
+        customOriginalArtwork: item.metaData.customOriginalArtwork ?? [],
+        image: productImage
+    }
+}) }}>
+    <div class="loading-product-editor">
+        Initializing Admin Item Preview...
+    </div>
+</div>
+{% block javascripts %}
+    {{ encore_entry_script_tags('admin-preview') }}
+    {{ encore_entry_script_tags('admin') }}
+{% endblock %}
+</body>
+</html>

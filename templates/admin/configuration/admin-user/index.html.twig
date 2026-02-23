@@ -1,0 +1,83 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Admin Users{% endblock %}
+{% block pageTitle %}
+    <div class="page-header-icon">
+        <i class="fas fa-user-md"></i>
+    </div>
+    List of Admin/Designer Users
+{% endblock %}
+
+{% macro actionButton(link, icon, text, color) %}
+    <a href="{{ link }}" class="btn btn-{{ color }} btn-xs my-1">
+        <i class="fas fa-{{ icon }} me-1"></i> {{ text }}
+    </a>
+{% endmacro %}
+
+{% block body %}
+    <div class="card card-header-actions mx-auto shadow-none">
+        <div class="card-header">
+            List of Admin/Designer Users
+            <div>
+                {{ include('admin/configuration/admin-user/_filter_admin_user.html.twig') }}
+                <a href="{{ url('admin_config_user_add') }}" class="btn btn-primary btn-sm">
+                    <i class="fas fa-plus me-2"></i>
+                    Add
+                </a>
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="card-body mb-0 table table-striped">
+                <thead>
+                    <tr>
+                        <th>Sr.</th>
+                        <th>Name</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Enabled</th>
+                        <th>Roles</th>
+                        <th class="text-nowrap">Last Login At</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% if users | length > 0 %}
+                    {% for user in users %}
+                        <tr>
+                            <td>{{ users.getPaginationData.firstItemNumber + loop.index - 1 }}</td>
+                            <td>{{ user.name }}</td>
+                            <td>{{ user.username }}</td>
+                            <td>{{ user.email | default('-')}}</td>
+                            <td class="text-capitalize {{ user.isEnabled ? 'text-success fw-bold' : 'text-danger fw-bold' }}">
+                                {{ user.isEnabled ? 'Enabled' : 'Disabled' }}
+                            </td>
+                            <td style="width: 200px;">{{ user.roles | map(role => role | replace({'ROLE_': ''})) | join(' | ') | default('-') }}</td>
+                            <td>
+                                {% if user.lastLoginAt %}
+                                {{ user.lastLoginAt | date('M d, Y H:i A') }}
+                                {% else %}
+                                    Not Logged In Yet
+                                {% endif %}
+                            </td>
+                            <td style="width: 200px;">
+                                {{ _self.actionButton(url('admin_config_user_edit', {id: user.id}), 'edit', 'Edit', 'info') }}
+                                {{ _self.actionButton(url('admin_config_user_change_password', {id: user.id}), 'key', 'Change', 'primary') }}
+                                {{ _self.actionButton('#', 'edit', 'Disable', 'warning') }}
+                                {{ _self.actionButton('#', 'trash', 'Delete', 'danger') }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr class="text-center">
+                        <td colspan="8">No records</td>
+                    </tr>
+                {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        {{ knp_pagination_render(users) }}
+    </div>
+{% endblock %}

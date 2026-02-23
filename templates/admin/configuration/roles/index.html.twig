@@ -1,0 +1,61 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Roless{% endblock %}
+{% block pageTitle %}
+    <div class="page-header-icon">
+        <i class="fas fa-user-md"></i>
+    </div>
+    Roles
+{% endblock %}
+
+{% block body %}
+    <div class="card card-header-actions mx-auto shadow-none">
+        <div class="card-header">
+            List of Roles
+            <div>
+                <a href="{{ url('admin_config_role_add') }}" class="btn btn-primary btn-sm">
+                    <i class="fas fa-plus me-2"></i>
+                    Add
+                </a>
+            </div>
+        </div>
+        <div class="table-responsive">
+        <table class="card-body table table-striped">
+            <thead>
+            <tr>
+                <th>Sr.</th>
+                <th>Title</th>
+                <th>Key</th>
+                <th># Permission</th>
+                <th>&nbsp;</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% if roles | length > 0 %}
+                {% for role in roles %}
+                    <tr>
+                        <td>{{ roles.getPaginationData.firstItemNumber + loop.index - 1 }}</td>
+                        <td>{{ role.title }}</td>
+                        <td>{{ role.name }}</td>
+                        <td>{{ role.permissions | length }}</td>
+                        <td>
+                            <a href="{{ url('admin_config_role_edit', {id: role.id}) }}" class="btn btn-info btn-sm">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="6">No records</td>
+                </tr>
+            {% endif %}
+            </tbody>
+        </table>
+        </div>
+        <div class="mt-4">
+            {{ knp_pagination_render(roles) }}
+        </div>
+    </div>
+
+{% endblock %}

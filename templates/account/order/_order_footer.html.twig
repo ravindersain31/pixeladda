@@ -1,0 +1,24 @@
+<p class="text-center lead mt-2">
+    Your order will arrive on <br>
+    <strong>
+        {{ order.deliveryDate | date('l, M d, Y') }}<sup>*</sup>
+    </strong><br>
+    <small class="small text-muted d-block">
+        <sup>*</sup>
+        <em>This date is subject to change based on when you approve the final proof.</em>
+    </small>
+    <a href="{{ url('order_proof', {oid: order.orderId}) }}" class="btn mt-4 btn-primary view-proof-btn btn-ysp-white">
+        View Proofs
+    </a>
+</p>
+<div class="text-center mt-3">
+    {% if app.user %}
+        <a href="{{ path('my_account') }}" target="_blank">
+            My Account
+        </a>
+    {% else %}
+        <a href="{{ path('login') }}" target="_blank">
+            Login to My Account
+        </a>
+    {% endif %}
+</div>

@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Order Wire Stake - YardSignPlus{% endblock %}
+{% block metaData %}
+    <link rel="canonical" href="{{ url('order_wire_stake') }}" />
+    {% include 'common/_default_schema.html.twig' %}
+{% endblock %}
+{% block body %}
+    {{ include('common/common_mobile_bar.html.twig',{commonBarText: 'Order Online Or Call Now',commonBarTele: '+1-877-958-1499'}) }}
+    {{ include('common/breadcrumb.html.twig', { breadcrumbs: [
+        { name: 'Order Wire Stakes', active: true }
+    ]}) }}
+
+    <div class="container-lg container-fluid p-1">
+        <div class="order-sample">
+            <div class="d-flex justify-content-center align-items-center">
+                <h4 class="heading order-samples-title fs-1">Order Wire Stakes</h4>
+            </div>
+
+            {{ component('OrderWireStakeForm',{
+                product: product,
+                editData: editData,
+            }) }}
+        </div>
+    </div>
+{% endblock %}
+{% block footerJavascripts %}
+
+{% endblock %}

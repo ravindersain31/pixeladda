@@ -1,0 +1,172 @@
+{% extends 'base.html.twig' %}
+{% set productTypeMetaData = productType.seoMetaData[category.slug]['meta_data_'~variant] | default([]) %}
+{% if productTypeMetaData | length <= 0 %}
+    {% set productTypeMetaData = constant('App\\Constant\\MetaData\\EditorPage::META_DATA')[category.slug][variant] | default([]) %}
+{% endif %}
+{% set pageTitle = seoMeta.title | default(productTypeMetaData.title | default(category.productSeoMeta.title | default(product.name ~ ' - YardSignPlus'))) %}
+{% if pageTitle == product.name ~ ' - YardSignPlus' and product.isCustom %}
+    {% set pageTitle = variant | addInchQuotes ~ ' ' ~ product.name ~ ' - YardSignPlus' %}
+{% endif %}
+{% set pageHeaderTag = seoMeta.headerTag | default(productTypeMetaData.headerTag | default(category.productSeoMeta.headerTag | default('Personalize Outdoor Yard Signs'))) %}
+{% if pageHeaderTag == 'Personalize Outdoor Yard Signs' and product.isCustom %}
+    {% set pageHeaderTag = variant | addInchQuotes ~ ' Custom Yard Signs' %}
+{% endif %}
+{% set pageDescription = seoMeta.description | default(productTypeMetaData.description | default(category.productSeoMeta.description | default(product.name ~ ' - YardSignPlus'))) %}
+{% set pageKeywords = seoMeta.keywords | default(productTypeMetaData.keywords | default(category.productSeoMeta.keywords | default(product.name ~ ','~variant ~' yard sign'))) %}
+{% set prepareManualMetaData = product.isCustom and (productTypeMetaData | length <= 0 or (productTypeMetaData | length > 0 and productTypeMetaData.headerTag is null)) %}
+{% if prepareManualMetaData %}
+    {% set variantName = app.request.get('width')~'" x '~app.request.get('height')~'"' %}
+    {% if not app.request.get('width') %}
+        {% set variantName = variant | addInchQuotes %}
+    {% endif %}
+    {% if variantName not in pageTitle %}
+        {% set pageTitle = variantName ~ ' Custom Yard Signs' %}
+    {% endif %}
+    {% if variantName not in pageHeaderTag %}
+        {% set pageHeaderTag = variantName ~ ' Custom Yard Signs' %}
+    {% endif %}
+{% endif %}
+{% set metaData = {
+    'title': pageTitle,
+    'headerTag': pageHeaderTag,
+    'description': pageDescription,
+    'keywords': pageKeywords,
+} %}
+{% block title %}{{ metaData.title }}{% endblock %}
+{% block metaData %}
+    <meta property="og:title" content="{{ metaData.title }}">
+    <meta property="title" content="{{ metaData.title }}">
+    <meta property="og:description" content="{{ metaData.description | default('') }}">
+    <meta name="description" content="{{ metaData.description | default('') }}">
+    <meta name="keywords" content="{{ metaData.keywords | default('') }}">
+    {% if product['sku'] == 'CUSTOM' %}
+        <link rel="canonical" href="{{ url('custom_yard_sign_editor', {variant: variant}) }}"/>
+        {% if variant in ['48x24', '96x48', '24x18', '18x12'] %}
+            <meta name="robots" content="noindex, nofollow"/>
+        {% endif %}
+    {% else %}
+        <link rel="canonical" href="{{ url('editor', {category: category.slug, productType: productType.slug, sku: product['sku']}) }}"/>
+    {% endif %}
+{% endblock %}
+{% block preStylesheets %}
+    {{ encore_entry_link_tags('editor') }}
+{% endblock %}
+{% block preJavascripts %}
+    <script type="text/javascript">
+        fbq('track', 'CustomizeProduct');
+    </script>
+    {{ encore_entry_script_tags('editor') }}
+    <script type="application/ld+json">
+        {
+          "@context": "http://schema.org/",
+          "@type": "Product",
+          "name": "{{ product['name'] }}",
+          "image": "{{ productImage }}",
+          "description": "{{ metaData.description | default(product['name']) }}",
+          "brand": {
+            "@type": "Brand",
+            "name": "YardSignPlus"
+          },
+          "offers": {
+            "@type": "Offer",
+            "priceCurrency": "USD",
+            "price": "{{ lowestPrice }}",
+            "availability": "http://schema.org/InStock",
+            "itemCondition": "http://schema.org/NewCondition",
+            "url": "{{ url('editor', {category: category.slug, productType: productType.slug, sku: product['sku'], variant: initialData.variant }) }}",
+            "hasMerchantReturnPolicy": {
+              "@type": "MerchantReturnPolicy",
+              "merchantReturnLink": "{{ url('return_policy') }}"
+            },
+            "shippingDetails": {
+              "@type": "OfferShippingDetails",
+              "deliveryTime": {
+                "@type": "ShippingDeliveryTime",
+                "businessDays": {
+                  "@type": "OpeningHoursSpecification",
+                  "dayOfWeek": [
+                    "Monday",
+                    "Tuesday",
+                    "Wednesday",
+                    "Thursday",
+                    "Friday"
+                  ]
+                },
+                "cutoffTime": "17:00:00",
+                "transitTime": {
+                  "@type": "QuantitativeValue",
+                  "minValue": 1,
+                  "maxValue": 5,
+                  "unitCode": "DAY"
+                }
+              }
+            }
+          }
+        }
+    </script>
+{% endblock %}
+{% block body %}
+    <link fetchpriority="high" href="https://yardsignplus-static.s3.amazonaws.com/storage/images/freight.webp" as="image">
+    {{ include('common/common_mobile_bar.html.twig',{commonBarText: 'Order Online Or Call Now',commonBarTele: '+1-877-958-1499'}) }}
+    {% if isMobile() %}
+        {% if category.slug == 'custom-signs' %}
+            {{ include('common/breadcrumb.html.twig', { breadcrumbs: [
+                { name: 'Shop', link: 'https://www.yardsignplus.com/shop?c=contractor,political,real-estate,business-ads,for-sale,sign-riders,foreclosure,restaurant,birthday,graduation,church,community,health-safety,protest' },
+                { name: category.name, link: 'https://www.yardsignplus.com/shop?c=contractor,political,real-estate,business-ads,for-sale,sign-riders,foreclosure,restaurant,birthday,graduation,church,community,health-safety,protest' },
+                { name: product['sku'], active: true }
+            ]}) }}
+        {% else %}
+            {{ include('common/breadcrumb.html.twig', { breadcrumbs: [
+                { name: 'Shop', link: url('category_shop', {c: category.slug}) },
+                { name: category.name, link: url('category', {slug: category.slug}) },
+                { name: product['sku'], active: true }
+            ]}) }}
+        {% endif %}
+    {% endif %}
+    <div class="overnight-delivery-text"><button type="button" class="ysp-delivery-calendar-btn fw-600 text-white mt-0 fs-13" data-bs-toggle="modal" data-bs-target="#ysp-delivery-calendar">Overnight Delivery&nbsp;</button>Available</div>
+    {# <div class="container-fluid">
+        <div class="page-header py-2 py-md-3">
+            <div class="editor-heading-left d-none d-lg-inline">
+                {{ include('editor/_stress_free_order.html.twig') }}
+            </div>
+            <div class="editor-heading">
+                <h1 class="text-center" id="editor_heading">{{ metaData.headerTag }}</h1>
+                {{ include('editor/_reviewed_by.html.twig') }}
+            </div>
+            <div class="row d-none d-sm-flex flex-sm-column flex-md-row">
+                <div class="col-12 col-md-6 text-start fw-500">
+                    <button type="button" class="ysp-delivery-calendar-btn mt-0 fw-500" data-bs-toggle="modal" data-bs-target="#ysp-delivery-calendar">Overnight Delivery&nbsp;</button>Available
+                </div>
+                <div class="col-12 col-md-6 text-md-end fw-500">
+                    <a href="{{ path('contact_us') }}" class="text-primary" target="_blank">Contact Us</a> for Bulk Discounts
+                    {% if productType.allowCustomSize %}
+                        & <button id="custom-sizes-btn" type="button" class="ysp-delivery-calendar-btn mt-0 fw-500">Custom Sizes</button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div> #}
+    {% include 'editor/page-header/index.html.twig' %}
+    <div id="product-editor-container" data-prepare-manual-meta-data="{{ prepareManualMetaData ? "YES" : "NO" }}" {{ react_component('ProductEditor', {
+        'cart': cart,
+        'cartOverview': cartOverview,
+        'store': store,
+        'product': product,
+        'wireStakeProduct': wireStakeProduct,
+        'links': links,
+        'categories': categories,
+        'artwork': artwork,
+        'initialData': initialData,
+    }) }}>
+        <div class="loading-product-editor">
+            <div class="d-flex justify-content-center align-items-center ">
+                <img src="{{ asset(storeInfo.isPromoStore ? 'app-images/Loader-ysp.svg' : 'app-images/spinner.svg') }}" alt="Loading...">
+            </div>
+        </div>
+    </div>
+    {{ include('common/_people_also_purchase_swiper.html.twig') }}
+	{{ include("common/_coupon_banner.html.twig") }}
+	{{ include("common/editor_customer_photos.html.twig") }}
+	{{ include("editor/page-header/_reviews.html.twig") }}
+    {{ include('common/_delivery_calendar.html.twig') }}
+{% endblock %}

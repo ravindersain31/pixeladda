@@ -1,0 +1,12 @@
+<div class="carousel slide mt-2" data-bs-ride="carousel">
+    <div class="carousel-inner">
+        <div class="carousel-item active">
+            <picture>
+                <source srcset="{{ storeInfo.isPromoStore ? 'https://static.yardsignplus.com/storage/banners/ysp-discount-01-banner-mobile-1-6943e8a4b3f68763092734.webp' : 'https://static.yardsignplus.com/storage/images/YSP_Home_discount_mobile_2025.webp' }}"
+                        media="(max-width: 767px)">
+                <img fetchpriority="high" width="1905" height="338" class="d-block w-100 h-auto" src="{{ storeInfo.isPromoStore ? 'https://static.yardsignplus.com/storage/banners/ysp-discount-01-banner-desktop-1-6943e564d354a415532414.webp' : 'https://static.yardsignplus.com/storage/images/YSP_Home_Discount_desktop_2025.webp' }}"
+                    alt="YSP Banner">
+            </picture>
+        </div>
+    </div>
+</div>

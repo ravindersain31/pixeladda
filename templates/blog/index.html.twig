@@ -1,0 +1,108 @@
+{% extends 'base.html.twig' %}
+
+{% set title = metaData.title ?: metaData.pageTitle ~ ' - ' ~ storeInfo.storeTitle %}
+
+{% block title %}{{ title }}{% endblock %}
+{% block metaData %}
+    {% set pageUrl = url('blogs') %}
+    {% set pageImageUrl = storeInfo.isPromoStore
+        ? 'https://static.yardsignplus.com/storage/promo-store/Blog-Banner-Copia-Mobile.webp' 
+        : 'https://static.yardsignplus.com/assets/blog-banner-mob.webp'
+    %}
+
+    {% include 'common/_page_meta.html.twig' with {
+        title: title,
+        metaData: metaData,
+        pageUrl: pageUrl,
+        pageImageUrl: pageImageUrl,
+        storeInfo: storeInfo
+    } %}
+{% endblock %}
+{% block body %}
+    {{ include('common/common_mobile_bar.html.twig',{commonBarText: 'Order Online Or Call Now',commonBarTele: '+1-877-958-1499'}) }}
+    <div class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <a href="{{ url('category_shop',{c: categoriesCommaSeparated}) }}" target="_blank">
+                    <picture>
+                        <source srcset="{{ storeInfo.isPromoStore ? 'https://static.yardsignplus.com/storage/promo-store/Blog-Banner-Copia-Mobile.webp' : 'https://static.yardsignplus.com/assets/blog-banner-mob.webp' }}"
+                                media="(max-width: 767px)">
+                        <img fetchpriority="high" width="1905" height="338" class="d-block w-100 h-auto" src="{{ storeInfo.isPromoStore ? 'https://static.yardsignplus.com/storage/promo-store/Blog-Banner-Copia-Destop.webp' : 'https://static.yardsignplus.com/assets/blog-banner-desk.webp' }}"
+                             alt="YSP Contact Banner">
+                    </picture>
+                </a>
+            </div>
+        </div>
+    </div>
+    {{ include('common/breadcrumb.html.twig', { breadcrumbs: [
+        { name: 'Blogs', active: true }
+    ]}) }}
+    <div class="container py-4 blog-page">
+        <div class="row">
+            <div class="col-12 col-md-8">
+                <div class="row blogs">
+                    {% if blogs | length <= 0 %}
+                        <div class="col-12 blog bg-light text-center p-4 rounded-2">
+                            No blogs found.
+                        </div>
+                    {% endif %}
+                    {% for blog in blogs %}
+                        <div class="col-12 blog">
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <div class="blog-meta">
+                                        <div class="categories">
+                                            {% for category in blog.categories %}
+                                                <a href="{{ path('blog_category', {slug: category.slug}) }}"
+                                                   class="badge bg-ysp-purple">{{ category.title }}</a>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                    <h2 class="card-title">
+                                        <a href="{{ url('blog_post', {slug: blog.slug}) }}">
+                                            {{ blog.title }}
+                                        </a>
+                                    </h2>
+                                    <img src="{{ vich_s3.asset(blog, 'imageFile') }}" class="card-img-top"
+                                         alt="{{ blog.title }}">
+                                    <div class="card-text">{{ blog.excerpt | raw }}</div>
+                                    <div class="blog-meta">
+                                        <div class="author">
+                                            <div class="author-name">
+                                                Posted By
+                                                <img src="{{ vich_s3.asset(blog.author, 'avatarFile', '100x100') }}"
+                                                     alt="{{ blog.author.name }}" class="avatar">
+                                                <span class="d-block d-sm-inline">{{ blog.author.name }}</span>
+                                            </div>
+                                            <div class="date">
+                                                on <i class="far fa-calendar-alt"></i>
+                                                {{ blog.publishedAt|date('M d, Y') }}
+                                            </div>
+                                        </div>
+                                        <div class="read-more">
+                                            <a href="{{ url('blog_post', {slug: blog.slug}) }}"
+                                               class="btn btn-ysp-outline btn-sm">Read more...</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                    <div class="d-flex justify-content-center">
+                        {{ knp_pagination_render(blogs) }}
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-4">
+                <div class="card sidebar">
+                    <div class="card-body">
+                        <div class="accordion widget" id="blogSidebarAccordion">
+                            {{ include('blog/_widget_yardsigns.html.twig') }}
+                            {{ include('blog/_widget_categories.html.twig') }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

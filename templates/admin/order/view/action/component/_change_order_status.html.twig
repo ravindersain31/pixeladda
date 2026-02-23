@@ -1,0 +1,68 @@
+<div {{ attributes }}>
+    {{ form_start(form, {
+        'attr': {
+            'novalidate': true,
+            'data-action': 'live#action:prevent',
+            'data-live-action-param': 'changeStatus'
+        }
+    }) }}
+    {% set additionalChangeFee = 10 %}
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title">Change Order Status #{{ this.order.orderId }}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+
+    <div class="offcanvas-body text-start">
+        {% include 'flash.html.twig' with { 'class': 'p-2' } %}
+
+        <div class="mb-3">
+            {{ form_errors(form) }}
+        </div>
+
+        <div class="alert alert-info mb-3">
+            <strong>Disclaimer:</strong> Please provide a reason for changing the order status. This helps the customer support team understand the context of your actions. 
+            Ensure your comments are clear and concise.
+        </div>
+
+        <div class="form-group mb-3">
+            {{ form_row(form.comments) }}
+        </div>
+
+        {# <div class="mb-3">
+            {% set maxChanges = order.getMaxAllowedRequestChanges() %}
+            {% set changesMadeBeforeApproval = order.getProofRequestChangeCountBeforeApproval() %}
+            {% set changesMadeAfterApproval = order.getProofRequestChangeCountAfterApproval() %}
+
+            <div class="text-muted fs-6">
+                <strong>Remaining Changes:</strong>
+                {% if maxChanges is not null %}
+                    {% if order.getRemainingRequestChanges() > 0 %}
+                        {{ order.getRemainingRequestChanges() }} free changes remaining.
+                    {% else %}
+                        No more free changes allowed.
+                        Now a <strong>${{ additionalChangeFee }}</strong> fee will be applied for each additional change request.
+                    {% endif %}
+                {% else %}
+                    Unlimited changes allowed.
+                {% endif %}
+            </div>
+        </div> #}
+
+        {# <div class="alert alert-warning mt-2">
+            <strong>Important:</strong>
+            Once the free revisions are exhausted, each additional change request will incur a 
+            <span class="fw-bold">${{ additionalChangeFee }} fee</span>.
+        </div> #}
+
+        <div class="offcanvas-footer text-start">
+            <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="offcanvas">Close</button>
+            
+            <button type="submit" data-loading="action(changeStatus)|addAttribute(disabled)" class="btn btn-sm btn-primary">
+                <span data-loading="action(changeStatus)|show" style="display: none">Updating Status...</span>
+                <span data-loading="action(changeStatus)|hide" style="display: block">Save Changes</span> <!-- Updated button text -->
+            </button>
+        </div>
+    </div>
+
+    {{ form_end(form) }}
+</div>

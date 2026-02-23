@@ -1,0 +1,103 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Rewards - {{storeInfo.storeTitle}}{% endblock %}
+{% block metaData %}
+    <link rel="canonical" href="{{ url('faqs') }}" />
+    {% include 'common/_default_schema.html.twig' %}
+{% endblock %}
+{% block body %}
+{{ include('common/common_mobile_bar.html.twig',{commonBarText: 'Order Online Or Call Now',commonBarTele: '+1-877-958-1499'}) }}
+    <div class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <picture>
+                    <source srcset="{{ storeInfo.isPromoStore ? 'https://static.yardsignplus.com/storage/promo-store/Rewards-Banner-Mobile.webp' : 'https://static.yardsignplus.com/storage/banners/rewards-mobile.webp'}}"
+                            media="(max-width: 767px)">
+                    <img fetchpriority="high" width="1905" height="338" class="d-block w-100 h-auto"
+                         src="{{ storeInfo.isPromoStore ? 'https://static.yardsignplus.com/storage/promo-store/Rewards-Banner.webp' : 'https://static.yardsignplus.com/storage/banners/rewards-desktop.webp'}}"
+                         alt="YSP FAQs Banner">
+                </picture>
+            </div>
+        </div>
+    </div>
+    {{ include('common/highlights.html.twig') }}
+    {{ include('common/breadcrumb.html.twig', { breadcrumbs: [
+        { name: 'Rewards', active: true }
+    ]}) }}
+    <section class="mt-4">
+        <div class="container">
+            <h1 class="text-center ysp-purple fw-600 fs-2">Rewarding Our Loyal Customers with FREE Perks!</h1>
+            <div class="row">
+                <div class="col-lg-4 rewards-faq-icon-box mb-3">
+                    <div class="icon-image text-center mb-3">
+                        <img class="YSP-rewards-icons img-fluid" width="150px" src="{{ storeInfo.isPromoStore ? 'https://static.yardsignplus.com/storage/promo-store/Icons-Rewards-1.svg' : 'https://static.yardsignplus.com/assets/icons/money.webp'}}" alt="YSP Rewards">
+                    </div>
+                    <div class="rewards-icon-text text-center mb-2">
+                        <h5 class="mb-2"><strong>Earn on All Orders</strong></h5>
+                        <p>The more you purchase, the more you earn! YSP Rewards appear in your <a href="{{ url('login') }}" target="_blank">My Account</a> after your order ships.</p>
+                    </div>
+
+                </div>
+                <div class="col-lg-4 rewards-faq-icon-box mb-3">
+                    <div class="icon-image text-center mb-3">
+                        <img class="YSP-rewards-icons img-fluid" width="150px" src="{{storeInfo.isPromoStore ? 'https://static.yardsignplus.com/storage/promo-store/Icons-Rewards-2.svg' : 'https://static.yardsignplus.com/assets/icons/Cronometer.webp'}}" alt="YSP Rewards">
+                    </div>
+                    <div class="rewards-icon-text text-center mb-2">
+                        <h5 class="mb-2"><strong>Valid for 6 Months</strong></h5>
+                        <p>Earn YSP Rewards on all orders! All YSP Rewards are valid for 6 months.</p>
+                    </div>
+
+                </div>
+                <div class="col-lg-4 rewards-faq-icon-box mb-3">
+                    <div class="icon-image text-center mb-3">
+                        <img class="YSP-rewards-icons img-fluid" width="150px" src="{{ storeInfo.isPromoStore ? 'https://static.yardsignplus.com/storage/promo-store/Icons-Rewards-3.svg' : 'https://static.yardsignplus.com/assets/icons/Person.webp'}}" alt="YSP Rewards">
+                    </div>
+                    <div class="rewards-icon-text text-center mb-2">
+                        <h5 class="mb-2"><strong>Apply on All Orders</strong></h5>
+                        <p>YSP Rewards can be redeemed on all products! All YSP Rewards automatically apply to your next order when logged into <a href="{{ url('login') }}" target="_blank">My Account</a>.</p>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="ysp-faq-wrapper mb-4 mt-4">
+        <div class="container">
+            <h1 class="text-center">Frequently Asked Questions</h1>
+            <div class="row">
+                {% for title,faqsList in rewardsFaqs %}
+                    <div class="col-md-12 mb-3">
+                        <div class="faq-title">
+                            <h3>{{ title }}</h3>
+                        </div>
+                        <div class="accordion ysp-accordion mt-3" id="accordionFaq{{ loop.index }}">
+                            {% set indexFaq = loop.index %}
+                            {% for question, answer in faqsList %}
+                                {% set index = random(99,999) %}
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="yspAccordion{{ index }}">
+                                        <button class="accordion-button p-2" type="button" data-bs-toggle="collapse"
+                                                data-bs-target="#yspAccord{{ index }}" aria-expanded="true"
+                                                aria-controls="yspAccord{{ index }}">
+                                            {{ question | raw }}
+                                        </button>
+                                    </h2>
+                                    <div id="yspAccord{{ index }}" class="accordion-collapse collapse" aria-labelledby="yspAccordion{{ index }}"
+                                            data-bs-parent="#accordionFaq{{ indexFaq }}">
+                                        <div class="accordion-body">
+                                            <p>{{ answer | raw }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                {% endfor %}
+            </div>
+        </div>
+        <div class="text-center mt-4">To learn more please visit our
+            <a href="{{ url('faqs') }}" target="_blank">FAQs</a>
+        </div>
+    </section>
+{% endblock %}

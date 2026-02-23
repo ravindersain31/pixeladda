@@ -1,0 +1,91 @@
+<div {{ attributes }}  >
+    <button data-bs-toggle="modal" data-bs-target="#add_from_address_{{ order.orderId }}"
+            class="btn btn-warning btn-sm me-1 text-white text-decoration-none">
+        Update from Address
+    </button>
+    <!-- Modal -->
+    <div class="modal fade" id="add_from_address_{{ order.orderId }}" tabindex="-1"
+         aria-labelledby="add_from_address_{{ order.orderId }}_label" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="add_from_address_{{ order.orderId }}_label">
+                        Update from Address
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                {% set epFromAddress = order.metaDataKey('epFromAddress') %}
+                <div class="modal-body">
+                    {{ form_start(form, {attr: {
+                        'novalidate': true,
+                        'data-action': 'live#action:prevent',
+                        'data-live-action-param': 'updateFromAddress',
+                    }}) }}
+                    {{ form_errors(form) }}
+                    {% include 'flash.html.twig' %}
+                    <div class="row">
+                        {% for choice in form.addressType.children %}
+                            {% set value = choice.vars.value %}
+                            <div class="col-12 mb-2 {% if value != 'custom' %}col-md-6{% endif %}">
+                                <label class="card card-radio shadow-none">
+                                    {{ form_widget(choice) }}
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{ choice.vars.label }}</h5>
+                                        <p class="card-text">
+                                            {% if value== 'custom' %}
+                                                Add custom address for the shipping label
+                                            {% elseif value == 'blind' %}
+                                                <b>Company:</b> --<br>
+                                                {{ defaultBlindAddress.street1 }},
+                                                {{ defaultBlindAddress.city }},
+                                                {{ defaultBlindAddress.state }},
+                                                {{ defaultBlindAddress.country }} -
+                                                {{ defaultBlindAddress.zip }}
+                                            {% else %}
+                                                <b>Company:</b> {{ defaultYSPAddress.company }}<br>
+                                                {{ defaultYSPAddress.street1 }},
+                                                {{ defaultYSPAddress.city }},
+                                                {{ defaultYSPAddress.state }},
+                                                {{ defaultYSPAddress.country }} -
+                                                {{ defaultYSPAddress.zip }}
+                                            {% endif %}
+                                        </p>
+                                        {% if value == 'custom' %}
+                                            <div class="show-on-selected">
+                                                <small class="text-muted">
+                                                    If you add this address, it will be used for the purchasing shipping
+                                                    labels and printed on the shipping label.
+                                                </small>
+                                                {% include 'admin/components/order/_update-from-custom-address.html.twig' %}
+
+                                                {% if epFromAddress %}
+                                                    <button class="btn btn-link p-0 mt-3" data-action="live#action"
+                                                            data-live-action-param="removeFromAddress"
+                                                            data-loading="action(removeFromAddress)|addAttribute(disabled)">
+                                                            <span data-loading="action(removeFromAddress)|show"
+                                                                  style="display: none">
+                                                                Removing this and using defaults...
+                                                            </span>
+                                                        <span data-loading="action(removeFromAddress)|hide"
+                                                              style="display: block">Remove this and use defaults</span>
+                                                    </button>
+                                                {% endif %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <button class="btn btn-primary" type="submit"
+                            data-loading="action(updateFromAddress)|addAttribute(disabled)">
+                        <span data-loading="action(updateFromAddress)|show" style="display: none">Updating From Address...</span>
+                        <span data-loading="action(updateFromAddress)|hide"
+                              style="display: block">Update From Address</span>
+                    </button>
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

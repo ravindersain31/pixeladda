@@ -1,0 +1,202 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    Cart Preview - {{storeInfo.storeTitle}}
+{% endblock %}
+{% block preStylesheets %}
+    {{ encore_entry_link_tags('cart-preview') }}
+    {{ encore_entry_link_tags('cart') }}
+{% endblock %}
+{% block preJavascripts %}
+    {{ encore_entry_script_tags('cart-preview') }}
+    {{ encore_entry_script_tags('cart') }}
+{% endblock %}
+{% block body %}
+{{ include('common/common_mobile_bar.html.twig',{commonBarText: 'Order Online Or Call Now',commonBarTele: '+1-877-958-1499'}) }}
+    <div class="page-header">
+        <div class="page-header-content">
+            Shopping Cart - Preview
+            {% if item.data.isCustomSize is defined and item.data.isCustomSize %}
+                {{item.data.customSize.templateSize.width ~ 'x' ~ item.data.customSize.templateSize.height}}
+            {% else %}
+               {{ item.product.label ?? item.product.name }}
+            {% endif %}
+        </div>
+    </div>
+    {{ include('common/breadcrumb.html.twig', { breadcrumbs: [
+        { name: 'Cart' },
+        { name: 'Preview'},
+        { name: item.data.isCustomSize is defined and item.data.isCustomSize ? item.data.customSize.templateSize.width ~ 'x' ~ item.data.customSize.templateSize.height : item.product.label ?? item.product.name, active: true }
+    ]}) }}
+
+    <div class="container my-3">
+        <a href="{{ url('cart', {id: lightCart.cartId}) }}"
+           class="btn btn-ysp-white gap-1 mb-2 d-inline-flex align-items-center">
+            Back <i class="far fa-hand-point-left back-icon"></i>
+        </a>
+
+        {% set hasCustomDesign = false %}
+
+        {% for side, data in item.canvasData %}
+            {% if data is defined and data.objects is defined and data.objects is not empty %}
+                {% for obj in data.objects %}
+                    {% if obj['custom']['type'] is defined and obj['custom']['type'] == 'custom-design' %}
+                        {% set hasCustomDesign = true %}
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endfor %}
+        {% if item.canvasData['front'] == null and hasCustomDesign == false and item.data.isCustom %}
+            <div class="image-preview text-center">
+                {% set addons = item.data['addons'] %}
+                {% if addons.sides is defined and addons.sides.key == 'DOUBLE' %}
+                    <div class="d-flex  align-items-center preview ">
+                        <img src="{{ item.data['image'] }}" alt="{{ item.data['name'] }}" class=" preview-double-image">
+                        <img src="{{ item.data['image'] }}" alt="{{ item.data['name'] }}" class=" preview-double-image">
+                    </div>
+                {% else %}
+                    <img src="{{ item.data['image'] }}" alt="{{ item.data['name'] }}" class="img-fluid preview-single-image">
+                {% endif %}
+            </div>
+        {% elseif item.canvasData['front']['version'] is defined and hasCustomDesign == false and item.data.isCustom %}
+            <div class="image-preview text-center">
+                {% set addons = item.data['addons'] %}
+                {% if addons.sides is defined and addons.sides.key == 'DOUBLE' %}
+                    <div class="d-flex  align-items-center preview ">
+                        <img src="{{ item.data['image'] }}" alt="{{ item.data['name'] }}" class=" preview-double-image">
+                        <img src="{{ item.data['image'] }}" alt="{{ item.data['name'] }}" class=" preview-double-image">
+                    </div>
+                {% else %}
+                    <img src="{{ item.data['image'] }}" alt="{{ item.data['name'] }}" class="img-fluid preview-single-image">
+                {% endif %}
+            </div>
+        {% else %}
+            {% if item.data.isCustomSize is defined and item.data.isCustomSize %}
+                {% set templateSize = item.data.customSize.templateSize.width ~ 'x' ~ item.data.customSize.templateSize.height %}
+            {% else %}
+                {% set templateSize = item.product.label ?? item.product.name %}
+            {% endif %}
+            <div class="cart-canvas" id="product-editor-container" {{ react_component('CartItemSinglePreview', {
+                'canvasData': canvasData,
+                'itemId': item.id,
+                'item': {
+                    image: item.data.image,
+                    name: templateSize,
+                    addons: item.dataKey('addons'),
+                }
+            }) }}>
+                <div class="loading-product-editor">
+                    Initializing Item Preview...
+                </div>
+            </div>
+        {% endif %}
+        <div class="mb-2">
+            {% for addon in labelForAddons(item.dataKey('addons')) %}
+                <small class="badge bg-primary fw-400">{{ addon }}</small>
+            {% endfor %}
+            {% if item.data['isHelpWithArtwork'] is defined and item.data['isHelpWithArtwork'] %}
+                <small class="badge bg-info fw-400">Help With Artwork</small>
+            {% endif %}
+            {% if item.data['isEmailArtworkLater'] is defined and item.data['isEmailArtworkLater'] %}
+                <small class="badge bg-info fw-400">Email Artwork Later</small>
+            {% endif %}
+            {% if item.data['deliveryMethod'] is defined and item.data['deliveryMethod']['key'] == 'REQUEST_PICKUP' %}
+                <small class="badge bg-danger fw-400">{{item.data['deliveryMethod']['label']}}</small>
+            {% endif %}
+            {% if item.data.isBlindShipping is defined and item.data.isBlindShipping %}
+                <small class="badge bg-success fw-400">Blind Shipping</small>
+            {% endif %}
+            {% if item.data.isFreeFreight is defined and item.data.isFreeFreight %}
+                <small class="badge bg-success fw-400">Free Freight: Scoring</small>
+            {% endif %}
+            {% if item.data.YSPLogoDiscount.hasLogo is defined and item.data.YSPLogoDiscount.hasLogo %}
+                <small class="badge ysp-bg-purple fw-400">{{storeInfo.logoTitle}}</small>
+            {% endif %}
+        </div>
+        <table class="table table-bordered item-info-table">
+            <tbody>
+            <tr>
+                {% if item.data.isCustomSize is defined and item.data.isCustomSize %}
+                    <th colspan="2" class="text-center">CUSTOM SIZE - {{ item.data.customSize.templateSize.width }}x{{ item.data.customSize.templateSize.height }}</th>
+                {% else %}
+                    <th colspan="2" class="text-center">{{ product.sku }} - {{ item.product.label ?? item.product.name }}</th>
+                {% endif %}
+            </tr>
+            <tr>
+                <td>
+                    Qty
+                    {% if product.productType.slug == 'yard-letters' %}
+                        ({{ item.quantity > 1 ? 'Packs' : 'Pack' }})
+                    {% endif %}
+                </td>
+                <td class="text-end">{{ item.quantity }} PC(s)</td>
+            </tr>
+            <tr>
+                <td>Price</td>
+                <td class="text-end">${{ item.data['unitAmount'] | number_format(2) }}</td>
+            </tr>
+            <tr>
+                <td>Subtotal</td>
+                <td class="text-end">${{ item.data['totalAmount'] | number_format(2) }}</td>
+            </tr>
+            <tr>
+                <td>Delivery Date</td>
+                <td class="text-end">{{ item.shipping['date'] | date('M d, Y') }}</td>
+            </tr>
+            <tr>
+                <td>Shipping Cost</td>
+                <td class="text-end">
+                    {% if item.shipping['amount'] <= 0 %}
+                        <span class="free-shipping-text text-success fw-bold">FREE</span>
+                    {% else %}
+                        {% if cart.dataKey('shippingItemId') and cart.dataKey('shippingItemId') == item.itemId %}
+                            ${{ item.shipping['amount'] | number_format(2) }}
+                        {% else %}
+                            <del>${{ item.shipping['amount'] | number_format(2) }}</del>
+                        {% endif %}
+                    {% endif %}
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        {% if (cart.subTotal) <= 50 %}
+            <div class="alert alert-warning text-center p-2 mb-0">
+                Free shipping on orders of $50 or more. Add ${{(50 - cart.subTotal) | number_format(2)}} more to qualify for free shipping! 
+            </div>
+        {% endif %}
+        <a href="{{ url('cart', {id: lightCart.cartId}) }}"
+           class="btn btn-ysp-white gap-1 mb-2 mt-3 d-inline-flex align-items-center">
+            Back <i class="far fa-hand-point-left back-icon"></i>
+        </a>
+    </div>
+
+    {% set cartItems = [] %}
+    {% set template = item.product %}
+    {% set product = item.product.parent %}
+    {% set cartItems =  [{
+        index: 1,
+        item_id: product.sku,
+        item_name: product.sku ~ ' - ' ~ template.name,
+        affiliation: ysp.storeName,
+        currency: ysp.storeCurrency,
+        discount: 0.00,
+        item_brand: ysp.storeName,
+        item_category: product.primaryCategory.name,
+        price: item.dataKey('totalAmount'),
+        quantity: item.quantity,
+        coupon: "",
+    }] %}
+    <script>
+        const cartItems = {{ cartItems | json_encode | raw }};
+        dataLayer.push({
+            event: 'view_item',
+            ecommerce: {
+                currency: '{{ ysp.storeCurrency }}',
+                value: '{{ item.dataKey('totalAmount') }}',
+                items: cartItems
+            }
+        });
+    </script>
+{% endblock %}
+
+

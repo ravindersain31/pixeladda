@@ -1,0 +1,39 @@
+{% for item in lightCart.items %}
+    <div class="light-cart-item d-flex justify-center justify-content-start align-items-center text-align-start">
+        <div class="text-center">
+            {% set editCartUrl = editCartUrl(item, lightCart.cartId) %}
+            <a href="{{ editCartUrl }}" type="button">
+                <img class="img-responsive light-item-img" src="{{ item.data['image'] }}" alt="Image"/>
+            </a>
+        </div>
+        <div class="">
+            <div class="light-cart-item-header">
+                <a href="{{ editCartUrl }}" type="button">
+                    {{ item.parentSku }}
+                </a>
+            </div>
+            <div class="light-cart-item-info d-flex justify-content-between align-items-center">
+                <div class="price">
+                    ${{ item.data['totalAmount']|number_format(2) }}
+                </div>
+                <div class="variant-name">
+                    {{ item.data.name }}
+                </div>
+                <div class="quantity">
+                    Qty: {{ item.quantity }}
+                </div>
+            </div>
+        </div>
+        <div class="remove">
+            <form class="d-inline" method="post" action="{{ url('remove_item_from_cart') }}">
+                <input type="hidden" name="cartId" value="{{ lightCart.cartId }}">
+                <input type="hidden" name="itemId" value="{{ item.id }}">
+                <input type="hidden" name="action" value="remove">
+                <button type="submit"
+                        onclick="return confirm('Are you sure to delete this item from cart?')" class="p-0">
+                        <svg class="remove-cart-svg" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x-circle text-sgs-red" aria-hidden="true" data-acsb-hidden="true" data-acsb-force-hidden="true"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+                </button>
+            </form>
+        </div>
+    </div>
+{% endfor %}

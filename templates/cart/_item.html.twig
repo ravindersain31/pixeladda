@@ -1,0 +1,145 @@
+<div class="row">
+    {{ include('cart/partials/_cart_item_preview.html.twig') }}
+    <div class="col-12 col-md-8 col-xl-6">
+        <table class="table table-bordered item-info-table">
+            <tbody>
+            <tr>
+            {% if item.data.isCustomSize is defined and item.data.isCustomSize %}
+                <th colspan="2" class="text-center">{{ product.sku }} - {{ item.data.templateSize.width }}x{{ item.data.templateSize.height }}</th>
+            {% else %}
+                <th colspan="2" class="text-center">{{ product.sku }} - {{ item.product.label ?? item.product.name }}</th>
+            {% endif %}
+            </tr>
+            <tr>
+                <td>
+                    Qty
+                    {% if product.productType.slug == 'yard-letters' %}
+                        ({{ item.data.quantity > 1 ? 'Packs' : 'Pack' }})
+                    {% endif %}
+                </td>
+                <td class="text-end pe-1">
+                    {{component('CartItemQuantityForm', {
+                        cartItem: item,
+                        storeInfo: storeInfo
+                    })}}
+                </td>
+            </tr>
+            <tr>
+            {% if product.sku != 'SAMPLE' or item.data['isSample'] is not defined %}
+                <td>Wire Stakes</td>
+                {% if item.dataKey('addons')['frame'] is defined and 'NONE' not in item.dataKey('addons')['frame'] %}
+                    <td class="text-end">Yes</td>
+                {% elseif item.data['isWireStake'] is defined and item.data['isWireStake'] %}
+                    <td class="text-end">Yes</td>
+                {% else %}
+                    <td class="text-end">No</td>
+                {% endif %}
+            {% endif %}
+            </tr>
+            <tr>
+                <td>Price</td>
+                <td class="text-end">${{ item.data['unitAmount'] | number_format(2) }}</td>
+            </tr>
+            <tr>
+                <td>Subtotal</td>
+                <td class="text-end">${{ item.data['totalAmount'] | number_format(2) }}</td>
+            </tr>
+            <tr>
+                <td>Delivery Date</td>
+                <td class="text-end">{{ item.shipping['date'] | date('M d, Y') }}</td>
+            </tr>
+            <tr>
+                <td>Shipping Cost</td>
+                <td class="text-end">
+                    {% if item.shipping['amount'] <= 0 %}
+                        <span class="free-shipping-text fw-bold">FREE</span>
+                    {% else %}
+                        {% if cart.dataKey('shippingItemId') and cart.dataKey('shippingItemId') == item.itemId %}
+                            ${{ item.shipping['amount'] | number_format(2) }}
+                        {% else %}
+                            <del>${{ item.shipping['amount'] | number_format(2) }}</del>
+                        {% endif %}
+                    {% endif %}
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="mb-3">
+            {% for addon in labelForAddons(item.dataKey('addons')) %}
+                <small class="badge bg-primary fw-400">{{ addon }}</small>
+            {% endfor %}
+
+            {% if item.data['isWireStake'] is defined and item.data['isWireStake'] %}
+                <small class="badge bg-primary fw-400">{{ item.product.label ?? item.product.name }}</small>
+            {% endif %}
+            {% if item.data['isHelpWithArtwork'] is defined and item.data['isHelpWithArtwork'] %}
+                <small class="badge bg-info fw-400">Help With Artwork</small>
+            {% endif %}
+            {% if item.data['isEmailArtworkLater'] is defined and item.data['isEmailArtworkLater'] %}
+                <small class="badge bg-info fw-400">Email Artwork Later</small>
+            {% endif %}
+            {% if item.data['deliveryMethod'] is defined and item.data['deliveryMethod']['key'] == 'REQUEST_PICKUP' %}
+                <small class="badge bg-danger fw-400">{{item.data['deliveryMethod']['label']}}</small>
+            {% endif %}
+            {% if item.data.isBlindShipping is defined and item.data.isBlindShipping %}
+                <small class="badge bg-success fw-400">Blind Shipping</small>
+            {% endif %}
+            {% if item.data.isFreeFreight is defined and item.data.isFreeFreight %}
+                <small class="badge bg-success fw-400">Free Freight: Scoring</small>
+            {% endif %}
+            {% if item.shipping.isSaturday is defined and item.shipping.isSaturday %}
+                <small class="badge bg-danger fw-400">Super Rush: Saturday Delivery</small>
+            {% endif %}
+            {% if item.data.YSPLogoDiscount.hasLogo is defined and item.data.YSPLogoDiscount.hasLogo %}
+                <small class="badge ysp-bg-purple fw-400">{{storeInfo.logoTitle}}</small>
+            {% endif %}
+        </div>
+    </div>
+    {% if item.dataKey('additionalNote') %}
+        <div class="col-12 mb-3">
+            <table class="table table-bordered text-break mb-0">
+                <tbody>
+                    <tr>
+                        <th>Order Comment</th>
+                    </tr>
+                    <tr>
+                        <td>{{ item.dataKey('additionalNote') }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+    {% set notes = item.dataKey('notes') %}
+
+    {% if notes %}
+        <div class="col-12 mb-3">
+            <table class="table table-bordered text-break mb-0">
+                <tbody>
+                    <tr>
+                        <th colspan="2">Additional Notes</th>
+                    </tr>
+                    {% for type, value in notes %}
+                        <tr>
+                            <td class="fw-bold text-capitalize" style="width: 30%;">{{ type|replace({'_': ' '}) }}
+                                {% if value is iterable %}
+                                        {% for key, text in value %}
+                                            <span class="fw-semibold">({{ key|replace({'_': ' '}) }}):</span> <span class="fw-normal">{{ text }}</span>
+                                        {% endfor %}
+                                {% else %}
+                                    <span class="fw-normal">{{ value }}</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+    {% if cart.subTotal <= 50 and not (item.data['isSample'] is defined and item.data['isSample']) %}
+        <div class="col-12 text-center">
+            <span class="alert alert-warning d-block p-2 mb-0">
+                Free shipping on orders of $50 or more. Add ${{(50 - cart.subTotal) | number_format(2)}} more to qualify for free shipping!
+            </span>
+        </div>
+    {% endif %}
+</div>

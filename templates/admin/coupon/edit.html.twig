@@ -1,0 +1,25 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Coupon Edit
+{% endblock %}
+{% block pageTitle %}
+	<div class="page-header-icon">
+		<i class="fas fa-list"></i>
+	</div>
+	Coupon
+{% endblock %}
+
+{% block body %}
+	<div class="card card-header-actions mx-auto shadow-none">
+		<div class="card-header">
+			Edit {{coupon.code}}
+		</div>
+        <div class="card-body">
+            {{ component('CouponForm',{
+                form:form,
+                coupon:coupon
+            }) }}
+        </div>
+	</div>
+{% endblock %}
+

@@ -1,0 +1,42 @@
+{% extends 'emails/base.html.twig' %}
+{% block title %}Order Today, Save 10% Off from YardSignPlus.com{% endblock %}
+{% block subject %}Order Today, Save 10% Off{% endblock %}
+
+{% block body %}
+
+	<style>
+		@media screen and(max-width: 767px) {
+			.common-logo-icon {
+				width: 110px !important;
+			}
+			.btn-shop-now {
+				font-size: 18px !important;
+			}
+			.off-desc-small {
+				font-size: 13px !important;
+				color: #000000 !important;
+				margin: 15px 0 !important;
+			}
+			.ys-mob-ryt-lft-pad15 {
+				padding: 0 15px !important;
+			}
+		}
+	</style>
+
+	<tr>
+		<td colspan="3">
+			<p class="off-desc-small ys-mob-ryt-lft-pad15" style="font-size: 18px;color: #000000;padding: 0 50px;line-height: 135%;margin: 25px 0 25px;">Please click the button below to continue shopping with us. Use code SAVE10 for 10% off while supplies last!</p>
+		</td>
+	</tr>
+	<tr>
+		<td colspan="3">
+			<a href="{{ url('homepage') }}" class="btn-shop-now" style="background-color: #e8c94c;color: #000000 !important;font-size: 32px;text-transform: uppercase;text-decoration: none;padding: 10px 25px;
+				            display: inline-block;font-weight: normal;border-radius: 6px;margin-bottom: 40px;">shop now</a>
+		</td>
+	</tr>
+	<tr>
+		<td colspan="3">
+			<img src="https://static.yardsignplus.com/sign_board.png" alt="sign board" style="width: 720px;max-width: 100%;"/>
+		</td>
+	</tr>
+{% endblock %}

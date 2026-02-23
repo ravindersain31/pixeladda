@@ -1,0 +1,39 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}All Transactions{% endblock %}
+{% block pageTitle %}
+    <div class="page-header-icon">
+        <i class="fa-solid fa-cubes"></i>
+    </div>
+    All Transactions
+{% endblock %}
+
+{% block body %}
+    {% if isFilterFormSubmitted %}
+        Showing results for:
+        <div class="small">
+            {% if filterForm.vars.value.transactionId %}
+                <span><b>Transaction ID: </b>{{ filterForm.vars.value.transactionId }}</span>
+            {% endif %}
+            {% if filterForm.vars.value.status %}
+                <span><b>Status: </b>{{ filterForm.vars.value.status }}</span>
+            {% endif %}
+            {% if filterForm.paymentMethod.vars.value %}
+                <span><b>Payment Method: </b>{{ filterForm.paymentMethod.vars.value }}</span>
+            {% endif %}
+        </div>
+    {% endif %}
+    <div class="card card-header-actions mx-auto shadow-none">
+        <div class="card-header">
+            All Transactions List
+            <div class="card-header-actions">
+                {{ include('admin/transaction/_filter_transaction.html.twig') }}
+            </div>
+        </div>
+        {{ include('admin/transaction/_transaction_table.html.twig') }}
+    </div>
+
+    <div class="mt-4">
+    {{ knp_pagination_render(transactions) }}
+    </div>
+{% endblock %}

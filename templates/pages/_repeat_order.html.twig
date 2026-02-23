@@ -1,0 +1,19 @@
+<section class="container-fluid ysp-repeat-orders-wrapper" {{ stimulus_controller('repeat-order') }}>
+    <div class="row">
+        <div class="col-md-12 mt-3 mb-3">
+            <div class="ysp-repeat-order-info-wrapper">
+                <p class="repeat-order-info">Enter your old order number to generate a shopping cart link. Edit the shopping cart link with your new order request.
+                    Mention your old order number in the comments section.
+                    We will email you a digital proof in 1 hour that is identical to the style and color combination of your old order. Once your proof is approved for production, we will begin processing your order.</p>
+            </div>
+        </div>
+            {{ component('RepeatOrderForm') }}
+        <div class="col-md-12 mt-3 mb-3">
+            <div class="ysp-repeat-order-info-wrapper">
+                <p class="repeat-order-info">For questions please call <a href="tel: +1-877-958-1499">+1-877-958-1499</a> to submit a repeat order. You may also email <a href="mailto: {{storeInfo.storeEmail}}">{{storeInfo.storeEmail}}</a> or message us on our <a href="javascript:void(Tawk_API.toggle())">live chat</a>. We are available 24 hours a day, 7 days a week. 
+                    You can also create a <a href="/login">My Account</a> and visit the Repeat Orders section to submit a repeat order.</p>
+            </div>
+        </div>
+    </div>
+</section>
+{{ include('customer/common/_repeat_order.html.twig') }}

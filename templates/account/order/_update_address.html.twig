@@ -1,0 +1,80 @@
+<div class="offcanvas offcanvas-end w-75 p-2" tabindex="-1" id="update-address" aria-labelledby="offcanvasRightLabel">
+    <div class="offcanvas-header p-0 border-bottom">
+        <h5 class="address-updated-sidebar" id="offcanvasRightLabel">Update Address</h5>
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <div {{ stimulus_controller('checkout', {formName: 'update_address'}) }}>
+            {{ form_start(updateAddressForm, {attr: {validation: 'update-address'}}) }}
+
+            <div class="">
+                {% if order.status not in ['PROOF_APPROVED', 'SHIPPED'] %}
+                    <div class="mb-2 mt-3">
+                        <button type="submit" class="btn btn-primary">
+                            Save Address
+                        </button>
+                    </div>
+                {% endif %}
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            {{ form_label(updateAddressForm.shippingAddress) }}
+                        </div>
+                        <div class="card-body">
+                            {{ form_errors(updateAddressForm.shippingAddress) }}
+                            {{ include('checkout/_address.html.twig', {address: updateAddressForm.shippingAddress, target: 'shippingAddress'}) }}
+                            <div class="copy-address-button d-flex justify-content-around my-1">
+                                <button type="button" class="btn btn-primary" data-action="click->checkout#copyToBillingAddress">
+                                    Copy To Billing Address
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            {{ form_label(updateAddressForm.billingAddress) }}
+                        </div>
+                        <div class="card-body">
+                            {{ form_errors(updateAddressForm.billingAddress) }}
+                            {{ include('checkout/_address.html.twig', {address: updateAddressForm.billingAddress, target: 'billingAddress'}) }}
+                        </div>
+                    </div>
+                </div>
+                {% if order.status not in ['PROOF_APPROVED', 'SHIPPED'] %}
+                    <div class="mt-2">
+                        <button type="submit" class="btn btn-primary">
+                            Save Address
+                        </button>
+                    </div>
+                {% endif %}
+            </div>
+            {{ form_end(updateAddressForm) }}
+        </div>
+        <script>
+            window.addEventListener('DOMContentLoaded', function () {
+                const shippingRules = window.generateValidationRules('shippingAddress', 'update_address');
+                const billingRules = window.generateValidationRules('billingAddress', 'update_address');
+                const shippingMessage = window.generateValidationMessages('shippingAddress', 'update_address');
+                const billingMessage = window.generateValidationMessages('billingAddress', 'update_address');
+                $('[validation="update-address"]').validate({
+                    rules: Object.assign({}, shippingRules, billingRules),
+                    messages: Object.assign({}, shippingMessage, billingMessage),
+                    errorPlacement: function (error, element) {
+                        if (element && element.attr('type') === 'checkbox') {
+                            error.insertAfter(element.parent());
+                        } else {
+                            error.insertAfter(element);
+                        }
+                    },
+                    submitHandler: function (form) {
+                        window.addProcessOnBtn($(form).find('[type="submit"]'));
+                        form.submit();
+                    }
+                });
+            });
+        </script>
+    </div>
+</div>

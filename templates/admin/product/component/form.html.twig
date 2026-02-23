@@ -1,0 +1,89 @@
+<div {{ attributes }}>
+	{{ form_start(form) }}
+	{{ form_errors(form) }}
+	<div class="row mb-3">
+		<div class="col-12 col-md-4">
+			{{ form_row(form.store) }}
+		</div>
+		<div class="col-12 col-md-4">
+			{{ form_row(form.productType) }}
+		</div>
+		<div class="col-12 col-md-4">
+			{{ form_row(form.modalName) }}
+		</div>
+		<div class="col-12">
+			{{ form_row(form.name) }}
+		</div>
+		{% if form.slug is defined %}
+			<div class="col-12">
+				{{ form_row(form.slug) }}
+			</div>
+		{% endif %}
+		<div class="col-6">
+			{{ form_row(form.primaryCategory) }}
+		</div>
+		<div class="col-6">
+			{{ form_row(form.categories) }}
+		</div>
+		{% if form.vars.value.productType is not null and form.vars.value.productType.slug == 'yard-letters' %}
+			<div class="col-12">
+				<div class="card border-warning shadow-none">
+					<div class="card-body p-3 pb-0">
+						<div class="alert alert-warning text-center p-2 small">
+							<strong>Important:</strong>
+							Please fill out all required fields!
+						</div>
+						<div class="row">
+							<div class="col-12 col-md-3">
+								{{ form_row(form.totalSigns) }}
+							</div>
+							{% for frame in form.frameTypes %}
+								<div class="col-12 col-md-3">
+									{{ form_row(frame) }}
+								</div>
+							{% endfor %}
+						</div>
+					</div>
+				</div>
+
+			</div>
+
+		{% endif %}
+		<div class="col-12 col-md-4">
+			{{ form_row(form.imageFile) }}
+		</div>
+		<div class="col-12 col-md-4">
+			{{ form_row(form.seoImageFile) }}
+		</div>
+		<div class="col-12 col-md-4">
+			{{ form_row(form.displayImageFile) }}
+		</div>
+		<div class="col-12 col-md-4">
+			{{ form_row(form.promoImageFile) }}
+		</div>
+	</div>
+	<div class="bg-light p-3 rounded mb-3">
+		<h6>Meta Data</h6>
+		<div class="row">
+			<div class="col-12 col-md-6">
+				{{ form_row(form.seoMeta.title) }}
+			</div>
+			<div class="col-12 col-md-6">
+				{{ form_row(form.seoMeta.headerTag) }}
+			</div>
+			<div class="col-12">
+				{{ form_row(form.seoMeta.description) }}
+			</div>
+			<div class="col-12">
+				{{ form_row(form.seoMeta.keywords) }}
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-12 col-md-6 {% if this.product.id is defined and this.product.id is null or is_granted('ROLE_SUPER_ADMIN') %}{% else %}d-none{% endif %}">
+			{{ form_row(form.hasVariant) }}
+		</div>
+	</div>
+	{{ form_row(form.submit) }}
+	{{ form_end(form) }}
+</div>

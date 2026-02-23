@@ -1,0 +1,76 @@
+{% set shipByDate = 'NO' %}
+{% if list.shipBy %}
+    {% set shipByDate = list.shipBy | date('Y-m-d') %}
+{% endif %}
+<div id="ship_by_list_id_{{ list.id }}_{{ printer | lower }}" class="col-12 col-sm-6 col-md-4 col-lg-3 p-1 pe-3 pe-md-0 ship-by-list {% if loop.index == 1 %}ps-3{% endif %}">
+    <div class="card mb-1 shadow-none">
+        {% set cardBackground = '' %}
+        {% if date(list.shipBy) < date('-1 day') %}
+            {% set cardBackground = '#ffe5df' %}
+        {% elseif date(list.shipBy) > date('-1 day') and  date(list.shipBy) <= date() %}
+            {% set cardBackground = '#fff5df' %}
+        {% endif %}
+        <div class="card-header bg-light text-dark p-1 h-auto d-flex flex-column"
+             style="{% if cardBackground != '' %}background: {{ cardBackground }}!important{% endif %}">
+            <div class="d-flex justify-content-between align-content-center w-100">
+                <div class="d-flex justify-content-center align-items-center">
+                    <span>
+                        {% if list.shipBy %}
+                            Ship By: {{ list.shipBy | date('D M d') }}
+                        {% else %}
+                            Invalid List
+                        {% endif %}
+                    </span>
+                    {% if is_granted('warehouse_queue_delete_ship_by_list') %}
+                        <a href="{{ url('admin_warehouse_queue_delete_ship_by_list', {id: list.id}) }}"
+                           class="badge bg-danger text-white ms-2" onclick="return confirm('Are you sure?')">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    {% endif %}
+                </div>
+                {% if is_granted('warehouse_add_order_to_ship_by_list') %}
+                    {{ component('AdminWarehouseAddOrderToList', {
+                        shipByList: list,
+                        printerName: printer
+                    }) }}
+                {% endif %}
+            </div>
+        </div>
+        <div class="card-body bg-light p-1 card-design"
+            style="height: calc(100vh - 162px); overflow-y: scroll; overflow-x: hidden; {% if cardBackground != '' %}background: {{ cardBackground }}!important{% endif %}">
+            {% set displayedGroups = [] %}
+
+            {% for warehouseOrder in warehouseOrders %}
+                {% set warehouseOrderGroup = warehouseOrder.warehouseOrderGroup %}
+
+                {# Check if the order is part of a group and has not been displayed yet #}
+                {% if warehouseOrderGroup is not null and warehouseOrderGroup.id not in displayedGroups %}
+                    <div class="card mb-2 shadow-sm border-0 rounded" style="transition: transform 0.2s;">
+                        <div class="card-body p-1 rounded" style="background: {{ warehouseOrderGroup.cardColor|default('rgb(0, 97, 242)') }}!important">
+                            {# Loop through the group orders and display them #}
+                            {% for item in warehouseOrderGroup.orderGroup %}
+                                <div class="{% if loop.first %} {% else %}mt-2{% endif %}">
+                                    <div class="list-group-item list-group-item-action {% if not loop.last %}mb-2{% endif %}">
+                                        {{ component('AdminWarehouseOrderCard', {
+                                            'warehouseOrder': item
+                                        }) }}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% set displayedGroups = displayedGroups|merge([warehouseOrderGroup.id]) %} {# Mark this group as displayed #}
+                {% elseif warehouseOrderGroup is null %}
+                    {# If the order is not part of any group, display it individually #}
+                    <div class="card mb-2 shadow-sm border-0 rounded" style="transition: transform 0.2s;">
+                        <div class="card-body p-1">
+                            {{ component('AdminWarehouseOrderCard', {
+                                'warehouseOrder': warehouseOrder
+                            }) }}
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+</div>

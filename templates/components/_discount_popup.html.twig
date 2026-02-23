@@ -1,0 +1,25 @@
+<div {{ attributes }}>
+{{ form_start(form, {attr: {
+    'id': 'discount-form',
+    'novalidate': true,
+    'data-action': 'live#action:prevent',
+    'data-live-action-param': 'discountSubscription',
+}}) }}
+    {% if form.email.vars.errors|length > 0  %}
+        {{ form_errors(form.email) }}
+    {% elseif form.phone_number.vars.errors|length > 0 %}
+        {{ form_errors(form.phone_number) }}
+    {% endif %}
+    {% if isSuccessful %}
+        <div class="d-block alert text-{{flashError}} footer-flash">{{ flashMessage }}</div>
+        <span id="discount-flash" hidden>{{flashError}}</span>
+    {% endif %}
+    {{ form_widget(form.email) }}
+    {{ form_widget(form.phone_number) }}
+    <button type="submit" data-loading="action(discountSubscription)|addAttribute(disabled)" class="subscribe">
+        <span data-loading="action(discountSubscription)|show" style="display: none">Processing...</span>
+        <span data-loading="action(discountSubscription)|hide" style="display: block">SUBSCRIBE</span>
+    </button>
+    <button type="button" id="full-price" class="btn full-price" data-bs-dismiss="modal" aria-label="Close">No I'll Pay Full Price</button>
+    {{ form_end(form) }}
+</div>

@@ -1,0 +1,33 @@
+<div {{ attributes }}>
+	{{ form_start(form, {attr: {
+            'novalidate': true,
+            'data-action': 'live#action:prevent',
+            'data-live-action-param': 'save'
+	}}) }}
+	<div class="card cart-step mb-3">
+		<div class="modal-header">
+			<h1 class="modal-title fs-5" id="exampleModalLabel">Apply Coupon</h1>
+			<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+		</div>
+		<div class="card-body">
+			<h5>Coupon Code</h5>
+			<div class="card-content mt-2">
+				{{ form_errors(form) }}
+				{{ form_row(form.code) }}
+				<div class="form-group form-group-submit text-center">
+					<button type="submit" data-loading="action(save)|addAttribute(disabled)" class="btn btn-primary btn-block ysp-account-submit-btn" {{ this.hasValidationErrors ? 'disabled' : '' }}>
+						<span data-loading="action(save)|show" style="display: none">Applying...</span>
+						<span data-loading="action(save)|hide" style="display: block">Apply</span>
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	{% if isSuccessful %}
+		<div class="alert alert-{{flashError}} alert-dismissible fade show" role="alert" data-auto-dismiss="5000">
+			{{ flashMessage }}
+			<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+		</div>
+	{% endif %}
+	{{ form_end(form) }}
+</div>

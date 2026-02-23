@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% set title = metaData.title ?: metaData.pageTitle ~ ' - ' ~ storeInfo.storeTitle %}
+
+{% block title %}{{ title }}{% endblock %}{% block metaData %}
+    {% set pageUrl = url('view_proof') %}
+    {% set pageImageUrl = null %}
+
+    {% include 'common/_page_meta.html.twig' with {
+        title: title,
+        metaData: metaData,
+        pageUrl: pageUrl,
+        pageImageUrl: pageImageUrl,
+        storeInfo: storeInfo
+    } %}
+{% endblock %}
+{% block body %}
+	{{ include('common/common_mobile_bar.html.twig',{commonBarText: 'Order Online Or Call Now',commonBarTele: '+1-877-958-1499'}) }}
+	<div class="page-header">
+		<div class="page-header-content">
+			VIEW YOUR PROOF
+		</div>
+	</div>
+	{{ include('common/breadcrumb.html.twig', { breadcrumbs: [
+        { name: 'View Your Proof', active: true }
+    ]}) }}
+	<section class="common-sec-horizontal-pad ysp-contact-us-wrapper">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-12"></div>
+			</div>
+			<div class="row justify-content-center">
+				<div class="col-lg-4 my-4">
+					<div class="card rounded-1">
+						<div class="card-body">
+							{{ include('default/_view_proof.html.twig') }}
+						</div>
+					</div>
+				</div>
+				<div class="col-12 table-responsive" id="order-proof-container">
+				</div>
+			</div>
+		</div>
+	</section>
+{% endblock %}

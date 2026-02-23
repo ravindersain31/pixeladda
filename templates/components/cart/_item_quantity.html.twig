@@ -1,0 +1,40 @@
+<div {{ attributes }}>
+	{{ form_start(form, {attr: {
+        'novalidate': true,
+        'data-action': 'live#action:prevent',
+        'data-live-action-param': 'save',
+		'class': 'CartQuantityForm'
+    }}) }}
+
+	{{ form_errors(form) }}
+	<div class="input-group justify-content-center flex-nowrap CartInputGroup">
+		{{ form_widget(form.itemId) }}
+		<input type="hidden" id='cart_item_quantity_sku' name='cart_item_quantity[sku]' value='{{ cartItem.getProduct().getParent().getSku() }}'>
+		<input type="hidden" name='cart_item_quantity[isCustomSizeSample]' value="{{ (cartItem.data['isCustomSize'] is defined and cartItem.data['isSample'] is defined and cartItem.data['isCustomSize'] and cartItem.data['isSample']) ? 'true' : 'false' }}" id="isCustomSizeSample">
+		<button type="button" class="button-plus icon-shape ysp-purple border-0 pe-1" data-field="quantity">
+			<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-plus-circle">
+				<circle cx="12" cy="12" r="10"></circle>
+				<line x1="12" y1="8" x2="12" y2="16"></line>
+				<line x1="8" y1="12" x2="16" y2="12"></line>
+			</svg>
+		</button>
+		{{ form_widget(form.quantity) }}
+		<button type="button" class="button-minus icon-shape ysp-purple border-0" data-field="quantity">
+			<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-minus-circle">
+				<circle cx="12" cy="12" r="10"></circle>
+				<line x1="8" y1="12" x2="16" y2="12"></line>
+			</svg>
+		</button>
+		<button type="submit" class="btn btn-sm ysp-bg-purple text-white update-cart-quantity d-none rounded">
+			<span data-loading="action(save)|show addAttribute(disabled) addClass(opacity-50)" disabled>
+				<img width="16" height="16" src="{{ asset(storeInfo.isPromoStore ? 'app-images/Loader-ysp.svg' : 'app-images/spinner.svg') }}" alt="Loading Spinner">Save
+			</span>
+			<span data-loading="action(save)|hide">
+				Save
+			</span>
+		</button>
+	</div>
+
+	{{ form_end(form) }}
+
+</div>

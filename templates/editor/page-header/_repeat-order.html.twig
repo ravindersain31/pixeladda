@@ -1,0 +1,92 @@
+<div class="repeat-order-container">
+    <div id="repeat-order-error" class="text-center"></div>
+    <div class="repeat-form">
+        <form class="row g-3" id="repeat-order-form" action="{{ url('editor_repeat_order') }}" method="POST">
+            <div class="col-auto">
+                <label for="editor-enterOrderId" class="visually-hidden">Enter Order ID</label>
+                <input type="text" class="form-control" name="orderId" id="editor-enterOrderId" data-numeric-input="data-numeric-input" required
+                       placeholder="Enter Order ID" minlength="8">
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-ysp-outline btn-sm mb-3">Submit</button>
+            </div>
+        </form>
+    </div>
+    <div class="repeat-info">
+        <p>Enter your old order number to generate a shopping cart link.
+            Edit with your new order request. Mention in the comments to make like your old order number.
+            We will email you a digital proof in 1 hour. Once approved, we will begin processing your order.</p>
+        <p class="mt-3">For questions please call <a href="tel: +1-877-958-1499">+1-877-958-1499</a> to submit a repeat order.
+            You may also email <a href="mailto: {{storeInfo.storeEmail}}">{{storeInfo.storeEmail}}</a> or message us on our <a href="javascript:void(Tawk_API.toggle())">live chat</a>.
+            We are available 24 hours a day, 7 days a week. You can also create a <a href="/login">My Account</a> and visit the Repeat Orders section to submit a repeat order.</p>
+    </div>
+</div>
+<div class="modal fade" id="repeatOrderModal" data-bs-backdrop="no" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="repeatOrderModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="repeatOrderModalLabel">Repeat Order</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>For repeat orders, visit the provided shopping cart link,</br>click <i class="fa fa-edit" aria-hidden="true"></i>, 
+                    and update your quantity. In the comments section mention your old order number. You may skip choosing your design and
+                    customizing your order.</p>
+                <p>After submitting your order, you will receive a digital proof in 1 hour for your review that is
+                    identical in style and colors to your old order. Once approved, we will begin production.</p>
+                <p>For questions please call <a href="tel: +1-877-958-1499">+1-877-958-1499</a>, message us on our <a
+                            href="javascript:void(Tawk_API.toggle())">Live Chat</a>, or email <a
+                            href="mailto: {{storeInfo.storeEmail}}">{{storeInfo.storeEmail}}</a></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm mr-2" data-bs-dismiss="modal">Cancel</button>
+                <a href="javascript:void(0)" id="cartLinkOfRepeatOrder" class="m-0 btn btn-ysp-outline btn-sm">Proceed to Shopping Cart</a>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', function () {
+        var $repeatOrderErrorArea = $('#repeat-order-error');
+        var $form = $("#repeat-order-form");
+        $form.on('submit', (function (e) {
+            e.preventDefault();
+            let orderId = $('#editor-enterOrderId').val().trim();
+            if (orderId.length < 8) {
+                $repeatOrderErrorArea.html('<div class="alert alert-danger p-2 rounded-1">Your order id should be at least 8 characters.</div>');
+                return;
+            }
+            if (orderId.length > 15) {
+                $repeatOrderErrorArea.html('<div class="alert alert-danger p-2 rounded-1">This value is too long. It should have 15 characters or less.</div>');
+                return;
+            }
+            $.ajax({
+                url: $(this).attr('action'),
+                type: "POST",
+                data: new FormData(this),
+                contentType: false,
+                cache: false,
+                processData: false,
+                beforeSend() {
+                    $form.find('button[type="submit"]').text('Processing...').attr('disabled', true);
+                },
+                success: function (data) {
+                    $repeatOrderErrorArea.html('');
+                    if (!data.success) {
+                        $repeatOrderErrorArea.html('<div class="alert alert-danger p-2 rounded-1">' + data.message + '</div');
+                    } else {
+                        $('#repeatOrderModalLabel').html('Repeat Order #' + data.orderId);
+                        $('#cartLinkOfRepeatOrder').attr('href', window.location.origin + data.redirect);
+                        $('#repeatOrderModal').modal('show');
+                    }
+                    $form.find('button[type="submit"]').text('Submit').attr('disabled', false);
+                },
+                error: function (e) {
+                    $repeatOrderErrorArea.html('<div class="alert alert-danger p-2 rounded-1">' + e.message + '</div');
+                    $form.find('button[type="submit"]').text('Submit').attr('disabled', false);
+                }
+            });
+        }));
+    });
+</script>

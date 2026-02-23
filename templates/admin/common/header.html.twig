@@ -1,0 +1,112 @@
+<nav class="topnav navbar navbar-expand shadow justify-content-between justify-content-sm-start navbar-light bg-white"
+     id="sidenavAccordion">
+    <!-- Sidenav Toggle Button-->
+    <button class="btn btn-icon btn-transparent-dark order-1 order-lg-0 me-2 ms-lg-2 me-lg-0" id="sidebarToggle">
+        <i class="fas fa-bars"></i>
+    </button>
+    <a class="navbar-brand pe-3 ps-4 ps-lg-2" href="{{ url('admin_dashboard') }}">VB Admin</a>
+    <!-- Navbar Search Input-->
+    <!-- * * Note: * * Visible only on and above the lg breakpoint-->
+    <form class="form-inline me-auto d-none d-lg-block me-3 w-50" action="{{ url('admin_orders') }}" method="get">
+        <div class="input-group input-group-joined input-group-solid">
+            <input class="form-control pe-0" type="search" name="search"
+                   placeholder="Search orders By Order ID, Billing Name, Email, Mobile" aria-label="Search"
+                   value="{{ app.request.get('search') | base64_decode }}"/>
+            <button type="submit" class="btn btn-outline-primary">
+                Search
+            </button>
+        </div>
+    </form>
+    <!-- Navbar Items-->
+    <ul class="navbar-nav align-items-center ms-auto">
+        <!-- Navbar Search Dropdown-->
+        <!-- * * Note: * * Visible only below the lg breakpoint-->
+        <li class="nav-item dropdown no-caret me-3 d-lg-none">
+            <a class="btn btn-icon btn-transparent-dark dropdown-toggle" id="searchDropdown" href="#" role="button"
+               data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-search"></i></a>
+            <!-- Dropdown - Search-->
+            <div class="dropdown-menu dropdown-menu-end p-3 shadow animated--fade-in-up"
+                 aria-labelledby="searchDropdown">
+                <form class="form-inline me-auto w-100" action="{{ url('admin_orders') }}" method="get">
+                    <div class="input-group input-group-joined input-group-solid">
+                        <input class="form-control pe-0" name="search" type="search"
+                               placeholder="Search orders By Order ID, Billing Name, Email, Mobile" aria-label="Search"
+                               value="{{ app.request.get('search') | base64_decode }}" aria-describedby="basic-addon2"/>
+                        <div class="input-group-text"><i class="fa fa-search"></i></div>
+                    </div>
+                </form>
+            </div>
+        </li>
+        {% set addRoutes = ['admin_order_new_order', 'admin_product_add', 'admin_blog_post_new'] %}
+        {% if is_granted(addRoutes) %}
+            <li class="nav-item dropdown no-caret dropdown-user me-3 me-lg-4">
+                <div class="btn-group">
+                    <button type="button" class="btn btn-primary btn-sm dropdown-toggle" data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                        <i class="fa fa-plus"></i>
+                    </button>
+                    <ul class="dropdown-menu">
+                        {% if is_granted('admin_order_new_order') %}
+                            <li><a class="dropdown-item" href="{{ url('admin_order_new_order') }}">Add Manual Order</a>
+                            </li>
+                        {% endif %}
+                        {#                        {% if is_granted('admin_product_add') %} #}
+                        {#                            <li><a class="dropdown-item" href="{{ url('admin_product_add') }}">Add new Product</a></li> #}
+                        {#                        {% endif %} #}
+                        {#                        {% if is_granted('admin_blog_post_new') %} #}
+                        {#                            <li><a class="dropdown-item" href="{{ url('admin_blog_post_new') }}">Add new Blog</a></li> #}
+                        {#                        {% endif %} #}
+                    </ul>
+                </div>
+            </li>
+        {% endif %}
+        <!-- User Dropdown-->
+        <li class="nav-item dropdown no-caret dropdown-user me-3 me-lg-4">
+            <a class="btn btn-icon btn-transparent-dark dropdown-toggle" id="navbarDropdownUserImage"
+               href="javascript:void(0);" role="button" data-bs-toggle="dropdown" aria-haspopup="true"
+               aria-expanded="false">
+                <img class="img-fluid" src="https://static.yardsignplus.com/fit-in/300x300/assets/logo.png"/>
+            </a>
+            <div class="dropdown-menu dropdown-menu-end border-0 shadow animated--fade-in-up"
+                 aria-labelledby="navbarDropdownUserImage">
+                <h6 class="dropdown-header d-flex align-items-center">
+                    <img class="dropdown-user-img"
+                         src="https://static.yardsignplus.com/fit-in/300x300/assets/logo.png"/>
+                    <div class="dropdown-user-details">
+                        <div class="dropdown-user-details-name">{{ app.user.name }}</div>
+                        <div class="dropdown-user-details-email">{{ app.user.userIdentifier }}</div>
+                    </div>
+                </h6>
+                {% if 'ROLE_WAREHOUSE' not in app.user.roles %}
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="{{ url('admin_account_profile') }}">
+                    <div class="dropdown-item-icon"><i data-feather="settings"></i></div>
+                    Account
+                </a>
+                {% endif %}
+                <a class="dropdown-item" href="{{ url('admin_logout') }}">
+                    <div class="dropdown-item-icon"><i data-feather="log-out"></i></div>
+                    Logout
+                </a>
+            </div>
+        </li>
+    </ul>
+</nav>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const forms = document.querySelectorAll('form[action="{{ url("admin_orders") }}"]');
+        forms.forEach(function(form) {
+            form.addEventListener('submit', function(event) {
+                event.preventDefault();
+                const searchInput = form.querySelector('[name="search"]').value;
+                // Encode the search input in Base64
+                const encodedSearch = btoa(searchInput);
+                 // Create a URL object to modify the search parameters
+                const currentUrl = new URL(form.action, window.location.origin);
+                currentUrl.searchParams.set('search', encodedSearch);
+                window.location.href = currentUrl;
+            });
+        });
+    });
+</script>

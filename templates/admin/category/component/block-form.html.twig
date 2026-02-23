@@ -1,0 +1,26 @@
+<div {{ attributes }}>
+    {{ form_start(form) }}
+    {{ form_errors(form) }}
+    <div class="row mb-3">
+        <div class="col-12">
+            {% for block in form.categoryBlocks %}
+                <div class="card shadow-none mb-3">
+                    <div class="card-header">
+                        <div class="d-inline">
+                            {{ block.title.vars.data | default('Block') }}
+                        </div>
+                        {{ form_widget(block.vars.button_delete) }}
+                    </div>
+                    <div class="card-body">
+                        {{ form_row(block, {attr: {class: 'row'}}) }}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="mb-3">
+        {{ form_widget(form.categoryBlocks.vars.button_add) }}
+    </div>
+
+    {{ form_end(form) }}
+</div>

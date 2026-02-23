@@ -1,0 +1,38 @@
+{% if order.status == 'RECEIVED' %}
+    <div class="alert alert-success fs-6 w-75 m-auto">
+        We have received your order and are working on your proof.
+    </div>
+{% elseif order.status == 'PROOF_UPLOADED' %}
+    <div class="alert alert-warning fs-6 w-75 m-auto">
+        We have sent you a proof. Please approve or request changes on the proof.
+    </div>
+{% elseif order.status == 'SHIPPED' %}
+    <div class="alert alert-success fs-6 w-75 m-auto">
+        Your order has been shipped. It will arrive on {{ order.deliveryDate | date('D M d, Y') }}.
+    </div>
+{% elseif order.status == 'CANCELLED' %}
+    <div class="alert alert-warning w-75 fs-6 px-5 m-auto">
+        This order has been cancelled
+        {% if order.paymentStatus in ['REFUNDED', 'PARTIALLY_REFUNDED'] %}
+            and all associated payments have been refunded to the original payment method.
+        {% else %}
+            .
+        {% endif %}
+        </br>For questions please call <a href="tel: +1-877-958-1499">+1-877-958-1499</a> or email <a href="mailto: {{storeInfo.storeSupportEmail}}">{{storeInfo.storeSupportEmail}}</a>.
+    </div>
+{% elseif order.status == 'COMPLETED' %}
+    <div class="alert alert-success fs-6 w-75 m-auto">
+        Your order has been delivered and completed.
+    </div>
+{% elseif order.paymentStatus in ['REFUNDED', 'PARTIALLY_REFUNDED'] and order.status not in ['CANCELLED'] %}
+    <div class="alert alert-warning w-75 fs-6 px-5 m-auto">
+        This order has been fully/partially refunded.
+    </div>
+{% endif %}
+
+{% if order.paymentMethod == 'CHECK' and order.paymentStatus != 'COMPLETED' %}
+    <div class="alert alert-warning fs-6 w-75 mt-2 mb-3 m-auto text-center">
+        You have opted for the Check/PO Payment options so your order will not be shipped until an official check or
+        purchase order is received.
+    </div>
+{% endif %}

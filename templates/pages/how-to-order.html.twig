@@ -1,0 +1,84 @@
+{% extends 'base.html.twig' %}
+
+{% set title = metaData.title ?: metaData.pageTitle ~ ' - ' ~ storeInfo.storeTitle %}
+
+{% block title %}{{ title }}{% endblock %}
+{% block metaData %}
+    {% set pageUrl = url('how_to_order') %}
+    {% set pageImageUrl = null %}
+
+    {% include 'common/_page_meta.html.twig' with {
+        title: title,
+        metaData: metaData,
+        pageUrl: pageUrl,
+        pageImageUrl: pageImageUrl,
+        storeInfo: storeInfo
+    } %}
+{% endblock %}
+{% block body %}
+    {{ include('common/common_mobile_bar.html.twig',{commonBarText: 'Order Online Or Call Now',commonBarTele: '+1-877-958-1499'}) }}
+    {{ include('common/_banner.html.twig',{
+        desktopImg:  storeInfo.isPromoStore ? '' : 'https://static.yardsignplus.com/storage/banners/how-to-order-banner-desktop-694264db71e44947647751.webp',
+        desktopAlt: 'how to order banner',
+        mobileImg:  storeInfo.isPromoStore ? '' : 'https://static.yardsignplus.com/storage/banners/how-to-order-banner-mobile-694264dd9486d571421927.webp',
+        mobileAlt: 'how to order banner'
+    }) }}
+    {{ include('common/breadcrumb.html.twig', { breadcrumbs: [
+        { name: 'How to Order', active: true }
+    ]}) }}
+    <div class="page-content container">
+        <h3 class="my-2 text-center text-dark fw-semibold">How to Submit an Order</h3>
+        <p>Follow these 5 steps to order fully Custom Yard Signs and Stakes only at <strong>{{ storeInfo.storeName }}</strong>!</p>
+
+        <h4 class="my-4 fs-19 text-dark">STEP 1: Choose Your Product</h4>
+        <p>Browse and select the product that fits your needs.</p>
+        <h4 class="my-4 fs-19 text-dark">STEP 2: Customize Your Product</h4>
+        <p>Follow the steps on our <strong>Live Editor</strong> page to fully customize your signs and stakes:</p>
+        <ul class="text-dark">
+            <li>Choose your design</li>
+            <li>Add text and artwork</li>
+            <li>Leave a comment for additional instructions</li>
+        </ul>
+        <h4 class="my-4 fs-19 text-dark">STEP 3: Choose Your Category</h4>
+        <p>Select the category you want to customize. Examples include:</p>
+        <ul class="text-dark">
+            <li><a href="{{ url('category', {slug: 'custom-signs'}) }}">Custom Signs</a></li>
+            <li><a href="{{ url('category', {slug: 'big-head-cutouts'}) }}">Big Head Cutouts</a></li>
+            <li><a href="{{ url('category', {slug: 'yard-letters'}) }}">Yard Letters</a></li>
+            <li><a href="{{ url('category', {slug: 'die-cut'}) }}">Die-Cut</a></li>
+            <li><a href="{{ url('category', {slug: 'political'}) }}">Political</a></li>
+            <li>And <a href="{{ url('category_shop') }}">many more!</a></li>
+        </ul>
+
+        <h4 class="my-4 fs-19 text-dark">STEP 4: Submit Your Order</h4>
+        <ul class="text-dark">
+            <li>Add to cart and proceed to checkout to complete your order</li>
+            <li>Choose your delivery date</li>
+            <li>Review and submit your order</li>
+        </ul>
+        <p>We offer multiple payment methods. You can also choose <strong>See Design, Pay Later</strong> to receive a free preview before paying.</p>
+        <p>We will email you a proof or preview for your review within 1 hour. Once approved, we will begin production.</p>
+
+
+        <h4 class="my-4 fs-19 text-dark">STEP 5: Approve Your Proof</h4>
+        <p>Once your order is submitted we will send you a digital proof or preview for your review in 1 hour. Once approved we will begin production.</p>
+        <p>You may request changes if needed.</p>
+
+        <h4 class="my-4 fs-19 text-dark">STEP 6: Receive Your Order</h4>
+        <ul class="text-dark">
+            <li>Approve your proof</li>
+            <li>Complete payment</li>
+            <li>We will begin production. Once shipped, you will receive a tracking number.</li>
+        </ul>
+
+        <p class="mb-4">Thank you so much for your business. Please let us know if you have any questions. We are available 24 hours a day, 7 days a week. You may call toll-free by dialing 
+        <a href="tel:+1-877-958-1499">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-phone"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg><span>
+        +1-877-958-1499 </span></a>, email us <a href="mailto:{{storeInfo.storeEmail}}"><i class="far fa-envelope"></i> {{storeInfo.storeEmail}}</a>, or message us on our <a href="javascript:void(Tawk_API.toggle())"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-message-square"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg><span> Live Chat</span></a>.</p> 
+        <div class="d-flex justify-content-center">
+            <a target="_blank" href="{{ url('shop_now') }}" class="btn btn-ysp-outline-purple text-capitalize">
+                Shop Now
+            </a>
+        </div>
+    </div>
+{% endblock %}

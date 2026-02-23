@@ -1,0 +1,105 @@
+<div class="order-protection">
+    <div class="order-protection-info">
+        <div class="ysp-logo">
+            <img width="90" height="56" src="{{ storeInfo.storeYardLogoOther }}" alt="Yard Sign Plus Logo"
+                 class="img-fluid"/>
+        </div>
+        <div class="order-protection-heading">
+            <div class="d-flex align-item-center">
+                <h4>Order Protection</h4>
+                <sup>
+                    <span data-bs-toggle="modal" data-bs-target="#orderProtectionModel" class="ysp-info-icon">
+                        <i class="fa fa-question"></i>
+                    </span>
+                </sup>
+            </div>
+            <p class="mb-0">
+                Guaranteed delivery & satisfaction<span class="d-none d-md-inline"> with Order Protection</span>.
+            </p>
+        </div>
+    </div>
+    <div class="order-protection-action">
+        <div class="order-protection-price">
+            ${{ ((cart.subTotal + cart.totalShipping) * constant('App\\Entity\\Cart::ORDER_PROTECTION_PERCENTAGE') / 100) | number_format(2) }}
+        </div>
+        <div class="form-check form-switch">
+            {# {% if from == 'checkout' %}
+                <input type="checkbox" data-action="live#action:prevent" data-live-action-param="orderProtection(cartId={{ cart.cartId }})" id="orderProtectionCheckout" name="orderProtection" class="form-check-input" {% if cart.isOrderProtection %}checked{% endif %}>
+            {% else %} #}
+                <input type="checkbox" id="orderProtection" name="orderProtection" aria-label="Order Protection"
+                       onchange="window.location = '{{ url('toggle_order_protection', {redirect: from, cartId: cart.cartId}) }}'"
+                       class="form-check-input" {% if cart.isOrderProtection %}checked{% endif %}>
+            {# {% endif %} #}
+            <label class="form-check-label" for="orderProtection"></label>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade ysp-order-protection-modal" id="orderProtectionModel" data-bs-backdrop="no"
+     data-bs-keyboard="true" tabindex="-1" aria-labelledby="orderProtectionModelLabel" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="popup-close-button">
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">×</button>
+                </div>
+                <div class="row mt-4 order-protection-popup-header">
+                    <div class="col-lg-12 text-center">
+                        <img src="{{ storeInfo.storeYardLogoOther }}" alt="YSP Logo" class="mw-100">
+                    </div>
+                    <div class="col-lg-12 text-center">
+                        <h3>Order Protection</h3>
+                        <p>Ensure 100% satisfaction with your order.</p>
+                    </div>
+                </div>
+                <div class="row mt-5 order-protection-popup-body">
+                    <div class="col-lg-5 mb-5 position-relative">
+                        <img src="{{ asset('app-images/images/order-protection-side-photo.png') }}"
+                             class="mw-100 order-protection-side-photo mt-lg-3" alt="Order Protection">
+                        <div class="links">
+                            <span><a href="/privacy-policy" target="_blank">Privacy</a></span>
+                            <span><a href="/terms-and-conditions" target="_blank">Terms</a></span>
+                        </div>
+                    </div>
+                    <div class="col-lg-7">
+                        <ul class="order-protection-points">
+                            <li>
+                                <h4>Guaranteed Delivery</h4>
+                                <p>
+                                    <img src="{{ asset('app-images/images/order-protection-01.png') }}" alt="Order Protection">
+                                    <span>If your order is delivered late, we'll issue a full shipping refund. If no longer needed, we'll take it back &amp; issue a full refund.</span>
+                                </p>
+                            </li>
+                            <li>
+                                <h4>Guaranteed Product</h4>
+                                <p>
+                                    <img src="{{ asset('app-images/images/order-protection-02.png') }}" alt="Order Protection">
+                                    <span>If your order is incorrect or damaged, we'll exchange it.</span>
+                                </p>
+                            </li>
+                            <li>
+                                <h4>Guaranteed Service</h4>
+                                <p>
+                                    <img src="{{ asset('app-images/images/order-protection-03.png') }}" alt="Order Protection">
+                                    <span>We'll prioritize your concerns &amp; resolve any issue in less than 24 hours.</span>
+                                </p>
+                            </li>
+                            <li>
+                                <h4>Guaranteed Satisfaction</h4>
+                                <p>
+                                    <img src="{{ asset('app-images/images/order-protection-04.png') }}" alt="Order Protection">
+                                    <span>If you're not 100% satisfied with your order, we'll take it back &amp; issue a full refund.</span>
+                                </p>
+                            </li>
+                            <li class="mb-5 position-relative">
+                                <div class="d-flex justify-content-center">
+                                    <a href="{{ url('order_protection') }}" target="_blank" class="btn btn-ysp-white my-2 px-4 shop-now-btn">Learn More</a>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

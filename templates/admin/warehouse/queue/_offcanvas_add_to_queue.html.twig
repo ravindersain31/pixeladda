@@ -1,0 +1,41 @@
+{% if warehouseOrder is not null and warehouseOrder.printerName is not null and warehouseOrder.shipBy is not null %}
+    <button class="btn btn-link p-0 fs-13 text-decoration-none" data-bs-toggle="offcanvas"
+            data-bs-target="#order_action_{{ order.orderId }}" aria-controls="order_action_{{ order.orderId }}">
+        Update Queue
+    </button>
+{% else %}
+    <button class="btn badge bg-secondary text-decoration-none text-white" data-bs-toggle="offcanvas"
+            data-bs-target="#order_action_{{ order.orderId }}" aria-controls="order_action_{{ order.orderId }}">
+        Add to Queue
+    </button>
+{% endif %}
+<div class="text-start offcanvas offcanvas-end" tabindex="-1"
+     id="order_action_{{ order.orderId }}"
+     aria-labelledby="order_action_{{ order.orderId }}_label">
+    <div class="offcanvas-header p-2">
+        <div class="heading-offcanvas d-flex justify-content-center align-items-center">
+            <h5 class="offcanvas-title me-1" id="order_action_{{ order.orderId }}_label">
+                {{ order.orderId }}
+            </h5>
+            <a href="{{ url('admin_order_overview', {orderId: order.orderId }) }}"
+               target="_blank"
+               class="badge bg-primary small text-decoration-none text-white">
+                <i class="fa fa-external-link"></i> View Order Details
+            </a>
+            {% if warehouseOrder is not null and warehouseOrder.driveLink %}
+                <a href="{{ warehouseOrder.driveLink }}"
+                   target="_blank"
+                   class="badge bg-info small text-decoration-none text-white ms-1">
+                    <i class="fa fa-external-link"></i> Drive Link
+                </a>
+            {% endif %}
+            <a href="{{ url('order_proof', {oid: order.orderId }) }}" target="_blank"
+               class="badge bg-info ms-1 small text-decoration-none text-white">
+                <i class="fa fa-external-link"></i> Proof</a>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body p-2 pt-0">
+        {% include 'admin/warehouse/queue/_offcanvas_order_update.html.twig' with { warehouseOrder, order } %}
+    </div>
+</div>

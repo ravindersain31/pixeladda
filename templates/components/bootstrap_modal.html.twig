@@ -1,0 +1,34 @@
+{% set dialogClasses = [
+    'modal-dialog',
+    centered is defined and centered ? 'modal-dialog-centered' : '',
+    size is defined and size ? 'modal-' ~ size : ''
+]|filter(v => v)|join(' ') %}
+
+<div {{ attributes.defaults({
+    class: 'modal fade',
+    tabindex: '-1',
+    'aria-hidden': 'true',
+    id: id ? id : false,
+}).defaults(stimulus_controller('bootstrap-modal-cart')) }}>
+    <div class="{{ dialogClasses }}">
+        <div class="modal-content">
+            {% block modal_full_content %}
+                {% if block('modal_header') %}
+                    <div class="modal-header">
+                        {% block modal_header %}{% endblock %}
+                    </div>
+                {% endif %}
+
+                <div class="modal-body">
+                    {% block modal_body %}{% endblock %}
+                </div>
+
+                {% if block('modal_footer') %}
+                    <div class="modal-footer">
+                        {% block modal_footer %}{% endblock %}
+                    </div>
+                {% endif %}
+            {% endblock %}
+        </div>
+    </div>
+</div>

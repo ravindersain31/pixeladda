@@ -1,0 +1,62 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Currencies{% endblock %}
+{% block pageTitle %}
+    <div class="page-header-icon">
+        <i class="fas fa-list"></i>
+    </div>
+    Currencies
+{% endblock %}
+
+{% block body %}
+    <div class="card card-header-actions mx-auto shadow-none">
+        <div class="card-header">
+            List of Currencies
+            <div>
+                <a href="{{ url('admin_config_currency_add') }}" class="btn btn-primary btn-sm">
+                    <i class="fas fa-plus me-2"></i>
+                    Add
+                </a>
+            </div>
+        </div>
+        <div class="table-responsive">
+        <table class="card-body table table-striped">
+            <thead>
+            <tr>
+                <th>Sr.</th>
+                <th>Name</th>
+                <th>Code</th>
+                <th>Symbol</th>
+                <th>Rate/USD</th>
+                <th>&nbsp;</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% if currencies | length > 0 %}
+                {% for currency in currencies %}
+                    <tr>
+                        <td>{{ currencies.getPaginationData.firstItemNumber + loop.index - 1 }}</td>
+                        <td>{{ currency.name }}</td>
+                        <td>{{ currency.code }}</td>
+                        <td>{{ currency.symbol }}</td>
+                        <td>{{ currency.rate }}</td>
+                        <td>
+                            <a href="{{ url('admin_config_currency_edit', {id: currency.id}) }}" class="btn btn-info btn-sm">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="6">No records</td>
+                </tr>
+            {% endif %}
+            </tbody>
+        </table>
+        </div>
+        <div class="mt-4">
+            {{ knp_pagination_render(currencies) }}
+        </div>
+    </div>
+{% endblock %}

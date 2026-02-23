@@ -1,0 +1,244 @@
+{% extends 'base.html.twig' %}
+
+{% set title = metaData.title ?: metaData.pageTitle ~ ' - ' ~ storeInfo.storeTitle %}
+
+{% block title %}{{ title }}{% endblock %}
+{% block metaData %}
+    {% set pageUrl = url('new_arrivals') %}
+    {% set pageImageUrl = storeInfo.isPromoStore
+        ? 'https://static.yardsignplus.com/storage/banners/new-arrivals-desktop-promo-69649fdfdf24b181086083.webp'
+        : 'https://static.yardsignplus.com/storage/banners/new-arrivals-desktop-69688ecce395b437080847.webp'
+    %}
+
+    {% include 'common/_page_meta.html.twig' with {
+        title: title,
+        metaData: metaData,
+        pageUrl: pageUrl,
+        pageImageUrl: pageImageUrl,
+        storeInfo: storeInfo
+    } %}
+{% endblock %}
+
+{% block body %}
+{{ include('common/common_mobile_bar.html.twig',{commonBarText: 'Order Online Or Call Now',commonBarTele: '+1-877-958-1499'}) }}
+ {{ include('common/_banner.html.twig',{
+        desktopImg: storeInfo.isPromoStore ? 'https://static.yardsignplus.com/storage/banners/new-arrivals-desktop-promo-69649fdfdf24b181086083.webp' : 'https://static.yardsignplus.com/storage/banners/new-arrivals-desktop-69688ecce395b437080847.webp',
+        desktopAlt: 'new-arrivals-banner',
+        mobileImg: storeInfo.isPromoStore ? 'https://static.yardsignplus.com/storage/banners/new-arrivals-mobile-promo-69649fecb5f85490069609.webp' : 'https://static.yardsignplus.com/storage/banners/new-arrivals-mobile-69688eaf6bd48155644194.webp',
+        mobileAlt: 'new-arrivals-banner'
+    }) }}
+{{ include('common/highlights.html.twig') }}
+{{ include('common/breadcrumb.html.twig', { breadcrumbs: [
+    { name: 'New Arrivals', active: true }
+]}) }}
+
+<div class="container-fluid new-arrivals-section">
+    <section class="ysp-custom-gallery-wrapper">
+        <div class="row ysp-custom-gallery-grid-wrapper product-content py-3 shop-now">
+            <div class="col-md-1"></div>
+                <h3 class="mt-2 text-ysp text-center">New Arrivals</h3>
+                <p class="mb-0 fs-18 fw-400 text-center">
+                    Discover some of the latest products added in the past 90 days to our website! All products can be fully customized. For questions, to receive a quote, or assistance with a custom order please call
+                    <a href="tel: +1-877-958-1499">+1-877-958-1499</a>, email
+                    <a href="mailto:sales@yardsignplus.com">sales@yardsignplus.com</a>, or message us on our
+                    <a href="javascript:void(Tawk_API.toggle())">live chat</a>.
+                </p>
+                <div class="choose-category-list mt-2">
+                    <div class="row">
+                        <div class="col-xxl-2 col-xl-3">
+                            <div class="accordion" id="yspAccordionNewArrivalsSidebar">
+                                {{ form_start(filterForm, { attr: { onchange: 'this.submit()' } }) }}
+
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="headingProductStyles">
+                                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseProductStyles" aria-expanded="true" aria-controls="collapseProductStyles">
+                                            PRODUCT STYLES
+                                        </button>
+                                    </h2>
+
+                                    <div id="collapseProductStyles" class="accordion-collapse collapse show" aria-labelledby="headingProductStyles" data-bs-parent="#yspAccordionNewArrivalsSidebar">
+                                        <div class="accordion-body">
+                                            {{ form_widget(filterForm.c) }}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {{ form_end(filterForm) }}
+                            </div>
+                        </div>
+
+                        {% set categories = ysp.getNewArrivalCategories(ysp.storeId, 15, chooseCategories ) %}
+                        <div class="col-12 col-lg-9 col-xl-10">
+                            {% for category in categories %}
+                                <div class="row">
+                                    <div class="col-md-1"></div>
+                                    <div class="col-md-12 mt-2 mt-sm-2">
+                                        <h3 class="product-section-heading mt-sm-0">
+                                            <a href="{{ url('category_shop',{c: category.slug}) }}" class="text-white">
+                                                {{category.name}}
+                                            </a>
+                                        </h3>
+                                    </div>
+                                    <div class="col-md-1"></div>
+                                </div>
+                                {% set defaultMetaDescription = category.name ~ ' Custom Yard Signs, Free shipping on $50+, overnight delivery. Digital proof in 1hr. Order today!' %}
+                                    <div class="product-block">
+                                        <div class="row product-list">
+                                            {% set products = ysp.getCategoryToProducts(ysp.storeId, category, [], 3) %}
+                                            {% set schemaItemList = [] %}
+                                            {% set lastItemPosition = lastItemPosition is defined ? lastItemPosition : 1 %}
+                                            {% set alreadyShownSkus = alreadyShownSkus is defined ? alreadyShownSkus : [] %}
+                                            {% set isCustom = category.slug == 'custom-signs' %}
+                                            {% for key,product in products %}
+                                                {% set shopperApprovedRating = product.shopperApprovedRating is defined and product.shopperApprovedRating > 0 ? product.shopperApprovedRating : 4.8 %}
+
+                                            {% if isCustom %}
+
+                                                {% set productUrl = url('custom_yard_sign_editor', {
+                                                    variant: product.slug
+                                                }) %}
+                                                {% set productImage = null %}
+                                                {% if product.displayImageName is defined and product.displayImageName %}
+                                                    {% set productImage = "https://static.yardsignplus.com/product/fit-in/800x800/img/" ~ product.displayImageName %}
+                                                {% elseif product.imageName is defined and product.imageName %}
+                                                    {% set productImage = "https://static.yardsignplus.com/product/fit-in/800x800/img/" ~ product.imageName %}
+                                                {% endif %}
+
+                                                {% set schemaItemList = schemaItemList | merge([{
+                                                    "@type": "ListItem",
+                                                    "position": lastItemPosition,
+                                                    "item": {
+                                                        "@type": "Product",
+                                                        "@id": productUrl ~ "#product",
+                                                        "name": product.name,
+                                                        "url": productUrl,
+                                                        "image": [productImage],
+                                                        "description": product.seoMeta.description ?? category.seoMeta.description ?? defaultMetaDescription,
+                                                        "sku": product.sku,
+                                                        "brand": {
+                                                            "@type": "Brand",
+                                                            "name": 'Yard Sign Plus'
+                                                        },
+                                                        "offers": {
+                                                            "@type": "AggregateOffer",
+                                                            "priceCurrency": 'USD',
+                                                            "lowPrice": product.lowestPrice,
+                                                            "highPrice": product.highestPrice,
+                                                            "offerCount": products|length|default(1) + 5,
+                                                            "availability": "https://schema.org/InStock",
+                                                            "url": productUrl
+                                                        },
+                                                        "aggregateRating": {
+                                                            "@type": "AggregateRating",
+                                                            "ratingValue": shopperApprovedRating,
+                                                            "reviewCount": reviewCount(),
+                                                            "bestRating": "5",
+                                                            "worstRating": "1"
+                                                        }
+                                                    }
+                                                }]) %}
+                                            {% else %}
+
+                                                {% set p = product.variants|first %}
+                                                {% set size = p.variantOptions['Size'] is defined ? p.variantOptions['Size'] : null %}
+                                                {% set productUrl = url('editor', {
+                                                    category: product.primaryCategory.slug,
+                                                    productType: product.productType.slug,
+                                                    sku: product.sku
+                                                }) %}
+                                                {% if size is defined %}
+                                                {% set productUrl = url('editor', {
+                                                    category: product.primaryCategory.slug,
+                                                    productType: product.productType.slug,
+                                                    sku: product.sku,
+                                                    variant: size
+                                                }) %}
+                                                {% endif %}
+
+                                                {% set baseUrl = 'https://static.yardsignplus.com/product/img/' %}
+
+                                                {% set imageName =
+                                                    storeInfo.isPromoStore
+                                                        ? (product.promoImage.name ?? product.image.name ?? null)
+                                                        : (product.image.name ?? null)
+                                                %}
+
+                                                {% set productImage = imageName ? baseUrl ~ imageName : null %}
+
+                                                {% set schemaItemList = schemaItemList | merge([{
+                                                    "@type": "ListItem",
+                                                    "position": lastItemPosition,
+                                                    "item": {
+                                                        "@type": "Product",
+                                                        "@id": productUrl ~ "#product",
+                                                        "name": product.name,
+                                                        "url": productUrl,
+                                                        "image": [productImage],
+                                                        "description": product.seoMeta.description ?? category.seoMeta.description ?? defaultMetaDescription,
+                                                        "sku": product.sku,
+                                                        "brand": {
+                                                            "@type": "Brand",
+                                                            "name": 'Yard Sign Plus'
+                                                        },
+                                                        "offers": {
+                                                            "@type": "AggregateOffer",
+                                                            "priceCurrency": 'USD',
+                                                            "lowPrice": product.lowestPrice,
+                                                            "highPrice": product.highestPrice,
+                                                            "offerCount": product.variants|length|default(1),
+                                                            "availability": "https://schema.org/InStock",
+                                                            "url": productUrl
+                                                        },
+                                                        "aggregateRating": {
+                                                            "@type": "AggregateRating",
+                                                            "ratingValue": shopperApprovedRating,
+                                                            "reviewCount": reviewCount(),
+                                                            "bestRating": "5",
+                                                            "worstRating": "1"
+                                                        }
+                                                    }
+                                                }]) %}
+                                                {% set alreadyShownSkus = alreadyShownSkus | merge([product.sku]) %}
+                                                <div class="col-6 col-md-4 col-xl-3 product-item {% if key >= 4 %} d-none d-sm-block {% endif %}">
+                                                    {% include 'product/_product_card.html.twig' with {size: size} %}
+                                                </div>
+
+
+                                                {% set lastItemPosition = lastItemPosition + 1 %}
+                                            {% endif %}
+                                            {% endfor %}
+                                            {% set moreUrl = url('category_shop', {c: category.slug}) %}
+                                            <div class="col-6 col-md-4 col-xl-3 product-item">
+                                                <a href="{{ moreUrl }}" class="card">
+                                                    <div class="card-body">
+                                                        <div class="p-2 mt-5">
+                                                            {% set productImage = storeInfo.isPromoStore ? 'https://static.yardsignplus.com/storage/promo-store/Product-Icon-Arrow-Sign.webp' : 'https://static.yardsignplus.com/fit-in/300x500/product_20221011-e41592d0-4957-11ed-b323-57c4fba49bc7.png' %}
+                                                            <img width="245" height="184" loading="lazy" class="lazy product-image" src="{{ productImage | lazyDefaultImage }}" data-src="{{ productImage }}" alt="{{ category.name }}">
+                                                        </div>
+                                                        <div class="card-button mb-2">
+                                                            <button class="btn btn-light btn-block btn-ysp-outline btn-sm">
+                                                                View More
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                            {% endfor %}
+                        </div>
+
+                    <div class="text-center view-all-product">
+                        <a href="{{ url('category_shop') }}" class="btn btn-ysp-outline">
+                            View All Yard Sign Products
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-1"></div>
+        </div>
+    </section>
+</div>
+{% endblock %}

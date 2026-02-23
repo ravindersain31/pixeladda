@@ -1,0 +1,14 @@
+.braintree-placeholder {
+  margin: 0;
+  height: 0;
+}
+
+.braintree-form__field-group label {
+  display: block;
+}
+
+.braintree-sheet__content--form .braintree-form__flexible-fields {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}

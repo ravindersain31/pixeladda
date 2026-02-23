@@ -1,0 +1,11 @@
+{% if ysp.getEnv('APP_USER_HOST') == 'yardsignplus.com' or ysp.getEnv('APP_USER_HOST') == 'www.yardsignplus.com' %}
+    {% include 'tags/_ms_clearity.html.twig' %}
+    {% include 'tags/_gtag_US.html.twig' %}
+    {% include 'tags/_bing_ads_US.html.twig' %}
+    {% include 'tags/_facebook_pixel.html.twig' %}
+{% else %}
+    <script>
+        function fbq() {}
+        {# console.log('Yard Sign Plus - Dev') #}
+    </script>
+{% endif %}

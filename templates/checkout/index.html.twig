@@ -1,0 +1,82 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    Checkout - {{storeInfo.storeTitle}}
+{% endblock %}
+{% block javascripts %}
+    <script src="https://js.braintreegateway.com/web/dropin/1.39.1/js/dropin.min.js"></script>
+    <script src="https://js.braintreegateway.com/web/3.97.3/js/client.min.js"></script>
+    <script src="https://js.braintreegateway.com/web/3.97.3/js/google-payment.min.js"></script>
+    <script src="https://js.braintreegateway.com/web/3.97.3/js/apple-pay.min.js"></script>
+    <script src="https://pay.google.com/gp/p/js/pay.js"></script>
+    <script src="https://js.stripe.com/v3/"></script>
+    <script defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyApxy-puRWe0-tyK_eH-1NjadBfucNNmks&loading=async&libraries=places"></script>
+{% endblock %}
+
+{% block body %}
+    {{ include('common/common_mobile_bar.html.twig',{commonBarText: 'Order Online Or Call Now',commonBarTele: '+1-877-958-1499'}) }}
+    <div class="container">
+        <div class="row">
+            <div class="col-xl-6 offset-xl-3 col-md-8 offset-md-2 mt-1">
+                {% if cart.totalAmount > 0 %}
+                    {% include 'common/_express_payment.html.twig' %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="page-header">
+        <div class="page-header-content">
+            Checkout
+        </div>
+    </div>
+
+    <div class="container my-3 checkout-page proof-order-container">
+        {{ include('common/flash.html.twig') }}
+        {% if app.user %}
+            {{ include('checkout/_saved_addresses.html.twig') }}
+        {% endif %}
+        {{ include('checkout/_form.html.twig') }}
+    </div>
+    {% set cartItems = [] %}
+    {% if cart.cartItems | length > 0 %}
+        {% for item in cart.cartItems %}
+            {% set template = item.product %}
+            {% set product = item.product.parent %}
+            {% set cartItems = cartItems | merge([{
+                index: loop.index,
+                item_id: product.sku,
+                item_name: product.sku ~ ' - ' ~ template.name,
+                affiliation: ysp.storeName,
+                currency: ysp.storeCurrency,
+                discount: 0.00,
+                item_brand: ysp.storeName,
+                item_category: product.primaryCategory.name,
+                price: item.dataKey('totalAmount'),
+                quantity: item.quantity,
+                coupon: "",
+            }]) %}
+        {% endfor %}
+    {% endif %}
+    <script>
+        const cartItems = {{ cartItems | json_encode | raw }};
+        dataLayer.push({
+            event: 'begin_checkout',
+            ecommerce: {
+                currency: '{{ ysp.storeCurrency }}',
+                value: '{{ cart.totalAmount }}',
+                items: cartItems
+            }
+        });
+
+        fbq('track', 'InitiateCheckout', {
+            value: '{{ cart.totalAmount }}',
+            currency: '{{ ysp.storeCurrency }}',
+            num_items: cartItems.length,
+            content_ids: cartItems.map(item => item.item_name),
+        });
+    </script>
+    {% include 'components/_amazon_pay_modal.html.twig' with { 
+        checkoutSession: amazonPay.checkoutSession,
+        payment_cancel: 'checkout' 
+    } %}
+{% endblock %}

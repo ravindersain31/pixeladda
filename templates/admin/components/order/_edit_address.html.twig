@@ -1,0 +1,58 @@
+{% if is_granted('order_update_shipping_address') %}
+    <button class="btn badge bg-primary text-white text-decoration-none ms-1" data-bs-toggle="offcanvas"
+            data-bs-target="#order_edit_{{ type }}_{{ order.orderId }}"
+            aria-controls="order_edit_{{ type }}_{{ order.orderId }}">
+        <i class="fa fa-edit me-1"></i>
+        Edit
+    </button>
+
+    <div class="offcanvas offcanvas-end overflow-auto" id="order_edit_{{ type }}_{{ order.orderId }}"
+         tabindex="-1" aria-labelledby="order_edit_{{ type }}_{{ order.orderId }}_label" data-controller="checkout"
+         data-checkout-form-name-value="update_address">
+        {% set form = createFormView('App\\Form\\Admin\\Order\\UpdateAddressType', null, {
+            order,
+            addressType: type
+        }) %}
+        {{ form_start(form, {attr: {
+            'action': path('admin_order_update_address', {orderId: order.orderId, type }),
+        }}) }}
+        <div class="offcanvas-header p-3 pb-0">
+            <h5 id="order_edit_{{ type }}_{{ order.orderId }}_label mb-0">
+                {{ form_label(form[type]) }}
+            </h5>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"
+                    aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            {% set addressUpdatedMessages = app.flashes('addressUpdated') %}
+            {% for message in addressUpdatedMessages %}
+                <div class="alert alert-success p-2">{{ message }}</div>
+            {% endfor %}
+
+            {% set addressFailedMessages = app.flashes('addressFailed') %}
+            {% for message in addressFailedMessages %}
+                <div class="alert alert-danger p-2">{{ message }}</div>
+            {% endfor %}
+            {{ form_errors(form) }}
+
+            {% include 'checkout/_address.html.twig' with {address: form[type], target: type } %}
+            {% if form.textUpdates is defined %}
+                {{ form_row(form.textUpdates) }}
+            {% endif %}
+            {% if form.textUpdatesNumber is defined %}
+                {{ form_row(form.textUpdatesNumber) }}
+            {% endif %}
+            <div class="d-block">
+                {% if type == 'shippingAddress' and epAddress and epAddress.id %}
+                    <div class="alert alert-warning p-2 mb-0">
+                        If you update the shipping address, the address will require validation again.
+                    </div>
+                {% endif %}
+                <button type="submit" class="btn btn-primary mt-2">
+                    Update Address
+                </button>
+            </div>
+        </div>
+        {{ form_end(form) }}
+    </div>
+{% endif %}

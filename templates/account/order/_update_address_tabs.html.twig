@@ -1,0 +1,59 @@
+<div {{ stimulus_controller('checkout', {formName: 'update_address'}) }}>
+    {{ form_start(updateAddressForm, {attr: {validation: 'update-address'}}) }}
+    <ul class="nav nav-tabs" id="addressTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="shipping-tab" data-bs-toggle="tab" data-bs-target="#shipping" type="button"
+                    role="tab" aria-controls="shipping" aria-selected="true">{{ form_label(updateAddressForm.shippingAddress) }}</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="billing-tab" data-bs-toggle="tab" data-bs-target="#billing" type="button"
+                    role="tab" aria-controls="billing" aria-selected="false">{{ form_label(updateAddressForm.billingAddress) }}</button>
+        </li>
+    </ul>
+    <div class="tab-content" id="addressTabContent">
+        <div class="tab-pane fade show active" id="shipping" role="tabpanel" aria-labelledby="shipping-tab">
+            <p class="mt-3 text-small">Your order will be delivered at the below address. Please update the address in below form if it is not correct.</p>
+            {{ form_errors(updateAddressForm.shippingAddress) }}
+            {{ include('checkout/_address.html.twig', {address: updateAddressForm.shippingAddress, target: 'shippingAddress'}) }}
+            <div class="copy-address-button d-flex justify-content-around my-4">
+                <button type="button" class="btn btn-primary" data-action="click->checkout#copyToBillingAddress">
+                    Copy To Billing Address
+                </button>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="billing" role="tabpanel" aria-labelledby="billing-tab">
+            <p class="mt-3 text-small">Your order will be invoiced at the below address. Please update the address in below form if it is not correct.</p>
+            {{ form_errors(updateAddressForm.billingAddress) }}
+            {{ include('checkout/_address.html.twig', {address: updateAddressForm.billingAddress, target: 'billingAddress'}) }}
+        </div>
+        {% if order.status not in ['PROOF_APPROVED', 'SHIPPED'] %}
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary">Update</button>
+            </div>
+        {% endif %}
+    </div>
+    {{ form_end(updateAddressForm) }}
+</div>
+<script>
+    window.addEventListener('DOMContentLoaded', function () {
+        const shippingRules = window.generateValidationRules('shippingAddress', 'update_address');
+        const billingRules = window.generateValidationRules('billingAddress', 'update_address');
+        const shippingMessage = window.generateValidationMessages('shippingAddress', 'update_address');
+        const billingMessage = window.generateValidationMessages('billingAddress', 'update_address');
+        $('[validation="update-address"]').validate({
+            rules: Object.assign({}, shippingRules, billingRules),
+            messages: Object.assign({}, shippingMessage, billingMessage),
+            errorPlacement: function (error, element) {
+                if (element && element.attr('type') === 'checkbox') {
+                    error.insertAfter(element.parent());
+                } else {
+                    error.insertAfter(element);
+                }
+            },
+            submitHandler: function (form) {
+                window.addProcessOnBtn($(form).find('[type="submit"]'));
+                form.submit();
+            }
+        });
+    });
+</script>

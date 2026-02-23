@@ -1,0 +1,132 @@
+<div class="top_footer common-sec-horizontal-pad">
+	{# <h1 class="d-none d-sm-flex justify-content-center">HAVE YOUR OWN DESIGN?</h1> #}
+	{% set isHome = app.request.pathInfo == '/' %}
+	{% set isAbout = app.request.pathInfo == '/about-us' %}
+	{% if isHome or isAbout %}
+		<div class="row w-100 mt-3 mb-3 highlight-row">
+			<div class="col-12 highlight-column {{ isHome ? 'hide-icon-section-home' : '' }}">
+				<div class="row d-flex justify-content-between">
+					{% set highlights = [
+						{ img: storeInfo.isPromoStore ? '24_7support-Promo-Icon.webp' : 'support-icon.webp', alt: '24/7 Support' },
+						{ img: storeInfo.isPromoStore ? 'Special-Promo-Icon.webp' : 'special-offer-icon.webp', alt: 'Bulk Order' },
+						{ img: storeInfo.isPromoStore ? 'Fast-guaranteed-Promo-Icon.webp' : 'gauranteed-icon.webp', alt: 'Fast Guaranteed' },
+						{ img: storeInfo.isPromoStore ? 'Satisfation-Promo-Icon.webp' : 'satisfaction-icon.webp', alt: 'Satisfaction' },
+						{ img: storeInfo.isPromoStore ? 'Weather-Proof-Promo-Icons.webp' : 'wheatherproof-icon.webp', alt: 'Weatherproof' },
+						{ img: storeInfo.isPromoStore ? 'Lowest-Prices-Icon.webp' : 'lowest-prices-icon.webp', alt: 'Lowest Prices' }
+					] %}
+					{% for h in highlights %}
+						<div class="col-lg-2 col-md-4 col-sm-4 col-4 d-flex justify-content-center my-2">
+							<div class="icon-img">
+								<img 
+									class="img-fluid mx-auto d-block"
+									src="{{storeInfo.isPromoStore ? 'https://static.yardsignplus.com/storage/promo-store/' ~ h.img : 'https://static.yardsignplus.com/fit-in/1000x1000/storage/images/' ~ h.img }}" 
+									alt="{{ h.alt }}"
+								>
+							</div>
+						</div>
+					{% endfor %}
+				</div>
+			</div>
+		</div>
+	{% endif %}
+	<div class="row contact-us-now-form w-100">
+		<div class="col-lg-6 col-xl-4 col-sm-12 col-md-6 mb-sm-4 mb-3 mb-md-0 d-none d-sm-flex">
+			<div class="sec-1">
+				<h2 class="text-md-left text-center sec-t-title">
+					{{ ysp.getHomePageConstants('REVIEW_TITLE') }}</h2>
+				{% for key,review in ysp.getHomePageConstants('REVIEWS') %}
+					<div class="testimonials-main-wrapper">
+						<div class="testimonials-left-wrapper">
+							<img width="87" height="87" loading="lazy" src="{{asset(review.image)}}" alt="{{ key }}" class="image" height="100px">
+						</div>
+
+						<div class="testimonials-right-wrapper">
+							<span class="user">{{ review.name }}</span>
+							<div class="rating-wrapper">
+								<span class="home-rating-review">
+									<span class="home-rating-review-wrap">
+										<span class="stars-active" style="width: {{review.stars * 100/5}}%">
+											<i class="fa fa-star" aria-hidden="true"></i>
+											<i class="fa fa-star" aria-hidden="true"></i>
+											<i class="fa fa-star" aria-hidden="true"></i>
+											<i class="fa fa-star" aria-hidden="true"></i>
+											<i class="fa fa-star" aria-hidden="true"></i>
+										</span>
+									</span>
+								</span>
+							</div>
+							<div class="description">
+								<img width="40" height="26" loading="lazy" src="{{asset("app-images/images/curl.png")}}" alt="{{ key }}">
+								<p>
+									"{{ review.comment }}"
+								</p>
+							</div>
+						</div>
+					</div>
+				{% endfor %}
+				
+ 				{% if not storeInfo.isPromoStore %}
+					<div class="shopper-approved-reviews text-center">
+						<a href="https://www.shopperapproved.com/reviews/yardsignplus.com" class="btn btn-customize-now">See More Customer Reviews</a>
+					</div>
+				{% endif %}
+			</div>
+		</div>
+		<div class="col-lg-6 col-xl-4 col-sm-12 col-md-6 mb-sm-4 mb-3 mb-md-0">
+			<div class="row">
+				<div class="col-md-12 mb-0 mb-sm-3 mb-md-0">
+					<div class="sec-2">
+						<h2 class="sec-t-title">CALL US NOW!</h2>
+						<p class="desc">
+							{% for info in ysp.getHomePageConstants('INFO') %}
+								{{ info }}<br/>
+							{% endfor %}
+						</p>
+						<a href="tel: +1-877-958-1499">
+							<h3 class="contact">{{ ysp.getHomePageConstants('INFO_TELEPHONE') }}</h3>
+						</a>
+						<a href="mailto: {{storeInfo.storeEmail}}">
+							<h3 class="email">{{ ysp.getHomePageConstants('INFO_EMAIL') }}</h3>
+						</a>
+					</div>
+				</div>
+				{% if not storeInfo.isPromoStore %}
+				<div class="col-md-12 d-none d-sm-flex">
+					<div class="sec-3">
+						<h2 class="text-center sec-t-title">JOIN THE COMMUNITY!</h2>
+						<p class="desc">Mention @{{ storeInfo.storeTitle }} in your posts for a chance to be featured in our gallery!</p>
+						<div class="icons text-center">
+							<a href="https://www.instagram.com/yardsign_plus/" aria-label="instagram" target="_blank">
+								<svg id="Group_110" data-name="Group 110" xmlns="http://www.w3.org/2000/svg" width="52.62" height="52.731" viewbox="0 0 52.62 52.731">
+									<path id="Path_31" data-name="Path 31" d="M-693.02,2932.249q-2.921.91-2.921,3.543,1.293,2.921,3.256,2.92t3.208-2.92Q-690.148,2932.249-693.02,2932.249Z" transform="translate(733.336 -2923.199)" fill="#fff"/>
+									<path id="Path_32" data-name="Path 32" d="M-736.666,2944.62a13.564,13.564,0,0,0-7.852-2.634h-.288q-9.049,0-12.592,9.337-.479.622-.862,4.4,0,9.434,10.821,13.12h5.841q10.486-3.782,10.486-13.407v-.622Q-731.112,2949.359-736.666,2944.62Zm-7.852,19.87q-5.843,0-8.475-5.842a7.367,7.367,0,0,1-.622-2.921q1.053-9.1,8.81-9.1h.288q6.32,0,8.475,6.751a4.32,4.32,0,0,1,.287,2.058Q-737.146,2964.49-744.518,2964.49Z" transform="translate(771.14 -2929.106)" fill="#fff"/>
+									<path id="Path_33" data-name="Path 33" d="M-746.569,2910.729l-3.639-1.2-3.687-.288H-775.2q-11.4,0-15.226,11.108a50.011,50.011,0,0,0-.574,8.188v15.226q0,12.45,7.9,16.614,3.543,2.01,22.791,1.485,14.747,0,16.949-3.208,4.979-3.973,4.98-13.167v-19.583Q-738.381,2914.32-746.569,2910.729Zm3.782,35.623q-1.485,10.822-9.05,10.822h-8.475q-5.938,0-12.545.287-11.013,0-12.88-6.99a86.845,86.845,0,0,1-.575-11.683v-6.464q0-14.6,2.346-14.6,2.345-3.781,9.624-3.782h20.445q11.107,0,11.108,11.683Z" transform="translate(791.002 -2909.243)" fill="#fff"/>
+								</svg>
+							</a>
+							<a href="https://www.facebook.com/yardsignplusdotcom" aria-label="facebook" target="_blank">
+								<svg xmlns="http://www.w3.org/2000/svg" width="52.712" height="52.712" viewbox="0 0 52.712 52.712">
+									<path id="Path_246" data-name="Path 246" d="M-457.088,2917.249q-8.683-8.249-18.388-8.249h-1.583a24.484,24.484,0,0,0-6.538,1.073q-10.113,3.345-14.966,11.237a29.378,29.378,0,0,0-4.06,12.309c.1,0,.153.06.153.179a1.175,1.175,0,0,0-.153.613v.306a27.3,27.3,0,0,0,7.33,18.873q8.631,8.122,18.72,8.122h.613a32.965,32.965,0,0,0,7.636-1.252,27.257,27.257,0,0,0,14.838-11.849q3.575-6.921,3.575-12.182v-2.171a31.131,31.131,0,0,0-.46-3.6Q-450.984,2924.655-457.088,2917.249Zm-11.85,7.176h-3.116q-2.81.256-2.81,2.656v3.755a.271.271,0,0,0,.306.306h5.312v.307q-.485,5.133-.791,5.133h-4.521q-.255,0-.306.332v14.506H-480.4l-.076-.945v-13.408q-.23-.485-.46-.486H-483.6v-5.44h2.656q.46-.256.46-.485l-.153-4.827a16.761,16.761,0,0,1,.613-2.5q1.634-4.035,7.023-4.035h.791q3.269,0,3.269.46Z" transform="translate(502.623 -2909)" fill="#fff"/>
+								</svg>
+							</a>
+							<a href="https://twitter.com/yardsignplus" aria-label="twitter" target="_blank">
+								<svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 50 50" width="24" height="24"><path d="M 5.9199219 6 L 20.582031 27.375 L 6.2304688 44 L 9.4101562 44 L 21.986328 29.421875 L 31.986328 44 L 44 44 L 28.681641 21.669922 L 42.199219 6 L 39.029297 6 L 27.275391 19.617188 L 17.933594 6 L 5.9199219 6 z M 9.7167969 8 L 16.880859 8 L 40.203125 42 L 33.039062 42 L 9.7167969 8 z"/></svg>
+							</a>
+						</div>
+						{{ include('common/file-upload.html.twig') }}
+					</div>
+				</div>
+				{% endif %}
+			</div>
+		</div>
+		<div class="col-xl-4 col-sm-12 col-md-12 mt-0 mt-md-3 mt-xl-0 d-flex flex-column">
+			<div class="sec-4">
+				{{ include('common/flash.html.twig') }}
+				<h2 class="text-md-left text-center sec-t-title">CONTACT US NOW!</h2>
+				{{ include('default/_contact-us.html.twig') }}
+			</div>
+			{# <div class="px-3 p-md-0 mt-auto">
+				<img width="578" height="108" loading="lazy" class="img-fluid mt-3" src="{{ asset("app-images/images/delivery.webp") }}" alt="Overnight Delivery">
+			</div> #}
+		</div>
+	</div>
+</div>

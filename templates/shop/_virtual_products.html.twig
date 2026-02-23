@@ -1,0 +1,49 @@
+{% for product in virtualProducts %}
+    <div class="col-6 col-lg-4 col-xxl-3 product-item pe-xl-1 ps-xl-1 mb-1 p-xl-1">
+        <a href="{{ url('custom_yard_sign_editor', { variant: product.name }) }}" class="card">
+            <div class="card-body">
+                <div class="postion-relative p-2">
+                    {% set productImage = product.displayImageName %}
+                    {% if product.displayImageName is null %}
+                        {% set productImage = product.imageName %}
+                    {% endif %}
+                    <img width="246" height="184" class="lazy product-image"
+                         src="{{ ("https://static.yardsignplus.com/product/fit-in/800x800/img/"~ productImage) | lazyDefaultImage }}"
+                         data-src="{{ ("https://static.yardsignplus.com/product/fit-in/800x800/img/"~ productImage) }}"
+                         alt="{{ product.name }}">
+                </div>
+                <h3 class="card-text p-1 p-sm-2">
+                    {% if product.title %}
+                        {{ product.title }}
+                    {% else %}
+                        {{ product.name | addInchQuotes }} Yard Signs - Custom Corrugated Plastic Lawn Signs
+                    {% endif %}
+                </h3>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">
+                    <div class="product-meta-data">
+                        <div class="product-price">${{ lowestPrice(product, product.name) | number_format(2) }}</div>
+                        <div class="product-min-qty">Min 1</div>
+                        <div class="product-rating-star">
+                            {% for item in 0..4 %}
+                                <span class="star" data-rating="1"><svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                                                        height="24" viewBox="0 0 24 24" fill="none"
+                                                                        stroke="currentColor" stroke-width="2"
+                                                                        stroke-linecap="round" stroke-linejoin="round"
+                                                                        class="feather feather-star"><polygon
+                                                points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></span>
+                            {% endfor %}
+                        </div>
+                        <div class="product-rating-count">(12)</div>
+                    </div>
+                </li>
+            </ul>
+            <div class="card-button">
+                <button class="btn btn-primary btn-block btn-customize-now">
+                    Customize Now
+                </button>
+            </div>
+        </a>
+    </div>
+{% endfor %}

@@ -1,0 +1,229 @@
+{% extends 'base.html.twig' %}
+
+{% set categoryName = category.name %}
+{% block title %}{{ category.seoMeta.title | default(categoryName ~ ' Yard Signs - Custom Lawn Signs - Ships Overnight') | raw }}{% endblock %}
+{% set defaultMetaDescription = categoryName ~ ' Custom Yard Signs, Free shipping on $50+, overnight delivery. Digital proof in 1hr. Order today!' %}
+{% block metaData %}
+    <meta property="og:title" content="{{ (category.seoMeta.title | default(categoryName ~ ' Yard Signs - Custom Lawn Signs - Ships Overnight')) | raw }}">
+    <meta property="og:description" content="{{ (category.seoMeta.description | default(defaultMetaDescription)) | raw }}">
+    <meta property="title" content="{{ (category.seoMeta.title | default(categoryName ~ ' Yard Signs - Custom Lawn Signs - Ships Overnight')) | raw }}">
+    <meta name="description" content="{{ (category.seoMeta.description | default(defaultMetaDescription)) | raw }}">
+    <meta name="keywords" content="{{ (category.seoMeta.keywords | default(categoryName ~ ' custom yard signs, ' ~ categoryName ~ ' yard signs')) | raw }}">
+    <link rel="canonical" href="{{ url('category', {slug: category.slug}) }}" />
+{% endblock %}
+
+{% block body %}
+    {% set MobileBanner  = storeInfo.isPromoStore ? vich_s3.asset(category, 'promoMobileBannerFile') : vich_s3.asset(category, 'mobileBannerFile') %}
+    {% set DesktopBanner  = storeInfo.isPromoStore ? vich_s3.asset(category, 'promoBannerFile') : vich_s3.asset(category, 'bannerFile') %}
+
+    {% set marketingCategories = {'business-signs': 'Business Sign'} %}
+    {% set breadcrumbs = category.parent is not null
+        ? [{ name: category.parent.name, link: url('category', { slug: category.parent.slug }) }, { name: category.name, active: true }]
+        : [{ name: category.name, active: true }]
+    %}
+    {{ include('common/common_mobile_bar.html.twig',{commonBarText: 'Order Online Or Call Now',commonBarTele: '+1-877-958-1499'}) }}
+    {% if isMobile() %}
+        {{ include('common/breadcrumb.html.twig', { breadcrumbs: breadcrumbs }) }}
+        <div class="overnight-delivery-text"><button type="button" class="ysp-delivery-calendar-btn fw-600 text-white mt-0 fs-13" data-bs-toggle="modal" data-bs-target="#ysp-delivery-calendar">Overnight Delivery&nbsp;</button>Available</div>
+    {% endif %}
+    {% if parent is defined and parent is not null %}
+        {% if MobileBanner is null and DesktopBanner is null %}
+            <div class="page-header">
+                <div class="page-header-content">
+                    {{category.name}}
+                </div>
+            </div>
+        {% else %}
+            {{ include('common/_banner.html.twig',{ desktopImg: DesktopBanner, mobileImg: MobileBanner}) }}
+        {% endif %}
+    {% else %}
+        {{ include('common/_banner.html.twig',{ desktopImg: DesktopBanner, mobileImg: MobileBanner}) }}
+    {% endif %}
+    {{ include('common/drawerPurchaseOrder.html.twig') }}
+    {% if not isMobile() %}
+        {{ include('common/breadcrumb.html.twig', { breadcrumbs: breadcrumbs }) }}
+    {% endif %}
+    <div class="py-2">
+        {{ include('common/custom_search.html.twig') }}
+    </div>
+    <div class="pay-later-sec-banner d-flex border-sm-top pb-2 pb-sm-0">
+        {{ include('common/paylater.html.twig') }}
+    </div>
+    <div class=" select-template-to-fully-customize common-sec-horizontal-pad mb-2">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="pay-latter-text-wrapper ysp-template-custom-text">
+                        <div class="custom-mock-wrap">
+                            <h1>{{ category.seoMeta.headerTag | default(category.name ~ ' Custom Yard Signs') }}</h1>
+                            {% if category.slug == 'yard-letters' %}
+                                <h2 class="right-text d-sm-block text-custom">Fully Customize Your Message with Our Easy-to-Use Templates</h2>
+                            {% else %}
+                                <h2 class="right-text d-sm-block text-custom">Create Your Own Custom {{ marketingCategories[category.slug] is defined ? marketingCategories[category.slug] : 'Outdoor Yard Sign' }}! 
+                                    Select Any Template to Fully Customize!</h2>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% set defaultSizes = ['24x18', '18x12', '18x24','24x24','12x18', '12x12', '9x24', '9x12', '6x24', '6x18'] %}
+
+    {% set productTypeCategories = ['custom-signs', 'big-head-cutouts', 'die-cut', 'yard-letters', 'hand-fans'] %}
+    {% set categoryDescription = '' %}
+    {% if category.description and (category.description | striptags | length) > 50 %}
+        {% set categoryDescription = category.description | striptags %}
+    {% else %}
+        {% set categoryDescription = include('common/category-description/default.html.twig', {
+            categoryName: category.name
+        }) | striptags %}
+    {% endif %}
+    {% set shopperApprovedRating = getShopperApprovedRating() %}
+
+    {% if category.slug in productTypeCategories %}
+        {% set defaultSizes = defaulVariantsSizes %}
+    {% endif %}
+
+    {% if category.slug == 'custom-signs' %}
+        {% set defaultSizes = [
+            "24x18",
+            "18x12",
+            "18x24",
+            "24x24",
+            "12x18",
+            "12x12",
+            "24x36",
+            "36x24",
+            "48x24",
+            "48x48"
+        ] %}
+    {% endif %}
+
+    {% if category.slug == 'hand-fans' %}
+        {% set defaultSizes = ["8x12","7x14","7x13","5x23","8x8","12x12","18x12","18x24","24x18", "24x24",] %}
+    {% endif %}
+
+    {% set categoryLimits = {'contractor': 8,'political': 8,'real-estate': 8,'business-ads': 8,'for-sale': 8,'sign-riders': 4,'foreclosure': 8,'restaurant': 8,'birthday': 4,'graduation': 4,'church': 8,'community': 4,'health-safety': 4,'protest': 4, 'business-signs': 8} %}
+    {% set alreadyShownSkus = [] %}
+    {% set schemaItemList = [] %}
+    {% set lastItemPosition = 1 %}
+    <div class="container-fluid products-common-block">
+        <div class="collapse category-description" id="categoryDescription">
+            <div class="card">
+                <div class="card-body category-description-content">
+                    {% if category.description and (category.description | striptags | length) > 50 %}
+                        {{ category.description | raw }}
+                    {% else %}
+                        {% include 'common/category-description/default.html.twig' with {'categoryName': category.name} %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% for size in defaultSizes %}
+            {% set products = ysp.categoryProducts(ysp.storeId, category, alreadyShownSkus, (categoryLimits[category.slug] | default(4)), size) %}
+            {% if products is not empty %}
+                <div class="product-block border-bottom mb-2 {% if loop.index == 1 %}first-item{% endif %}">
+                {% if loop.index == 1 %}
+                <button class="btn btn-light category-description-button d-block mb-2 d-sm-none" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#categoryDescription" aria-expanded="false" aria-controls="categoryDescription">
+                    Product Information
+                </button>
+                {% endif %}
+                
+                {% set displaySize = size %}
+                {% if category.slug == 'hand-fans' %}
+                    {% if size == '7x13' %}
+                        {% set displaySize = '7x13 (Hourglass)' %}
+                    {% elseif size == '7x14' %}
+                        {% set displaySize = '7x13 (Rectangle)' %}
+                    {% endif %}
+                {% endif %}
+
+                <div class="d-flex justify-content-between align-items-center">
+                    <a href="{{ url('category_sizes', {'slug': category.slug, size}) }}">
+                        <h3 class="product-block-title">{{ displaySize }} {{ marketingCategories[category.slug] is defined ? marketingCategories[category.slug] : category.name ~ ' Yard Sign' }}s</h3>
+                    </a>
+                    {% if loop.index == 1 %}
+                        <button class="btn btn-light category-description-button d-none d-sm-block" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#categoryDescription" aria-expanded="false" aria-controls="categoryDescription">
+                            Product Information
+                        </button>
+                    {% endif %}
+                </div>
+                <div class="row product-list">
+                    {% for key, p in products %}
+                        {% set product = p.product %}
+
+                        {% set productUrl = url('editor', {
+                            category: product.primaryCategory.slug,
+                            productType: product.productType.slug,
+                            sku: product.sku
+                        }) %}
+                        {% if size is defined %}
+                            {% set productUrl = url('editor', {
+                                category: product.primaryCategory.slug,
+                                productType: product.productType.slug,
+                                sku: product.sku,
+                                variant: size
+                            }) %}
+                        {% endif %}
+
+                        {% set variantSize = size ?? '12x12' %}
+
+                        {% set productImage = 'https://static.yardsignplus.com/product/img/' ~ p.image %}
+
+                        {% set schemaItemList = schemaItemList | merge([{
+                            "@type": "ListItem",
+                            "position": lastItemPosition,
+                            "item": {
+                                "@type": "Product",
+                                "@id": productUrl ~ "#product",
+                                "name": product.name,
+                                "url": productUrl,
+                                "image": [productImage],
+                                "description": product.seoMeta.description ?? category.seoMeta.description ?? defaultMetaDescription,
+                                "sku": product.sku,
+                                "brand": {
+                                    "@type": "Brand",
+                                    "name": 'Yard Sign Plus'
+                                },
+                                "offers": {
+                                    "@type": "AggregateOffer",
+                                    "priceCurrency": 'USD',
+                                    "lowPrice": product.lowestPrice,
+                                    "highPrice": product.highestPrice,
+                                    "offerCount": product.variants|length|default(1),
+                                    "availability": "https://schema.org/InStock",
+                                    "url": productUrl
+                                },
+                                "aggregateRating": {
+                                    "@type": "AggregateRating",
+                                    "ratingValue": shopperApprovedRating,
+                                    "reviewCount": reviewCount(),
+                                    "bestRating": "5",
+                                    "worstRating": "1"
+                                }
+                            }
+                        }]) %}
+                        {% set alreadyShownSkus = alreadyShownSkus | merge([product.sku]) %}
+                        <div class="col-6 col-md-4 col-xl-3 product-item {% if key >= 4 %} d-none d-sm-block {% endif %}">
+                            {% include 'product/_product_card.html.twig' with {size: size} %}
+                        </div>
+                        {% set lastItemPosition = lastItemPosition + 1 %}
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        {% endfor %}
+
+        <div class="text-center mb-3 view-all-product">
+            <a href="{{ url('category_shop',{c: category.slug}) }}" class="btn btn-ysp-outline">
+                View All {{ marketingCategories[category.slug] is defined ? marketingCategories[category.slug] : category.name ~ ' Yard Sign' }}s
+            </a>
+        </div>
+    </div>
+    {{ include('common/_delivery_calendar.html.twig') }}
+    {% include 'common/_category_schema.html.twig' %}
+{% endblock %}

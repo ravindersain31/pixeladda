@@ -1,0 +1,59 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.11.6/viewer.min.css" integrity="sha512-za6IYQz7tR0pzniM/EAkgjV1gf1kWMlVJHBHavKIvsNoUMKWU99ZHzvL6lIobjiE2yKDAKMDSSmcMAxoiWgoWA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.11.6/viewer.min.js" integrity="sha512-EC3CQ+2OkM+ZKsM1dbFAB6OGEPKRxi6EDRnZW9ys8LghQRAq6cXPUgXCCujmDrXdodGXX9bqaaCRtwj4h4wgSQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<div class="customer-photos-container">
+    <div class="upload-photo">
+        <button href="javascript:void(0)" class="btn btn-ysp-outline btn-sm" data-bs-toggle="modal" data-bs-target="#photoModal">
+            <i class="fas fa-cloud-upload-alt"></i>
+            Add a Photo
+        </button>
+        <button href="javascript:void(0)" class="btn btn-ysp-outline btn-sm" data-bs-toggle="modal" data-bs-target="#videoModal">
+            <i class="fas fa-cloud-upload-alt"></i>
+            Add a Video
+        </button>
+    </div>
+    <div class="row" id="customer-photos-viewer">
+        {% for photos in customerPhotos %}
+            <div class="col-6 col-sm-4 col-md-2 p-1 customer-photo">
+                <button class="border-0 w-100 h-100 p-0" href="javascript:void(0);">
+                    {% set defaultUrl = 'https://placehold.co/400x400?text=Awaiting+Image' %}
+                    {% if 'video' in photos.photo.mimeType %}
+                        {% set videoUrl = photos.photo.name is null ? defaultUrl : vich_s3.asset_video(photos, 'photoFile') %}
+                        <video src="{{ videoUrl }}" width="100px" class="img-fluid card-img-top review-photos lazy loaded object-fit-contain" controls>
+                    {% else %}
+                        {% set imageUrl = photos.photo.name is null ? defaultUrl : vich_s3.asset(photos, 'photoFile', '1000x1000') %}
+                        <img width="306" height="150" loading="lazy" alt="customer photos of yard sign plus" src="{{ imageUrl }}" data-src="{{ imageUrl }}" class="img-fluid card-img-top review-photos lazy" />
+                    {% endif %}
+                </button>
+            </div>
+        {% endfor %}
+    </div>
+    <div class="text-center mt-2">
+        <a href="{{ url('customer_photos') }}" target="_blank" class="btn btn-ysp-outline">View All Customer Photos</a>
+    </div>
+</div>
+<div class="modal fade " id="photoModal" data-bs-backdrop="no" data-bs-keyboard="false" tabindex="-1" aria-labelledby="photoModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="photoModalLabel">Add Photo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                {% include 'editor/page-header/_customer_photo_form.html.twig' %}
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade " id="videoModal" data-bs-backdrop="no" data-bs-keyboard="false" tabindex="-1" aria-labelledby="videoModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="videoModalLabel">Add Video</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                {% include 'editor/page-header/_customer_video_form.html.twig' %}
+            </div>
+        </div>
+    </div>
+</div>

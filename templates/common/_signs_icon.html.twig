@@ -1,0 +1,47 @@
+<div class="container-fluid home-icons p-3 px-2 pt-1 pb-0 px-md-2 px-lg-4 pb-lg-0">
+  <a href="{{ url('category_shop') }}"><h3 class="product-block-title">Browse Templates</h3></a>
+  <div class="row justify-content-center w-100 m-auto">
+    {% set priorityCategories = [''] %}
+    {% set categoriesPerRow = 12 %} 
+
+    {% set sortedPriorityItems = priorityCategories
+        |map(name => allCategories
+            |filter(c => c.name == name and c.categoryThumbnail is not null)
+            |first
+        )
+        |filter(item => item is not null and item != false)
+    %}
+
+    {% set otherItems = allCategories
+        |filter(c => c.name not in priorityCategories and c.categoryThumbnail is not null)
+    %}
+    {% set allItems = sortedPriorityItems|merge(otherItems) %}
+    
+    {% for category in allItems %}
+    {# {% if storeInfo.isPromoStore %}
+      {% set thumbnailImage = attribute(category, 'promoCategoryThumbnail') ?? attribute(category, 'promoThumbnail') ?? null %}
+    {% else %}
+      {% set thumbnailImage = attribute(category, 'categoryThumbnail') ?? attribute(category, 'thumbnail') ?? null %}
+    {% endif %} #}
+    {% set thumbnailImage = attribute(category, 'categoryThumbnail') ?? attribute(category, 'thumbnail') ?? null %}
+
+      <div class="col-4 col-sm-3 col-md-1 px-md-2 mb-md-3 text-center position-relative">
+        <a href="{{ url('category', { 'slug': category.slug }) }}" class="d-block">          
+          <img loading="lazy" width="141" height="106" src="{{ thumbnailImage ?? "https://static.yardsignplus.com/category/home/68c026990b0fd976829841.webp" }}" alt="{{ 'Custom Outdoor Yard Signs Multiple Sizes ' ~ category.name ~ ' Sign' }}" class="img-fluid mb-1" style="height: auto;" />
+          <span class="d-block">{{ category.name }}</span>
+        </a>
+        {% if category.name in priorityCategories %}
+          <div class="custom-ribbon ribbon-24x18 green" style="top: 5px;">
+              New
+          </div>
+        {% endif %}
+      </div>
+      
+      {% if loop.index == categoriesPerRow %}
+        </div><div class="row justify-content-center w-100 m-auto">
+      {% elseif loop.index > categoriesPerRow and (loop.index - categoriesPerRow) % 12 == 0 and not loop.last %}
+        </div><div class="row justify-content-center w-100 m-auto">
+      {% endif %}
+    {% endfor %}
+  </div>
+</div>

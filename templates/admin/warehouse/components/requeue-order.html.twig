@@ -1,0 +1,26 @@
+<div {{ attributes }}>
+    {{ form_start(form, {
+        attr: {
+            'novalidate': true,
+            'data-action': 'live#action:prevent',
+            'data-live-action-param': 'save'
+        }
+    }) }}
+    {{ form_errors(form) }}
+    <div class="row">
+        <div class="col col-6 pe-0">{{ form_row(form.printerName) }}</div>
+        <div class="col col-6">{{ form_row(form.shipBy) }}</div>
+    </div>
+    {{ form_row(form.comments) }}
+    <div class="form-group mb-sm-0 form-group-submit text-start">
+        <button type="submit" data-loading="action(save)|addAttribute(disabled)"
+                class="btn btn-primary btn-block ysp-account-submit-btn">
+            <span data-loading="action(save)|show" style="display: none">Sending...</span>
+            <span data-loading="action(save)|hide" style="display: block">Yes, Requeue</span>
+        </button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            Cancel
+        </button>
+    </div>
+    {{ form_end(form) }}
+</div>

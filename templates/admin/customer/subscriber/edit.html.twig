@@ -1,0 +1,30 @@
+{% extends 'admin/base.html.twig' %}
+{% block title %}Edit {{ subscriber.email }} {% endblock %}
+{% block pageTitle %}
+	<div class="page-header-icon">
+		<i class="fas fa-dashboard"></i>
+	</div>
+	Edit
+{% endblock %}
+
+{% block body %}
+	<div class="card card-header-actions mx-auto shadow-none">
+		<div class="card-header">
+			SUBSCRIBER ID: #{{ subscriber.id }}
+			<div>
+				<a href="{{ url('admin_subscribers') }}" class="btn btn-dark btn-sm">
+					<i class="fas fa-arrow-left me-2"></i>
+					List
+				</a>
+			</div>
+		</div>
+		<div class="card-body">
+			{{ component('SubscriberForm',{
+                form:form,
+                subscriber:subscriber
+            }) }}
+		</div>
+	</div>
+
+{% endblock %}
+

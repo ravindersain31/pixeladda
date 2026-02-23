@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+{% set theme = themeColors() %}
+<html style="
+    --primary-color: {{ theme.primary }};
+    --primary-color-light: {{ theme.primaryColorLight }};
+    --secondary-color: {{ theme.secondary }};
+    --light-color: {{ theme.light }};
+    --background-color_1: {{ theme.background1 }};
+    --background-color_2: {{ theme.background2 }};
+    --border: {{ theme.border }};
+">
+<head>
+  {% set storeInfo = storeInfo() %}
+    <meta charset="UTF-8">
+    <title>{% block title %}{{storeInfo.storeTitle}}{% endblock %}</title>
+    <link rel="icon" type="image/x-icon"
+        href="{{ asset(storeInfo.isPromoStore
+          ? 'app-images/logo/promo/favicon.ico'
+          : 'app-images/logo/favicon.ico') }}?v=1">
+    {% block metaData %}{% endblock %}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    {{ encore_entry_link_tags('web') }}
+    <script type="text/javascript">
+        window.braintreeClientAuth = "{{ ysp.env('BRAINTREE_CLIENT_AUTH') }}"
+        window.googlePayEnv = "{{ ysp.env('GOOGLE_PAY_ENV') }}"
+        window.googleMerchantId = "{{ ysp.env('GOOGLE_PAY_MERCHANT_ID') }}"
+        window.stripePubKey = "{{ ysp.env('STRIPE_PUB_KEY') }}"
+        window.stripeEnv = "{{ ysp.env('STRIPE_ENV') }}"
+        window.klaviyoEnv = "{{ ysp.env('KLAVIYO_ENV') }}"
+        window.klaviyoUserEmail = "{{ app.user ? app.user.email : '' }}";
+        window.googleDriveClientId = "{{ ysp.env('GOOGLE_DRIVE_CLIENT_ID') }}"
+        window.googleDriveApiKey = "{{ ysp.env('GOOGLE_DRIVE_API_KEY') }}"
+        window.googleDriveAppId = "{{ ysp.env('GOOGLE_DRIVE_APP_ID') }}"
+        window.dropBoxAppId = "{{ ysp.env('DROPBOX_APP_ID') }}"
+        window.oneDriveClientId = "{{ ysp.env('ONE_DRIVE_CLIENT_ID') }}"
+        window.googleApiKey = "{{ ysp.env('GOOGLE_API_KEY') }}"
+        window.googleSearchEngineId = "{{ ysp.env('GOOGLE_SEARCH_ENGINE_ID') }}"
+        window.userId = {{ app.user ? app.user.id : 'null' }}
+        window.roles = {{ app.user ? app.user.roles|json_encode|raw : 'null' }};
+        window.storeInfo = {{ storeInfo|json_encode|raw }};
+        window.recaptchaSiteKey = "{{ app.request.server.get('RECAPTCHA_SITE_KEY') }}";
+    </script>
+    {{ include('tags/tags.header.html.twig') }}
+    {% block preStylesheets %}{% endblock %}
+    {% block stylesheets %}{% endblock %}
+    {% block preJavascripts %}{% endblock %}
+    {% block javascripts %}{% endblock %}
+</head>
+<body>
+
+{% set categoriesList = ysp.categories(ysp.storeId, true) %}
+{% set additionalCategoriesList = ysp.categories(ysp.storeId, false) %}
+{% set categoriesCommaSeparated = categoriesList|map(category => category.slug)|join(',') %}
+{% set additionalCategoriesCommaSeparated = additionalCategoriesList|map(category => category.slug)|join(',') %}
+{% set allCategoriesCommaSeparated = categoriesCommaSeparated ~ ',' ~ additionalCategoriesCommaSeparated %}
+{% set allCategories = categoriesList|merge(additionalCategoriesList) %}
+
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WT6562S"
+                  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+{% set nonStickyRoutes = [] %}
+{% block header %}
+  <header class="{% if app.request.attributes.get('_route') not in nonStickyRoutes %}sticky-top{% endif %}">
+    {{ include('common/header.html.twig') }}
+    {% block additionalHeader %}{% endblock %}
+  </header>
+{% endblock %}
+
+{% block body %}{% endblock %}
+{{ include('common/footer.html.twig') }}
+
+{% if not storeInfo.isPromoStore %}
+  {{ include('common/_tawk.html.twig') }}
+{% endif %}
+
+
+<script async src="https://cdn.jsdelivr.net/npm/vanilla-lazyload@17.8.8/dist/lazyload.min.js" onload="initLazy()"></script>
+<script type="text/javascript">
+    function initLazy() {
+        new LazyLoad();
+    }
+</script>
+<script src="https://www.google.com/recaptcha/enterprise.js?onload=renderCaptcha&render=explicit" defer></script>
+<script type="text/javascript">
+    const recaptchaWidgetMap = new Map();
+
+    function renderCaptcha() {
+        const elements = document.querySelectorAll('[id^="recaptcha_render_box_"]');
+        Array.from(elements).map((element) => {
+            const widgetId = grecaptcha.enterprise.render(element, {
+                'sitekey': '{{ app.request.server.get('RECAPTCHA_SITE_KEY') }}',
+                'callback': function (token) {
+                    const responseInputId = element.getAttribute('data-response-id');
+                    document.getElementById(responseInputId).value = token;
+                },
+                'expired-callback': function () {
+                    const responseInputId = element.getAttribute('data-response-id');
+                    document.getElementById(responseInputId).value = '';
+                    grecaptcha.enterprise.reset();
+                },
+            });
+
+            recaptchaWidgetMap.set(element.id, widgetId);
+        });        
+    }
+
+    function resetSpecificRecaptcha(elementId) {
+        if (recaptchaWidgetMap.has(elementId)) {
+            const widgetId = recaptchaWidgetMap.get(elementId);
+            grecaptcha.enterprise.reset(widgetId);
+        }
+    }
+</script>
+<script async src="https://static.klaviyo.com/onsite/js/klaviyo.js?company_id={{ ysp.env('KLAVIYO_COMPANY_ID')|url_encode }}"></script>
+<script src="https://cdn.attn.tv/yardsignplus/dtag.js"></script>
+<script>
+    window.hasNoEmoji = function (value) {
+        if (!value) return true;
+        const emojiRegex = /[\p{So}\p{Cs}\u{1F300}-\u{1FAFF}]/u;
+        return !emojiRegex.test(value);
+    };
+</script>
+<script>
+  function activeOnSiteTrack() {
+    const email = window.klaviyoUserEmail;
+
+    if (window.klaviyoEnv === 'production' && typeof klaviyo !== 'undefined') {
+      if (email) {
+        klaviyo.push(['identify', { '$email': email }]);
+      } else {
+        // console.warn("Email not available, skipping identify");
+      }
+
+      const item = {
+        page: window.location.href,
+        timestamp: new Date().toISOString()
+      };
+      klaviyo.push(["track", "Active On Site", item]);
+
+    } else {
+      // console.warn("Klaviyo library not loaded");
+    }
+  }
+
+  window.addEventListener("load", activeOnSiteTrack);
+</script>
+{% block footerJavascripts %}{% endblock %}
+<div class="processing-express-order d-none" id="processing-express-order-message">
+    <h4>Processing your order...</h4>
+    <small>Please don't press back or refresh this page.</small>
+</div>
+{{ include('tags/tags.footer.html.twig') }}
+{{ encore_entry_script_tags('web') }}
+</body>
+</html>

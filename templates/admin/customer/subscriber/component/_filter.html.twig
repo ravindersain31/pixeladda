@@ -1,0 +1,23 @@
+<button class="btn btn-primary btn-sm" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasFilterOrder"
+        aria-controls="offcanvasFilterOrder">
+    Filter
+</button>
+<a href="{{ app.request.pathInfo }}" class="btn btn-danger btn-sm">Clear</a>
+<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasFilterOrder"
+     aria-labelledby="offcanvasFilterCustomers">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="offcanvasFilterCustomers">Filter Subscribers</h5>
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+        <div class="offcanvas-body">
+        {{ form_start(filterForm) }}
+        {{ form_row(filterForm.email) }}
+        {{ form_row(filterForm.name) }}
+        {{ form_row(filterForm.phone) }}
+        <div class="mt-3">
+            <button type="submit" class="btn btn-primary">Submit</button>
+            <a href="{{ app.request.pathInfo }}" class="btn btn-danger">Clear</a>
+        </div>
+        {{ form_end(filterForm) }}
+    </div>
+</div>

@@ -1,0 +1,8 @@
+{% extends 'bootstrap_5_layout.html.twig' %}
+{% block re_captcha_row %}
+    <div id="recaptcha_render_box_{{ unique_block_prefix }}" data-response-id="{{ form.vars.form.children.token.vars.id }}"></div>
+    {{ form_widget(form) }}
+    {{ form_errors(form) }}
+    {{ form_errors(form.vars.form) }}
+    <label class="recaptcha-error-message d-inline"></label>
+{% endblock %}

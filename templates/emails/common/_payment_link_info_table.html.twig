@@ -1,0 +1,258 @@
+<table class="ysp-table-layout-auto ysp-border-top-mob" style="width: 100%;border: none;border-top: solid 4px #83c59c;border-spacing: 0;text-align: left;table-layout: fixed;">
+    <tbody>
+    <tr>
+        <td class="ysp-mob-pad-ryt-5 ysp-border-bottom-mob odd" style="width: 86px;border-bottom: solid 4px #83c59c;padding: 5px 0;font-size: 15px;font-weight: bold;color: {{ primaryColor }};">
+            Order ID
+        </td>
+        <td class="ysp-border-bottom-mob even" style="border-bottom: solid 4px #83c59c;padding: 5px 0;font-size: 14px;font-weight: normal;color: #000000;">
+            {{ order.orderId }}
+        </td>
+        <td class="ysp-mob-pad-ryt-5 ysp-border-bottom-mob odd email" style="border-bottom: solid 4px #83c59c;padding: 5px 0;font-size: 15px;font-weight: bold;color: {{ primaryColor }};">
+            Billing Name
+        </td>
+        <td class="ysp-border-bottom-mob even" style="border-bottom: solid 4px #83c59c;padding: 5px 0;font-size: 14px;font-weight: normal;color: #000000;text-wrap: nowrap;">
+            {{ billingAddressText }}
+        </td>
+    </tr>
+    <tr>
+        <td class="ysp-mob-pad-ryt-5 ysp-border-bottom-mob odd" style="border-bottom: solid 4px #83c59c;padding: 5px 0;font-size: 15px;font-weight: bold;color: {{ primaryColor }};">
+            Payment Link Id
+        </td>
+        <td class="ysp-border-bottom-mob even" style="border-bottom: solid 4px #83c59c;padding: 5px 0;font-size: 14px;font-weight: normal;;color: #000000;">
+            {{ paymentRequest.transactionId }}
+        </td>
+        <td class="ysp-mob-pad-ryt-5 ysp-border-bottom-mob odd" style="border-bottom: solid 4px #83c59c;padding: 5px 0;font-size: 15px;font-weight: bold;color: {{ primaryColor }};">
+            Amount
+        </td>
+        <td class="ysp-border-bottom-mob even" style="border-bottom: solid 4px #83c59c;padding: 5px 0;font-size: 14px;font-weight: normal;;color: #000000;">
+            {{ paymentRequest.amount }}
+        </td>
+    </tr>
+    <tr>
+        <td class="ysp-mob-pad-ryt-5 ysp-border-bottom-mob odd" style="border-bottom: solid 4px #83c59c;padding: 5px 0;font-size: 15px;font-weight: bold;color: {{ primaryColor }};">
+            Payment Method
+        </td>
+        <td class="ysp-border-bottom-mob even" style="border-bottom: solid 4px #83c59c;padding: 5px 0;font-size: 14px;font-weight: normal;;color: #000000;">
+            {{ paymentRequest.paymentMethod | badgePaymentMethod | raw }}
+        </td>
+        <td class="ysp-mob-pad-ryt-5 ysp-border-bottom-mob odd" style="border-bottom: solid 4px #83c59c;padding: 5px 0;font-size: 15px;font-weight: bold;color: {{ primaryColor }};">
+            Comments
+        </td>
+        <td class="ysp-border-bottom-mob even" style="border-bottom: solid 4px #83c59c;padding: 5px 0;font-size: 14px;font-weight: normal;;color: #000000;">
+           {{ paymentRequest.getComment }}
+        </td>
+    </tr>
+    </tbody>
+</table>
+<table style="width: 100%; border: none; border-spacing: 0;">
+    <tbody>
+    <tr>
+    {% if message.files is defined %}
+        <td class="odd" style="padding: 12px 0 10px; font-size: 15px; font-weight: bold; color: {{ primaryColor }};text-align: left; padding-left: 10px;">Product Image</td>
+    {% endif %}
+        <td class="odd" style="padding: 12px 0 10px; font-size: 15px; font-weight: bold; color: {{ primaryColor }};text-align: left; padding-left: 10px;">Product Details</td>
+        <td class="odd" style="padding: 12px 0 10px; font-size: 15px; font-weight: bold; color: {{ primaryColor }};">Quantity</td>
+        <td class="odd" style="padding: 12px 0 10px; font-size: 15px; font-weight: bold; color: {{ primaryColor }};">Price</td>
+        <td class="odd" style="padding: 12px 0 10px; font-size: 15px; font-weight: bold; color: {{ primaryColor }};">Total</td>
+    </tr>
+
+    {% set items = order.orderItemsAll %}
+    {% if items | length > 0 %}
+        {% for item in items %}
+        {% if item.itemType == 'DEFUALT' or item.product %}
+            {% set template = item.product %}
+            {% set product = template.parent %}
+            {% set templateImage =  vich_s3.asset(template, 'imageFile') %}
+            <tr style="vertical-align: top;">
+                {% if message.files is defined %}
+                <td class="ysp-border-mob" style="border: solid 4px #83c59c; border-right: 0 !important; padding: 14px;text-align:center;">
+                    {% for file in message.files %}
+                        {% set Image =  vich_s3.asset(file, 'fileObject') %}
+                        {% if file.type == 'PROOF_IMAGE' %}
+                            <img src="{{templateImage}}" alt="product image" width="150px" /><br>
+                        {% elseif file.type == 'PROOF_FILE' %}
+                            <a href="{{Image}}"
+                               class="btn btn-sm btn-primary my-2" target="_blank">
+                                Download Proof File
+                            </a><br>
+                        {% else %}
+                            <img src="{{templateImage}}" alt="product image" width="150px" /><br>
+                            <a href="{{Image}}"
+                               class="btn btn-sm btn-primary" target="_blank">
+                                View File {{ loop.index }}
+                            </a>
+                        {% endif %}
+                    {% else %}
+                        {% set templateImage =  vich_s3.asset(template, 'imageFile') %}
+                        <img src="{{templateImage}}" alt="product image" width="150px" /><br>
+                    {% endfor %}
+                </td>
+                {% endif %}
+                <td class="ysp-border-mob" style="border: solid 4px #83c59c; border-right: 0 !important; padding: 8px;">
+                    <p class="even" style="padding: 0 0 5px; font-size: 14px; font-weight: bold; color: #000000; margin: 0;text-align: left">
+                        Yard Sign -
+                        {% if item.metaData.isCustomSize is defined and item.metaData.isCustomSize %}
+                            {{ item.metaData.customSize.templateSize.width }}x{{ item.metaData.customSize.templateSize.height }}
+                        {% else %}
+                            {{ template.label ?? template.name }}
+                        {% endif %}
+                        -
+                        {{ product.sku }}</p>
+                    <table class="ysp-border-mob" style="width: 100%; border-spacing: 0; border: solid 4px #83c59c; text-align: left">
+                        <tr>
+                            <td class="even ysp-border-bottom-mob ysp-border-right-mob" style="border-bottom: solid 4px #83c59c;border-right: solid 4px #83c59c;padding: 3px;font-size: 14px;font-weight: bold;color: {{ primaryColor }};">
+                                Size</td>
+                            <td class="even ysp-border-bottom-mob" style="border-bottom: solid 4px #83c59c;padding: 3px;font-size: 14px;font-weight: bold;color: {{ primaryColor }};">
+                                Quantity</td>
+                        </tr>
+
+                        <tr>
+                            <td class="even ysp-border-right-mob" style="border-right: solid 4px #83c59c;padding: 3px;font-size: 14px;font-weight: normal;color: #000000;">
+                                {% if item.metaData.isCustomSize is defined and item.metaData.isCustomSize %}
+                                    {{ item.metaData.customSize.templateSize.width }}x{{ item.metaData.customSize.templateSize.height }}
+                                {% else %}
+                                    {{ template.name }}
+                                {% endif %}
+                            </td>
+                            <td class="even" style="padding: 3px;font-size: 14px;font-weight: normal;;color: #000000;">
+                                {{ item.quantity }}
+                            </td>
+                        </tr>
+
+                    </table>
+                </td>
+                <td class="ysp-border-mob even" style="border: solid 4px #83c59c; border-right: 0 !important; padding: 8px;font-size: 14px;font-weight: normal;color: #000000;">
+                    {{ item.quantity }}
+                </td>
+                <td class="ysp-border-mob even" style="border: solid 4px #83c59c; border-right: 0 !important; padding: 8px;font-size: 14px;font-weight: normal;;color: #000000;">
+                    ${{ item.unitAmount | number_format(2) }}
+                </td>
+                <td class="ysp-border-mob even" style="border: solid 4px #83c59c; padding: 10px;font-size: 14px;font-weight: normal;;color: #000000;">
+                    ${{ item.totalAmount | number_format(2) }}
+                </td>
+            </tr>
+        {% elseif (((not item.product) and item.itemType == 'CHARGED_ITEM') or ((not item.product) and item.itemType == 'DISCOUNT_ITEM')) %}
+            <tr style="vertical-align: top;">
+                <td class="ysp-border-mob" style="border: solid 4px #83c59c; border-right: 0 !important; padding: 8px;">
+                    <p class="even" style="padding: 0 0 5px; font-size: 14px; font-weight: bold; color: #000000; margin: 0;text-align: left">
+                        {{ item.itemName }} : {{ item.itemDescription }}
+                    </p>
+                </td>
+                <td class="ysp-border-mob even" style="border: solid 4px #83c59c; border-right: 0 !important; padding: 8px;font-size: 14px;font-weight: normal;color: #000000;">
+                    {{ item.quantity }}
+                </td>
+                <td class="ysp-border-mob even" style="border: solid 4px #83c59c; border-right: 0 !important; padding: 8px;font-size: 14px;font-weight: normal;;color: #000000;">
+                    {% if item.itemType == 'DISCOUNT_ITEM' %}
+                        -${{ item.unitAmount | number_format(2) }}
+                    {% else %}
+                        ${{ item.unitAmount | number_format(2) }}
+                    {% endif %}
+                </td>
+                <td class="ysp-border-mob even" style="border: solid 4px #83c59c; padding: 10px;font-size: 14px;font-weight: normal;;color: #000000;">
+                    {% if item.itemType == 'DISCOUNT_ITEM' %}
+                        -${{ item.totalAmount | number_format(2) }}
+                    {% else %}
+                        ${{ item.totalAmount | number_format(2) }}
+                    {% endif %}
+                </td>
+            </tr>
+        {% endif %}
+        {% endfor %}
+    {% endif %}
+    <tr>
+        <td class="even" colspan="4" style="font-size: 14px;font-weight: normal;border: none; text-align: left;padding: 10px 10px;color: #000000;">
+            Delivery Date:
+            {{ order.deliveryDate | date('F d, Y') }}<sup>*</sup>
+            <br/> Delivery Cost: ${{ order.shippingAmount | number_format(2) }}
+        </td>
+    </tr>
+    <tr>
+        <td colspan="4" style="padding: 0">
+            {% set balanceAmount = order.totalAmount - order.totalReceivedAmount %}
+            <table class="ysp-border-mob" style="width: 100%;table-layout: fixed;border-spacing: 0;border: solid 4px #83c59c;border-bottom: none;border-right: none;    border-collapse: collapse;">
+                <tr>
+                    <td colspan="3" class="even ysp-border-bottom-mob ysp-border-right-mob" style="font-size: 14px;font-weight: normal; border-right: solid 4px #83c59c;border-bottom: solid 4px #83c59c; text-align: left;padding: 6px;color: #000000;text-transform: capitalize;">
+                        Subtotal
+                    </td>
+                    <td class="even ysp-border-bottom-mob ysp-border-right-mob" style="font-size: 14px;font-weight: normal;border-right: solid 4px #83c59c;border-bottom: solid 4px #83c59c; padding: 6px;color: #000000;">
+                        ${{ order.SubTotalAmount | number_format(2) }}
+                    </td>
+                </tr>
+                {% if order.coupon %}
+                    <tr>
+                        <td colspan="3" class="even ysp-border-bottom-mob ysp-border-right-mob" style="font-size: 14px;font-weight: normal; border-right: solid 4px #83c59c;border-bottom: solid 4px #83c59c; text-align: left;padding: 6px;color: #000000;text-transform: capitalize;">
+                            Coupon Discount: (<span class="badge bg-success text-uppercase">{{ order.coupon.code }}</span>)
+                        </td>
+                        <td class="even ysp-border-bottom-mob ysp-border-right-mob" style="font-size: 14px;font-weight: normal;border-right: solid 4px #83c59c;border-bottom: solid 4px #83c59c; padding: 6px;color: #000000;">
+                            -${{ order.couponDiscountAmount | number_format(2) }}
+                        </td>
+                    </tr>
+                {% endif %}
+                <tr>
+                    <td colspan="3" class="even ysp-border-bottom-mob ysp-border-right-mob" style="font-size: 14px;font-weight: normal; border-right: solid 4px #83c59c;border-bottom: solid 4px #83c59c; text-align: left;padding: 6px;color: #000000;text-transform: capitalize;">
+                        Shipping (Delivery Date: {{ order.deliveryDate | date('F d, Y') }}<sup>*</sup>)
+                    </td>
+                    <td class="even ysp-border-bottom-mob ysp-border-right-mob" style="font-size: 14px;font-weight: normal;border-right: solid 4px #83c59c;border-bottom: solid 4px #83c59c; padding: 6px;color: #000000;">
+                        ${{ order.shippingAmount | number_format(2) }}
+                    </td>
+                </tr>
+                {% if order.additionalDiscount is defined and order.additionalDiscount is not empty %}
+                    {% for key,discount in order.additionalDiscount %}
+                        <tr>
+                            <td colspan="3" class="even ysp-border-bottom-mob ysp-border-right-mob" style="font-size: 14px;font-weight: normal; border-right: solid 4px #83c59c;border-bottom: solid 4px #83c59c; text-align: left;padding: 6px;color: #000000;text-transform: capitalize;">
+                                Discount
+                                <small class="text-capitalize text-muted">
+                                    ({{discount.name}})
+                                </small>
+                            </td>
+                            <td class="even ysp-border-bottom-mob ysp-border-right-mob" style="font-size: 14px;font-weight: normal;border-right: solid 4px #83c59c;border-bottom: solid 4px #83c59c; padding: 6px;color: #000000;">
+                                -${{discount.amount | number_format(2)}}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% endif %}
+                {% if order.orderProtectionAmount > 0 %}
+                    <tr>
+                        <td colspan="3" class="even ysp-border-bottom-mob ysp-border-right-mob" style="font-size: 14px;font-weight: normal; border-right: solid 4px #83c59c;border-bottom: solid 4px #83c59c; text-align: left;padding: 6px;color: #000000;text-transform: capitalize;">
+                            Order Protection
+                        </td>
+                        <td class="even ysp-border-bottom-mob ysp-border-right-mob" style="font-size: 14px;font-weight: normal;border-right: solid 4px #83c59c;border-bottom: solid 4px #83c59c; padding: 6px;color: #000000;">
+                            ${{ order.orderProtectionAmount | number_format(2) }}
+                        </td>
+                    </tr>
+                {% endif %}
+                {% if order.internationalShippingChargeAmount > 0 %}
+                    <tr>
+                        <td colspan="3" class="even ysp-border-bottom-mob ysp-border-right-mob" style="font-size: 14px;font-weight: normal; border-right: solid 4px #83c59c;border-bottom: solid 4px #83c59c; text-align: left;padding: 6px;color: #000000;text-transform: capitalize;">
+                            International Shipping
+                        </td>
+                        <td class="even ysp-border-bottom-mob ysp-border-right-mob" style="font-size: 14px;font-weight: normal;border-right: solid 4px #83c59c;border-bottom: solid 4px #83c59c; padding: 6px;color: #000000;">
+                            ${{ order.internationalShippingChargeAmount | number_format(2) }}
+                        </td>
+                    </tr>
+                {% endif %}
+                <tr>
+                    <td colspan="3" class="even ysp-border-bottom-mob ysp-border-right-mob" style="font-size: 14px;font-weight: normal; border-right: solid 4px #83c59c;border-bottom: solid 4px #83c59c; text-align: left;padding: 6px;color: #000000;text-transform: capitalize;">
+                        Order Total Amount
+                        {% if balanceAmount <= 0 %}
+                            <span style="display: inline-block; padding: .25em .4em; font-size: 75%; font-weight: 700; line-height: 1; text-align: center; white-space: nowrap; vertical-align: baseline; border-radius: .25rem; background-color: #28a745; text-transform: uppercase;">Paid</span>
+                        {% endif %}
+                    </td>
+                    <td class="even ysp-border-bottom-mob ysp-border-right-mob" style="font-size: 14px;font-weight: normal;border-right: solid 4px #83c59c;border-bottom: solid 4px #83c59c; padding: 6px;color: #000000;">
+                        ${{ order.totalAmount | number_format(2) }}
+                    </td>
+                </tr>
+                {% if balanceAmount > 0 %}
+                    <tr>
+                        <td colspan="3" class="even ysp-border-bottom-mob ysp-border-right-mob" style="font-size: 14px;font-weight: bolder; border-right: solid 4px #83c59c; border-bottom: solid 4px #83c59c; text-align: left;padding: 6px;color: {{ primaryColor }};background-color: #83c59c;">
+                            Balance</td>
+                        <td class="even ysp-border-bottom-mob ysp-border-right-mob" style="font-size: 14px;font-weight: bolder;border-right: solid 4px #83c59c;border-bottom: solid 4px #83c59c; padding: 6px;color: {{ primaryColor }};background-color: #83c59c;">
+                            ${{ (order.totalAmount - order.totalReceivedAmount) | number_format(2) }}
+                        </td>
+                    </tr>
+                {% endif %}
+            </table>
+        </td>
+    </tr>
+    </tbody>
+</table>

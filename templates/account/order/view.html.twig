@@ -1,0 +1,159 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Order #{{ order.orderId }} - {{storeInfo.storeTitle}}{% endblock %}
+
+{% block body %}
+    <div class="page-header">
+        <div class="page-header-content order-view">
+            Thank You for Choosing <span class="break-mobile">{{ storeInfo.storeName }}!</span>
+        </div>
+    </div>
+    {% set user = order.user %}
+    <div class="container my-3 order-conformation">
+        <div class="text-center">
+            <h5 class="lead mt-4">Order ID #<strong class="text-success">{{ order.orderId }}</strong></h5>
+            <h5 class="lead mt-3 mb-2 mb-md-4">Total Amount:
+                <strong>${{ order.totalAmount | number_format(2) }}</strong></h5>
+            {% if order.status in ['RECEIVED', 'PROOF_UPLOADED', 'CHANGES_REQUESTED', 'DESIGNER_ASSIGNED','PROOF_APPROVED'] %}
+                <p class="text-center lead mb-3 order-info">
+                    <em>
+                        Your order will not go into production until you Approve your Proof. You will receive an email
+                        with a proof for you to Approve or Request Changes shortly. Once approved, we will begin
+                        processing your order.
+                    </em>
+                </p>
+            {% endif %}
+            {{ include('common/flash.html.twig') }}
+            {% include 'account/order/_order_status_message.html.twig' %}
+        </div>
+        <div class="table-responsive mt-2">
+            <table class="table table-bordered">
+                <tbody>
+                <tr>
+                    <th>Email Address</th>
+                    <td>
+                        {{ user.email }}
+                        <small class="d-block">
+                            You will receive all communication related to this order on the above email address.
+                        </small>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        {% if order.paymentMethod == 'PAYPAL_EXPRESS' and (order.textUpdatesNumber is null or order.billingAddress.phone is empty) %}
+            {{ component('SavePaypalAddressForm', {'order': order}) }}
+        {% endif %}
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <td>Billing Address</td>
+                    <td>Shipping Address</td>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>
+                        <p class="mb-0">{{ order.billingAddress.firstName | default('-') }} {{ order.billingAddress.lastName | default('-') }}</p>
+                        <p class="mb-0">{{ order.billingAddress.addressLine1 | default('-') }}</p>
+                        {% if order.billingAddress.addressLine2 %}
+                            <p class="mb-0">{{ order.billingAddress.addressLine2 }}</p>
+                        {% endif %}
+                        <p class="mb-0">
+                            {{ order.billingAddress.city | default('-') }}
+                            , {{ order.billingAddress.state | default('-') }}
+                            {{ order.billingAddress.zipcode | default('-') }}
+                        </p>
+                        <p class="mb-0">
+                            {{ order.billingAddress.country | default('-') }}
+                        </p>
+                        <p class="mb-0">
+                            <b>Phone Number:</b> {{ order.billingAddress.phone | default('-') }}
+                        </p>
+                        <p class="mb-0">
+                            <b>Email:</b> {{ order.billingAddress.email | default('-') }}
+                        </p>
+                    </td>
+                    <td>
+                        <p class="mb-0">{{ order.shippingAddress.firstName | default('-') }} {{ order.shippingAddress.lastName | default('-') }}</p>
+                        <p class="mb-0">{{ order.shippingAddress.addressLine1 | default('-') }}</p>
+                        {% if order.shippingAddress.addressLine2 %}
+                            <p class="mb-0">{{ order.shippingAddress.addressLine2 }}</p>
+                        {% endif %}
+                        <p class="mb-0">
+                            {{ order.shippingAddress.city | default('-') }}
+                            , {{ order.shippingAddress.state | default('-') }}
+                            {{ order.shippingAddress.zipcode | default('-') }}
+                        </p>
+                        <p class="mb-0">
+                            {{ order.shippingAddress.country | default('-') }}
+                        </p>
+                        <p class="mb-0">
+                            <b>Phone Number:</b> {{ order.shippingAddress.phone | default('-') }}
+                        </p>
+                        <p class="mb-0">
+                            <b>Email:</b> {{ order.shippingAddress.email | default('-') }}
+                        </p>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th>Payment Method</th>
+                    <th>YSP TID</th>
+                    <th>Gateway TID</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Last Updated</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% set transactions = order.transactions %}
+                {% if transactions | length > 0 %}
+                    {% for transaction in transactions %}
+                        <tr>
+                            <td>{{ transaction.paymentMethod | replace({'_': ' '}) }}</td>
+                            <td>{{ transaction.transactionId | upper }}</td>
+                            <td>{{ transaction.gatewayId | upper }}</td>
+                            <td>${{ transaction.amount | number_format(2) }}</td>
+                            <td>{{ transaction.status|replace({'VOIDED':'PAY LATER'}) }}</td>
+                            <td>{{ transaction.updatedAt | date('m/d/Y h:i A') }}</td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center">No transactions for this order.</td>
+                    </tr>
+                {% endif %}
+                </tbody>
+            </table>
+        </div>
+        <div class="table-responsive">
+            {% include 'account/order/_order_items_table.html.twig' %}
+        </div>
+        {# {% if order.status in ['RECEIVED', 'PROOF_UPLOADED', 'CHANGES_REQUESTED', 'DESIGNER_ASSIGNED'] %} #}
+        {% include 'account/order/_order_footer.html.twig' %}
+        {# {% endif %} #}
+    </div>
+    <div class="mt-5">
+        {{ include("common/_coupon_banner.html.twig") }}
+        {{ include('common/_people_also_purchase_swiper.html.twig') }}
+    </div>
+    {% if emailReviewToken and emailReviewToken == order.emailReviewToken %}
+        {% include 'account/order/_email_review.html.twig' %}
+    {% endif %}
+{% endblock %}
+{% block footerJavascripts %}
+    {% if emailReviewToken and emailReviewToken == order.emailReviewToken %}
+        <script type="text/javascript">
+            document.addEventListener('DOMContentLoaded', function () {
+                $('#order_email_review_modal').modal('show');
+            });
+        </script>
+    {% endif %}
+{% endblock %}

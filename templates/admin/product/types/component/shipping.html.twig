@@ -1,0 +1,60 @@
+<div {{ attributes }}>
+    <style>
+        .select-day {
+            background: none;
+            border: none;
+            padding: 5px 0;
+            width: auto;
+        }
+    </style>
+    {{ form_start(form) }}
+    {{ form_errors(form) }}
+
+    <div class="pricing-row mb-3">
+        {% for key, day in form.days %}
+            <div class="card shadow-none mb-3 card-header-actions">
+                <div class="card-header h-100 text-dark">
+                    {{ form_widget(day.day) }}
+                    <div class="actions">
+                        {% if day.day.vars.value %}
+                        <a href="{{ url('admin_product_type_shipping_copy', {id: productType.id, day: day.day.vars.value}) }}"
+                           class="btn btn-info btn-sm"
+                           onclick="return confirm('*** WARNING *** \n\nAre you sure? \nIt will copy the shipping data from the day which has high number of tiers and delete the current data if any.')"
+                            >
+                            <i class="fa fa-copy me-2"></i> Copy
+                        </a>
+                        {% endif %}
+                        {{ form_widget(day.vars.button_delete) }}
+                    </div>
+                </div>
+                <div class="card-body">
+                    {% if day.shipping | length > 0 %}
+                        {% for key, shipping in day.shipping %}
+                            <div class="pricing-fields-container d-flex align-items-center">
+                                <div class="row w-100 mb-3">
+                                    {% for price in shipping %}
+                                        {{ form_row(price) }}
+                                    {% endfor %}
+                                    <div class="col-12">
+                                        {{ form_errors(shipping) }}
+                                    </div>
+                                </div>
+                                <div class="delete-button ps-3 mt-3">
+                                    {{ form_widget(shipping.vars.button_delete) }}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="small text-danger no-alias mb-2">
+                            No shipping pricing added. You can add by clicking "Add Tier"
+                        </div>
+                    {% endif %}
+                    {{ form_widget(day.shipping.vars.button_add) }}
+                </div>
+            </div>
+        {% endfor %}
+        {{ form_widget(form.days.vars.button_add) }}
+    </div>
+    {{ form_row(form.submit) }}
+    {{ form_end(form) }}
+</div>

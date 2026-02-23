@@ -1,0 +1,113 @@
+<div class="offcanvas-header">
+    <a href="{{ url('homepage') }}" class="offcanvas-title" id="offcanvasNavbarLabel">
+        <img loading="lazy" width="85" height="53" src="{{ storeInfo.storeYardLogoOther }}" alt="Logo">
+    </a>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close">
+        <svg xmlns="http://www.w3.org/2000/svg" width="17.619" height="17.619" viewBox="0 0 17.619 17.619">
+            <g id="S0uz0h" transform="translate(-2043.222 -313.928)">
+                <g id="Group_934" data-name="Group 934">
+                    <path id="Path_702" data-name="Path 702"
+                          d="M2059.774,313.928h.344a1.034,1.034,0,0,1,.723.723v.378a1.726,1.726,0,0,1-.472.661q-3.45,3.444-6.9,6.892a1.017,1.017,0,0,1-.17.116v.079a1.059,1.059,0,0,1,.17.116q3.454,3.451,6.909,6.9a1.691,1.691,0,0,1,.46.648v.379a1.042,1.042,0,0,1-.723.722h-.344a1.528,1.528,0,0,1-.646-.432q-3.467-3.475-6.939-6.945a.935.935,0,0,1-.108-.175l-.083.013a1.208,1.208,0,0,1-.12.168q-3.463,3.467-6.927,6.932a1.477,1.477,0,0,1-.662.439h-.344a1.046,1.046,0,0,1-.723-.757v-.31a1.661,1.661,0,0,1,.479-.694q3.445-3.438,6.886-6.881a1.834,1.834,0,0,1,.227-.156c-.111-.088-.174-.128-.226-.179q-3.444-3.441-6.886-6.881a1.658,1.658,0,0,1-.48-.694v-.31a1.046,1.046,0,0,1,.723-.757h.378a1.824,1.824,0,0,1,.684.495q3.438,3.445,6.882,6.885c.047.047.1.092.167.16.059-.072.1-.134.154-.186q3.459-3.462,6.917-6.922A1.5,1.5,0,0,1,2059.774,313.928Z"
+                          fill="var(--primary-color)"></path>
+                </g>
+            </g>
+        </svg>
+    </button>
+</div>
+<div class="offcanvas-body">
+    {{ component('SearchForm') }}
+
+    {% set total = allCategories | length %}
+    {% set midpoint = (total / 2) | round(0, 'ceil') %}
+    <div class="row">
+        <div class="col-6">
+            <ul class="navbar-nav justify-content-end flex-grow-1 pe-1 pt-2">
+                {% set flagCategories = [''] %}
+                {% for category in allCategories | slice(0, midpoint) %}
+                    <li class="nav-item">
+                        <a class="nav-link {% if app.request.get('slug') == category.slug %} active{% endif %}"
+                        href="{{ url('category', {slug: category.slug}) }}"
+                        target="_blank">{{ category.name }}
+                            {% if category.name in flagCategories %}
+                                <span class="badge rounded-pill" style="font-size: 8px; padding: 2px 4px; background: #00c477">
+                                    New
+                                </span>
+                            {% endif %}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% if total > midpoint %}
+            <div class="col-6">
+                {% set renderedSubCategory = 0 %}
+                <ul class="navbar-nav justify-content-end flex-grow-1 pe-3 pt-2">
+                    {% for category in allCategories | slice(midpoint) %}
+                        {% if category.parentSlug is null %}
+                            <li class="nav-item">
+                                <a class="nav-link {% if app.request.get('slug') == category.slug %} active{% endif %}"
+                                href="{{ url('category', {slug: category.slug}) }}"
+                                target="_blank">{{ category.name }}</a>
+                            </li>
+                        {% else %}
+                            {% set renderedSubCategory = renderedSubCategory + 1 %}
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+    </div>
+    <hr class="sub-rendered-{{ renderedSubCategory }} total-rendered-{{ allCategories | length }}">
+    <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+        <li class="nav-item">
+            <a class="nav-link {% if app.request.get('_route') matches '{^login}' %}active{% endif %}"
+               href="{{ url('login') }}" target="_blank">My Account</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if app.request.get('_route') matches '{^contact_us}' %}active{% endif %}"
+               href="{{ url('contact_us') }}" target="_blank">Contact Us</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if app.request.get('_route') matches '{^repeat_order}' %}active{% endif %}"
+               href="{{ url('repeat_order') }}" target="_blank">Repeat Orders</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if app.request.get('_route') matches '{^shop_now}' %}active{% endif %}"
+               href="{{ url('shop_now') }}" target="_blank">Shop Now</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if app.request.get('_route') matches '{^track_order}' %}active{% endif %}"
+               href="{{ url('track_order') }}" target="_blank">Track Your Order</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if app.request.get('_route') matches '{^customer_photos}' %}active{% endif %}"
+               href="{{ url('customer_photos') }}" target="_blank">Customer Photos</a>
+        </li>
+        {% if not storeInfo.isPromoStore %}
+            <li class="nav-item">
+                <a class="nav-link {% if app.request.get('_route') matches '{^customer_feedback}' %}active{% endif %}"
+                href="{{ url('customer_feedback') }}" target="_blank">Customer Reviews</a>
+            </li>
+        {% endif %}
+        <li class="nav-item">
+            <a class="nav-link {% if app.request.get('_route') matches '{^faqs}' %}active{% endif %}"
+               href="{{ url('faqs') }}" target="_blank">FAQs</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if app.request.get('_route') matches '{^order_sample}' %}active{% endif %}"
+               href="{{ url('order_sample') }}" target="_blank">Order Samples</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if app.request.get('_route') matches '{^order_wire_stake}' %}active{% endif %}"
+               href="{{ url('order_wire_stake') }}" target="_blank">Order Wire Stakes</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if app.request.get('_route') matches '{^order_blank_sign}' %}active{% endif %}"
+               href="{{ url('order_blank_sign') }}" target="_blank">Order Blank Signs</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if app.request.get('_route') matches '{^return_policy}' %}active{% endif %}"
+               href="{{ url('return_policy') }}" target="_blank">Return Policy</a>
+        </li>
+    </ul>
+</div>

@@ -1,0 +1,22 @@
+<div {{ attributes }}>
+    {{ form_start(form) }}
+    {{ form_errors(form) }}
+    {{ form_row(form.title) }}
+    {{ form_row(form.name) }}
+    {{ form_row(form.permissions) }}
+    <div class="mb-4">
+        <a type="button" data-bs-toggle="modal" data-bs-target="#new-permission-modal">+ Add Permission</a>
+    </div>
+    {{ form_row(form.submit) }}
+    {{ form_end(form) }}
+
+    {% component BootstrapModal with { id: 'new-permission-modal' } %}
+        {% block modal_header %}
+            <h5>Add a permission</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        {% endblock %}
+        {% block modal_body %}
+            {{ component('NewPermissionForm') }}
+        {% endblock %}
+    {% endcomponent %}
+</div>

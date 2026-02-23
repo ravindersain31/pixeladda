@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: DejaVu Sans, sans-serif; font-size: 12px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #ccc; padding: 6px; }
+        th { background: #f1f5f9; }
+        .text-right { text-align: right; }
+        .text-primary { color: #0d6efd; }
+        .text-success { color: green; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<h2 class="text-primary">
+    Grommets Report
+    <small>
+        [Date: {{ start|date('M d, Y') }} - {{ end|date('M d, Y') }}]
+    </small>
+</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>Grommet</th>
+            <th class="text-right">Total Grommets</th>
+            <th class="text-right">Total Orders</th>
+            <th class="text-right">Grommets %</th>
+            <th class="text-right">Order %</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for key, row in ordersByGrommets %}
+            <tr>
+                <td>{{ key }}</td>
+                <td class="text-right">{{ row.totalQuantity }}</td>
+                <td class="text-right">{{ row.orderIds|length }}</td>
+                <td class="text-right">
+                    {{ ((row.totalQuantity / row.orderIds|length) * 100)|number_format(2) }}%
+                </td>
+                <td class="text-right">
+                    {{ ((row.orderIds|length / totalOrders) * 100)|number_format(2) }}%
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+    <tfoot>
+        <tr>
+            <td class="text-success">Total</td>
+            <td class="text-right text-success">{{ totalQuantity }}</td>
+            <td colspan="3"></td>
+        </tr>
+    </tfoot>
+</table>
+
+<br>
+
+<h3 class="text-primary">Past 31 Days Summary</h3>
+
+<table>
+    <tr>
+        <td><strong>Total Orders</strong></td>
+        <td class="text-right">{{ totalOrders }}</td>
+    </tr>
+    <tr>
+        <td><strong>Total Grommets</strong></td>
+        <td>
+            {% for key, row in ordersByGrommets %}
+                <span class="text-success">{{ key }}</span> : {{ row.totalQuantity }} |
+            {% endfor %}
+            <br><strong>Total = {{ totalQuantity }}</strong>
+        </td>
+    </tr>
+</table>
+
+</body>
+</html>

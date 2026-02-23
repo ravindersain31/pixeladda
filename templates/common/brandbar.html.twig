@@ -1,0 +1,104 @@
+<nav class="brand-bar navbar navbar-dark">
+    <div class="container-fluid p-0 justify-content-xl-start flex-nowrap">
+        <div class="navbar-toggler-area mobile-only">
+            <ul class="nav">
+                <li class="nav-item">
+                    <button class="nav-link navbar-toggler drawer-icon" type="button" data-bs-toggle="offcanvas"
+                            data-bs-target="#offcanvasNavbar"
+                            aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
+                       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mobile-navbar-toggle feather feather-menu text-sgs-red" aria-hidden="true" data-acsb-hidden="true" data-acsb-force-hidden="true">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link p-0" href="tel: +1-877-958-1499" aria-label="phone">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-phone"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="navbar-brand-area">
+            <a class="navbar-brand" href="{{ url('homepage') }}" aria-label="logo">
+                <img fetchpriority="high"  width="105" height="66" src="{{ storeInfo.storeYardLogo }}" alt="Logo">
+            </a>
+        </div>
+        <div class="navbar-search-area desktop-only">        
+            {{ component('SearchForm') }}
+        </div>
+        <div class="navbar-cart-area">
+            <ul class="nav">
+                <li class="nav-item desktop-only">
+                    <a class="nav-link" href="tel: +1-877-958-1499" aria-label="phone">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-phone"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>                        <span>Available 24/7</span>
+                    </a>
+                </li>
+                <li class="nav-item desktop-only border"/>
+         
+                <li class="nav-item desktop-only">
+                    <button class="nav-link" onclick="javascript:void(Tawk_API.toggle())" aria-label="live chat">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-message-square"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                        <span>Live Chat</span>
+                    </button>
+                </li>
+                 <li class="nav-item desktop-only border"/>
+                <li class="nav-item mobile-only">
+                    <a class="nav-link" data-bs-toggle="collapse" href="#searchCollapse" aria-label="search" role="button" aria-expanded="false" aria-controls="searchCollapse">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    </a>
+                </li>
+                <li class="nav-item dropdown cart-dropdown" id="light-cart">
+                    <div class="light-cart-container"
+                        {{ react_component('Cart',{
+                            'cartData': ysp.getCartData(),
+                        })}}
+                    >
+                        <div>
+                            <button class="nav-link dropdown-toggle shopping-cart" id="shoppingCart" aria-label="shoppingCart" type="button" data-bs-toggle="dropdown"
+                                    aria-expanded="false">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-shopping-cart"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                                <span class="desktop-only">Shopping Cart</span>
+                                {% if (lightCart.items | length) > 0 %}
+                                    <span class="start-100 badge rounded-pill">
+                                        {{ lightCart.items | length }}
+                                    </span>
+                                {% endif %}
+                            </button>
+                            {% if lightCart.totalQuantity <= 0 %}
+                                <div class="dropdown-menu dropdown-menu-end ">
+                                    <div class="light-cart p-0">
+                                            <div class="row no-items p-3 pt-2">
+                                                <div class="col-4 text-start p-0">
+                                                    <a href="{{ url('cart') }}">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-shopping-cart"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                                                        {{ lightCart.items | length }}
+                                                    </a>
+                                                </div>
+                                                <div class="col-8 text-end p-0">
+                                                    Total: <strong>${{ lightCart.getTotalAmount() | number_format(2) }}</strong>
+                                                </div>
+                                            </div>
+                                            <div class="card-body text-center">
+                                                <span class="p-2">Your shopping cart is empty!</span>
+                                            </div>
+                                        <a href="{{ url('cart', {id: lightCart.cartId}) }}" class="btn btn-view-cart">
+                                            View Cart
+                                        </a>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="container-fluid p-0 justify-content-xl-start">
+        <div class="collapse w-100 navbar-search-area mobile-only mt-3 mb-2" id="searchCollapse">
+            {{ component('SearchMobileForm') }}
+        </div>
+    </div>
+</nav>
+<a href="tel: +1-877-958-1499" class="phone-floating" aria-label="phone"><i class="fa fa-phone"></i></a>

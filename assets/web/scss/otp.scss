@@ -1,0 +1,130 @@
+$ysp-purple: var(--primary-color);
+$light-gray: #f3f3f3;
+$dark-text: #1a1a1a;
+$hover-bg: #e0d2f5;
+$border-color: #ddd;
+$box-shadow-color: #000;
+
+
+.otp-back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #333;
+    text-decoration: none;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+.otp-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.otp-inputs {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.otp-field {
+    width: 3rem;
+    height: 3rem;
+    text-align: center;
+    font-size: 1.5rem;
+    border: 1px solid $border-color;
+    border-radius: 8px;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.otp-field:focus {
+    border-color: $ysp-purple;
+    box-shadow: 0 0 0 2px rgba(255, 137, 122, 0.3);
+}
+
+.otp-sent-text {
+    font-size: 0.95rem;
+    color: #333;
+    margin-bottom: 0.25rem;
+    text-align: center;
+}
+
+.otp-change {
+    font-size: 0.9rem;
+    color: $ysp-purple;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.otp-change a {
+    color: $ysp-purple;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.not-you {
+    color: $dark-text;
+}
+
+.otp-submit-btn {
+    background: $ysp-purple;
+    border: none;
+    width: 100%;
+    padding: 0.9rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 10px;
+    color: white;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.otp-submit-btn:hover {
+    background: $ysp-purple;
+}
+
+.otp-resend {
+    display: block;
+    margin-top: 1.2rem;
+    color: $ysp-purple;
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+
+.otp-inputs {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin: 1rem 0;
+}
+
+.otp-box {
+    width: 60px;
+    height: 60px;
+    text-align: center;
+    font-size: 1.5rem;
+    border: 1px solid $border-color;
+    border-radius: 10px;
+    transition: all 0.2s ease;
+}
+
+.otp-box:focus {
+    border-color: $ysp-purple;
+    box-shadow: 0 0 0 2px rgba(157, 122, 255, 0.25);
+    outline: none;
+}
+
+.otp-resend:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 480px) {
+    .ysp-otp-submit-btn {
+        font-size: 14px !important;
+        white-space: nowrap;
+    }
+}

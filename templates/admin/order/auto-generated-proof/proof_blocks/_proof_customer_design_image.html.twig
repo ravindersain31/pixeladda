@@ -1,0 +1,58 @@
+{% set customerDesign = item.metaData.customerDesign ?? {} %}
+{% set customerDesignProof = item.metaData.customerDesignProof ?? {} %}
+{% set isDoubleSided = item.addOns.sides.key is defined and item.addOns.sides.key == 'DOUBLE' %}
+
+{% if customerDesign or customerDesignProof %}
+    <div class="proof-wrapper">
+        {# FRONT SIDE #}
+        {% set frontImg = customerDesignProof.front|default(customerDesign.front|default(null)) %}
+        {% if frontImg %}
+            <div class="side-item">
+                <div class="design-container">
+                    <img src="{{ frontImg }}" alt="Customer Design - Front" class="proof-template-img" />
+                </div>
+            </div>
+        {% endif %}
+
+        {# BACK SIDE #}
+        {% if isDoubleSided %}
+            {% set backImg = customerDesignProof.back|default(customerDesign.back|default(null)) %}
+            {% if backImg %}
+                <div class="side-item">
+                    <div class="design-container">
+                        <img src="{{ backImg }}" alt="Customer Design - Back" class="proof-template-img" />
+                    </div>
+                </div>
+            {% endif %}
+        {% endif %}
+    </div>
+
+    <style>
+        .proof-wrapper {
+            width: 100%;
+            display: block;
+            margin: 0 auto;
+            text-align: center;
+        }
+        .side-item {
+            display: block;
+            margin: 0 auto;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .design-container {
+            position: relative;
+            display: inline-block;
+            margin: 0 auto;
+        }
+        .proof-template-img {
+            display: block;
+            max-width: 280px;
+            max-height: 280px;
+            height: auto;
+            width: auto;
+            margin: 0 auto;
+            object-fit: contain;
+        }
+    </style>
+{% endif %}

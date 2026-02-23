@@ -1,0 +1,13 @@
+FROM dunglas/mercure
+
+ENV SERVER_NAME=:9090 \
+    MERCURE_PUBLISHER_JWT_KEY=!ChangeThisMercureHubJWTSecretKey! \
+    MERCURE_SUBSCRIBER_JWT_KEY=!ChangeThisMercureHubJWTSecretKey!
+
+CMD ["/usr/bin/caddy", "run", "--config", "/etc/caddy/dev.Caddyfile"]
+
+HEALTHCHECK --interval=5s --timeout=5s --start-period=60s --retries=5 CMD curl -f http://localhost/healthz || exit 1
+
+EXPOSE 9090
+
+VOLUME ["/data", "/config"]

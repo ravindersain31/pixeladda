@@ -1,0 +1,30 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Currency Edit{% endblock %}
+{% block pageTitle %}
+    <div class="page-header-icon">
+        <i class="fas fa-dashboard"></i>
+    </div>
+    Currency Edit
+{% endblock %}
+
+{% block body %}
+    <div class="card card-header-actions mx-auto shadow-none">
+        <div class="card-header">
+            Edit Currency
+            <div>
+                <a href="{{ url('admin_config_currencies') }}" class="btn btn-light btn-sm">
+                    <i class="fas fa-arrow-left me-2"></i>
+                    List
+                </a>
+            </div>
+        </div>
+        <div class="card-body">
+            {{ component('AdminCurrencyForm', {
+                form: form,
+                currency: currency,
+            }) }}
+        </div>
+    </div>
+
+{% endblock %}

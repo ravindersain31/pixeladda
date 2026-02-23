@@ -1,0 +1,105 @@
+{% extends 'base.html.twig' %}
+
+{% set title = metaData.title ?: metaData.pageTitle ~ ' - ' ~ storeInfo.storeTitle %}
+
+{% block title %}{{ title }}{% endblock %}
+{% block metaData %}
+    {% set pageUrl = url('shipping_information') %}
+    {% set pageImageUrl = storeInfo.isPromoStore
+        ? 'https://static.yardsignplus.com/storage/promo-store/About-Banner-Mobile.webp'
+        : 'https://static.yardsignplus.com/about-us_20230104-867ee7b0-8c29-11ed-89cb-152b12637baa.png'
+    %}
+
+    {% include 'common/_page_meta.html.twig' with {
+        title: title,
+        metaData: metaData,
+        pageUrl: pageUrl,
+        pageImageUrl: pageImageUrl,
+        storeInfo: storeInfo
+    } %}
+{% endblock %}
+{% block body %}
+    {{ include('common/common_mobile_bar.html.twig',{commonBarText: 'Order Online Or Call Now',commonBarTele: '+1-877-958-1499'}) }}
+    <div class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <picture>
+                    <source srcset="{{ storeInfo.isPromoStore ? 'https://static.yardsignplus.com/storage/promo-store/Shipping-Information-Banner-Mobile.webp' : 'https://static.yardsignplus.com/shipping-information_20230104-069539a0-8c2a-11ed-9fa4-c3a697f5dea9.png' }}"
+                            media="(max-width: 768px)">
+                    <img fetchpriority="high" width="1905" height="338" class="d-block w-100 h-auto"
+                         src="{{ storeInfo.isPromoStore ? 'https://static.yardsignplus.com/storage/promo-store/Shipping-Information-Banner-Desktop.webp' : 'https://static.yardsignplus.com/shipping-information_20221226-4f996f00-84e4-11ed-8dbd-cb3d7fecec02.jpg' }}"
+                         alt="YSP Contact Banner">
+                </picture>
+            </div>
+        </div>
+    </div>
+    {{ include('common/highlights.html.twig') }}
+    {{ include('common/breadcrumb.html.twig', { breadcrumbs: [
+        { name: 'Shipping Information', active: true }
+    ]}) }}
+    <div class="page-content container my-4 mt-4 mb-5">
+        <p>Please reference our shipping policy information below to learn more about our order process.</p>
+        <div class="ysp-common-text-wrapper">
+            <h5>Order Submitted</h5>
+            <p>Once your order is submitted, we will email you a confirmation receipt.</p>
+        </div>
+        <div class="ysp-common-text-wrapper">
+            <br>
+            <h5>Processing Time</h5>
+            <p>Our normal production time is between 1-5 business days after your proof (digital mockup) is approved
+                depending on the delivery date you select. Please note that our delivery dates rotate at or after 4pm
+                CST. Please approve your proof or request changes as soon as possible to avoid delivery delays. Your
+                order will not be processed for production until you approve your proof (digital mockup).</p>
+        </div>
+        <div class="ysp-common-text-wrapper">
+            <br>
+            <h5>Delivery Dates</h5>
+            <p>We offer the fastest delivery dates in the industry for fully custom yard signs. 
+            We use multiple shipping couriers to ensure your order is delivered on time or ahead 
+            of the delivery date selected. These shipping couriers include but are not limited to 
+            USPS, FedEx, and UPS. The final cost (if any) for shipping is mentioned prior to 
+            submitting your order. For any potential late deliveries due to delays by shipping 
+            couriers, we will prorate or issue you a full refund on your shipping cost (if any). 
+            For orders greater than 48 inches in width or height, we may require to use Freight Shipping 
+            to ensure your order arrives in pristine condition. You may be eligible to select Free Freight 
+            by allowing us to vertically fold or score the signs with one to three creases to fit 
+            inside a standard box. Please click the hyperlink prompt or leave a comment "Free Freight" 
+            if you would like to proceed with this option. We may also be required to use Freight Shipping 
+            for bulk orders depending on the total number of packages required. Please note that no 
+            indication or reference needs to be made. Simply submit your order and we'll take care of the rest. 
+            If any follow up is required, we will give you a call and send you an email. This includes if 
+            we require scheduling a truck delivery, or discussing any potential fees. Please give us a 
+            call for all bulk orders and we'll provide you with the lowest priced quote in the industry!</p>
+        </div>
+        <div class="ysp-common-text-wrapper">
+            <br>
+            <h5>Shipping Address (P.O Boxes)</h5>
+            <p>We suggest a physical address. However, we can ship to PO Boxes. Please note that shipping to PO boxes,
+                APO, or FPO addresses may be subject to longer delivery times.</p>
+        </div>
+        <div class="ysp-common-text-wrapper">
+            <br>
+            <h5>International Orders</h5>
+            <p>We ship domestically and internationally. We deliver orders worldwide. International orders may be
+                subject to additional shipping costs. If required, we will contact you prior to production. All domestic
+                addresses qualify for free shipping if order value minimum is met. Shipping fees are notated on our
+                website. Orders shipping to Hawaii and Alaska may be subject to additional shipping costs. If required,
+                we will contact you prior to production.</p>
+        </div>
+        <div class="ysp-common-text-wrapper">
+            <br>
+            <h5>Track Order</h5>
+            <p>Once your order has been shipped, we will email you with your tracking number.</p>
+        </div>
+        <div class="ysp-common-text-wrapper">
+            <br>
+            <h5>Lost Package</h5>
+            <p>Once your order has shipped, your order is with the shipping courier (USPS, UPS, FedEx, or other
+                service). Any potential shipping delays or lost package concerns by the shipping courier must be handled
+                with the shipping courier. Please contact the shipping courier with your tracking number for further
+                assistance. Please email us at <a href="mailto: {{storeInfo.storeSupportEmail}}">{{storeInfo.storeSupportEmail}}</a>.
+                We will assist as much as possible with your concerns. Please note that requests must be submitted
+                within 10 days from the delivery date of your order.</p>
+        </div>
+    </div>
+{% endblock %}

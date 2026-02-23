@@ -1,0 +1,159 @@
+<div class="container px-2 pb-4">
+    <div class="row justify-content-center rounded">
+        <!-- Proof Approvals Card -->
+        {# <div class="col-12 col-md-6 col-lg-5">
+            <div class="card shadow-sm rounded-3 h-100">
+                <div class="card-body text-center py-3 px-3">
+                    <h5 class="card-title mb-2 d-flex justify-content-center align-items-center gap-1 text-success fw-semibold" style="font-size:1.1rem;">
+                        <i class="bi bi-check2-circle fs-4"></i> Proof Approvals
+                    </h5>
+
+                    <span class="badge rounded-pill 
+                        {% if order.hasExceededApprovalLimit() %}
+                            bg-danger text-white
+                        {% elseif order.hasReachedApprovalLimit() %}
+                            bg-warning text-dark
+                        {% else %}
+                            bg-success text-white
+                        {% endif %}
+                        fs-5 px-4 py-1 shadow-sm">
+                        {{ order.getProofApprovalCount() }} / {{ constant('App\\Enum\\OrderStatusEnum::MAX_APPROVALS_COUNT') }}
+                    </span>
+
+                    <div class="progress progress-sm mt-2 rounded-pill" style="height:6px;">
+                        {% set approvalPercent = (order.getProofApprovalCount() / constant('App\\Enum\\OrderStatusEnum::MAX_APPROVALS_COUNT')) * 100 %}
+                        <div class="progress-bar 
+                            {% if order.hasExceededApprovalLimit() %}
+                                bg-danger
+                            {% elseif order.hasReachedApprovalLimit() %}
+                                bg-warning
+                            {% else %}
+                                bg-success
+                            {% endif %}" 
+                            role="progressbar"
+                            style="width: {{ approvalPercent }}%" 
+                            aria-valuenow="{{ approvalPercent }}" 
+                            aria-valuemin="0" 
+                            aria-valuemax="100">
+                        </div>
+                    </div>
+
+                    <p class="mt-2 mb-0 fw-semibold fst-italic fs-7
+                        {% if order.hasExceededApprovalLimit() %}
+                            text-danger
+                        {% elseif order.hasReachedApprovalLimit() %}
+                            text-warning
+                        {% else %}
+                            text-muted
+                        {% endif %}">
+                        {% if order.hasExceededApprovalLimit() %}
+                            Approval limit exceeded
+                        {% elseif order.hasReachedApprovalLimit() %}
+                            Approval limit reached — no more approvals allowed
+                        {% else %}
+                            Approvals remaining
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+        </div> #}
+
+        <!-- Change Requests Card -->
+        <div class="col-12 col-md-6 col-lg-6">
+            <div class="card shadow-sm rounded-3 h-100">
+                <div class="card-body text-center py-3 px-3">
+                    <h5 class="card-title mb-2 d-flex justify-content-center align-items-center gap-1 text-warning fw-semibold" style="font-size:1.1rem;">
+                        <i class="bi bi-pencil-square fs-4"></i> Changes Requested
+                    </h5>
+
+                    {# {% set requestChangesCount = order.getProofRequestChangeCountBeforeApproval() + order.getProofRequestChangeCountAfterApproval() %} #}
+                    {% set maxAllowedRequestChanges = order.getMaxAllowedRequestChanges() %}
+
+                    <span class="badge rounded-pill 
+                        {% if order.hasExceededRequestChangesLimit() %}
+                            bg-danger text-white
+                        {% elseif order.hasReachedRequestChangesLimit() %}
+                            bg-warning text-dark
+                        {% else %}
+                            bg-warning text-dark
+                        {% endif %}
+                        fs-5 px-4 py-1 shadow-sm">
+                        {% if order.isProofApprovedBefore %}
+                            {{ order.getProofRequestChangeCountAfterApproval() }}
+                        {% else %}
+                            {{ order.getProofRequestChangeCountBeforeApproval() }}
+                        {% endif %}
+                        {% if maxAllowedRequestChanges is not null %}
+                            / {{ maxAllowedRequestChanges }}
+                        {% else %}
+                            / <span class="small">(Unlimited)</span>
+                        {% endif %}
+                    </span>
+
+                    {% if maxAllowedRequestChanges is not null %}
+                        {% set changesPercent = (order.getProofRequestChangeCountBeforeApproval() / maxAllowedRequestChanges) * 100 %}
+                        {% if order.isProofApprovedBefore %}
+                            {% set changesPercent = (order.getProofRequestChangeCountAfterApproval() / maxAllowedRequestChanges) * 100 %}
+                        {% endif %}
+                        <div class="progress progress-sm mt-2 rounded-pill" style="height:6px;">
+                            <div class="progress-bar 
+                                {% if order.hasExceededRequestChangesLimit() %}
+                                    bg-danger
+                                {% elseif order.hasReachedRequestChangesLimit() %}
+                                    bg-warning
+                                {% else %}
+                                    bg-warning
+                                {% endif %}" 
+                                role="progressbar" 
+                                style="width: {{ changesPercent }}%" 
+                                aria-valuenow="{{ changesPercent }}" 
+                                aria-valuemin="0" 
+                                aria-valuemax="100">
+                            </div>
+                        </div>
+
+                        <p class="mt-2 mb-2 fw-semibold fst-italic fs-7
+                            {% if order.hasExceededRequestChangesLimit() %}
+                                text-danger
+                            {% elseif order.hasReachedRequestChangesLimit() %}
+                                text-warning
+                            {% else %}
+                                text-muted
+                            {% endif %}">
+                            {% if order.hasExceededRequestChangesLimit() %}
+                                Change request limit exceeded — Now a $10 fee will be applied for each additional change request.
+                            {% elseif order.hasReachedRequestChangesLimit() %}
+                                Change request limit reached — Now a $10 fee will be applied for each additional change request.
+                            {% else %}
+                                Revisions remaining {{ order.getRemainingRequestChanges() }}
+                            {% endif %}
+                        </p>
+                    {% else %}
+                        <p class="mt-2 mb-2 fw-semibold fst-italic fs-7 text-muted">
+                            Unlimited revisions before approval
+                        </p>
+                    {% endif %}
+
+                    <div class="d-flex justify-content-around small fw-semibold" style="font-size:0.8rem;">
+                        <div class="text-primary">
+                            <div>Before Approval <small class="text-muted">Revisions</small></div>
+                            <div class="fw-bold">
+                                {{ order.getProofRequestChangeCountBeforeApproval() }} / 
+                                {{ constant('App\\Enum\\OrderStatusEnum::MAX_REQUEST_CHANGES_COUNT_BEFORE_APPROVAL') ?? 'Unlimited' }}
+                            </div>
+                        </div>
+                        <div class="text-secondary">
+                            <div>After Approval <small class="text-muted">Revisions</small></div>
+                            <div class="fw-bold">
+                                {{ order.getProofRequestChangeCountAfterApproval() }} / 
+                                {{ constant('App\\Enum\\OrderStatusEnum::MAX_REQUEST_CHANGES_COUNT_AFTER_APPROVAL') ?? 'Unlimited' }}
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

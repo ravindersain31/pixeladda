@@ -1,0 +1,17 @@
+{% if order.status in ['PROOF_APPROVED', 'SENT_FOR_PRODUCTION', 'READY_FOR_SHIPMENT'] %}
+    <div class="card-body p-2 text-end">
+        {% if is_granted('admin_order_proof_change_status') and order.status != 'CANCELLED' %}
+            <a class="btn btn-warning btn-sm my-1" type="button" data-bs-toggle="offcanvas"
+                data-bs-target="#offcanvasSendToWaiting" aria-controls="offcanvasSendToWaiting">
+                <i class="fa fa-level-up me-1"></i> CUSTOMER REQUESTED CHANGES
+            </a>
+        {% endif %}
+        {% component BootstrapOffCanvas with { id: 'offcanvasSendToWaiting' } %}
+            {% block offcanvas_full_content %}
+                {{ component('AdminOrderChangeStatusForm',{
+                    order: order
+                }) }}
+            {% endblock %}
+        {% endcomponent %}
+    </div>
+{% endif %}

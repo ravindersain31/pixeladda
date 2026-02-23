@@ -1,0 +1,29 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}
+    Generate Qr Code
+{% endblock %}
+{% block pageTitle %}
+    <div class="page-header-icon">
+        <i class="fa-solid fa-qrcode"></i>
+    </div>
+    Generate Qr Code
+{% endblock %}
+
+{% block body %}
+    {% block stylesheets %}
+        {{ encore_entry_link_tags('admin') }}
+        {{ encore_entry_link_tags('admin-qr-generator') }}
+    {% endblock %}
+
+    <div style="background: white" id="qr-generator-container" {{ react_component('AdminQrGenerator') }}>
+        <div class="loading-proof-template">
+            Initializing ...
+        </div>
+    </div>
+
+    {% block javascripts %}
+        {{ encore_entry_script_tags('admin') }}
+        {{ encore_entry_script_tags('admin-qr-generator') }}
+    {% endblock %}
+{% endblock %}

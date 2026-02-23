@@ -1,0 +1,23 @@
+{% set epFromAddress = order.metaDataKey('epFromAddress') %}
+{% if epFromAddress %}
+    <div class="border-bottom mb-2 pb-2">
+        <div class="d-block">
+            <b>Ship From Address:-</b>
+            <a href="{{ url('admin_order_overview', {orderId: order.orderId }) }}"
+               target="_blank"
+               class="badge bg-primary small text-decoration-none text-white">
+                <i class="fa fa-external-link"></i> Edit
+            </a>
+        </div>
+        <div class="d-block">
+            {{ epFromAddress.name }},
+            {% if epFromAddress.company %}{{ epFromAddress.company }}, {% endif %}
+            {{ epFromAddress.street1 }},
+            {% if epFromAddress.street2 %} {{ epFromAddress.street2 }},{% endif %}
+            {{ epFromAddress.city }}, {{ epFromAddress.state }},
+            {{ epFromAddress.country }}, {{ epFromAddress.zip }}
+            <br/>
+            <b>Phone: </b> {{ epFromAddress.phone }}
+        </div>
+    </div>
+{% endif %}

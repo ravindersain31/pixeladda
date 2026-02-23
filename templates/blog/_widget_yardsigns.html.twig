@@ -1,0 +1,32 @@
+<div class="accordion-item pb-2">
+    <h2 class="accordion-header" id="headingCategories">
+        <button class="accordion-button collapsed" type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#collapseCategories"
+                aria-expanded="false"
+                aria-controls="collapseCategories">
+            Browse Blogs
+        </button>
+    </h2>
+    <div id="collapseCategories" class="accordion-collapse collapse"
+        aria-labelledby="headingCategories"
+        data-bs-parent="#blogSidebarAccordion">
+        <div class="accordion-body p-0">
+            <ul class="list-group list-group-flush">
+                {% for category in categories %}
+                    {% set radioId = 'cat_radio_' ~ category.slug %}
+                    <li class="list-group-item d-flex align-items-center ms-2">
+                        <input
+                            type="radio"
+                            id="{{ radioId }}"
+                            name="category_radio"
+                            class="form-check-input me-2 category-radio radio-button"
+                            data-url="{{ path('blog_category', { slug: category.slug }) }}"
+                        >
+                        <label class="form-check-label" for="{{ radioId }}">{{ category.title }}</label>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>

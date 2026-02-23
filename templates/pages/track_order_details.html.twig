@@ -1,0 +1,156 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Order #{{ order.orderId }} - {{storeInfo.storeTitle}}{% endblock %}
+{% block metaData %}
+    <link rel="canonical" href="{{ url('track_order_details', {oid: order.orderId}) }}" />
+    <meta name="robots" content="noindex, nofollow"/>
+    {% include 'common/_default_schema.html.twig' %}
+{% endblock %}
+{% block body %}
+    <div class="page-header">
+        <div class="page-header-content order-view">
+            Track Your Order
+        </div>
+    </div>
+    {% set user = order.user %}
+    <div class="container my-3 order-conformation">
+        {{ include('common/flash.html.twig') }}
+        <div class="card mb-3 bg-light">
+            <div class="card-body text-uppercase">
+                <div class="row">
+                    <div class="col-12 col-md-6">
+                        <h6><strong>Order Id: </strong>{{ order.orderId }}</h6>
+                        <h6 class="mb-md-0"><strong>Order Total: </strong>${{ order.totalAmount | number_format(2) }}</h6>
+                    </div>
+                    <div class="col-12 col-md-6 text-start text-md-end">
+                        <h6><strong>Order Date: </strong>{{ order.orderAt | date('M d, Y H:i A') }}</h6>
+                        <h6 class="mb-0">{{ order.status | badgeOrderStatus | raw }}</h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% if order.shippingTrackingId %}
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th colspan="2">Tracking Details</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>
+                        <strong class="text-uppercase">Tracking Id:</strong>
+                        <span>{{ order.shippingTrackingId }}</span>
+                    </td>
+                    <td class="text-end">
+                        <strong class="text-uppercase">Shipped On:</strong>
+                        <span>{{ order.shippingDate | date('M d, Y') }}</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <strong class="text-uppercase">Carrier:</strong>
+                         <span>{{ order.shippingCarrier }} {#({{ order.shippingCarrierService ?? 03 }})#}</span>
+                    </td>
+                    <td style="text-align: right;display:block !important;">
+                        <a href="{{ shippingTracking.generateTrackingLink(order.shippingCarrier, order.shippingTrackingId) }}" class="btn ysp-common-submit-btn mb-0"
+                           target="_blank">Track Order</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        {% endif %}
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <td>Billing Address</td>
+                    <td>Shipping Address</td>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>
+                        <p class="mb-0">{{ order.billingAddress.firstName | default('-') }} {{ order.billingAddress.lastName | default('-') }}</p>
+                        <p class="mb-0">{{ order.billingAddress.addressLine1 | default('-') }}</p>
+                        {% if order.billingAddress.addressLine2 %}
+                            <p class="mb-0">{{ order.billingAddress.addressLine2 }}</p>
+                        {% endif %}
+                        <p class="mb-0">
+                            {{ order.billingAddress.city | default('-') }}
+                            , {{ order.billingAddress.state | default('-') }}
+                            {{ order.billingAddress.zipcode | default('-') }}
+                        </p>
+                        <p class="mb-0">
+                            {{ order.billingAddress.country | default('-') }}
+                        </p>
+                        <p class="mb-0">
+                            <b>Phone Number:</b> {{ order.billingAddress.phone | default('-') }}
+                        </p>
+                        <p class="mb-0">
+                            <b>Email:</b> {{ order.billingAddress.email | default('-') }}
+                        </p>
+                    </td>
+                    <td>
+                        <p class="mb-0">{{ order.shippingAddress.firstName | default('-') }} {{ order.shippingAddress.lastName | default('-') }}</p>
+                        <p class="mb-0">{{ order.shippingAddress.addressLine1 | default('-') }}</p>
+                        {% if order.shippingAddress.addressLine2 %}
+                            <p class="mb-0">{{ order.shippingAddress.addressLine2 }}</p>
+                        {% endif %}
+                        <p class="mb-0">
+                            {{ order.shippingAddress.city | default('-') }}
+                            , {{ order.shippingAddress.state | default('-') }}
+                            {{ order.shippingAddress.zipcode | default('-') }}
+                        </p>
+                        <p class="mb-0">
+                            {{ order.shippingAddress.country | default('-') }}
+                        </p>
+                        <p class="mb-0">
+                            <b>Phone Number:</b> {{ order.shippingAddress.phone | default('-') }}
+                        </p>
+                        <p class="mb-0">
+                            <b>Email:</b> {{ order.shippingAddress.email | default('-') }}
+                        </p>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th>Payment Method</th>
+                    <th>YSP TID</th>
+                    <th>Gateway TID</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Last Updated</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% set transactions = order.transactions %}
+                {% if transactions | length > 0 %}
+                    {% for transaction in transactions %}
+                        <tr>
+                            <td>{{ transaction.paymentMethod | replace({'_': ' '}) }}</td>
+                            <td>{{ transaction.transactionId | upper }}</td>
+                            <td>{{ transaction.gatewayId | upper }}</td>
+                            <td>${{ transaction.amount | number_format(2) }}</td>
+                            <td>{{ transaction.status }}</td>
+                            <td>{{ transaction.updatedAt | date('m/d/Y h:i A') }}</td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center">No transactions for this order.</td>
+                    </tr>
+                {% endif %}
+                </tbody>
+            </table>
+        </div>
+        <div class="table-responsive">
+            {% include 'account/order/_order_items_table.html.twig' %}
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends 'emails/base2.html.twig' %}
+{% block title %}Wholesale Account Request {% endblock %}
+{% block subject %}Your Wholesale Account Request{% endblock %}
+{% block body %}
+<tr>
+    <td colspan="3">
+        <p class="off-desc-small ys-mob-ryt-lft-pad15"
+           style="font-size: 16px; color: #000000; padding: 0 50px; line-height: 135%; margin: 25px 0 25px; text-align: left;">
+            Hello {{ customer.firstName ?? 'Valued Customer' }},
+        </p>
+
+        <p class="off-desc-small ys-mob-ryt-lft-pad15"
+           style="font-size: 16px; color: #000000; padding: 0 50px; line-height: 135%; margin: 25px 0 25px; text-align: left;">
+            We appreciate your interest in becoming a wholesale partner with <strong>Yard Sign Promo</strong>.
+            After reviewing your application, we are unable to approve it at this time.
+        </p>
+
+        <p class="off-desc-small ys-mob-ryt-lft-pad15"
+           style="font-size: 16px; color: #000000; padding: 0 50px; line-height: 135%; margin: 25px 0 25px; text-align: left;">
+            If you believe this decision was made in error, please reply to this email or contact our support team for assistance.
+        </p>
+
+        <p class="off-desc-small ys-mob-ryt-lft-pad15"
+           style="font-size: 16px; color: #000000; padding: 0 50px; line-height: 135%; text-align: left;">
+            Thank you for your understanding.  
+            We appreciate your interest in working with us.
+        </p>
+    </td>
+</tr>
+{% endblock %}

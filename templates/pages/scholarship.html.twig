@@ -1,0 +1,65 @@
+{% extends 'base.html.twig' %}
+
+{% set title = metaData.title ?: metaData.pageTitle ~ ' - ' ~ storeInfo.storeTitle %}
+
+{% block title %}{{ title }}{% endblock %}
+{% block metaData %}
+    {% set pageUrl = url('scholarship') %}
+    {% set pageImageUrl = storeInfo.isPromoStore
+        ? 'https://static.yardsignplus.com/storage/promo-store/Footer-Banner-Desktop.png' 
+        : 'https://static.yardsignplus.com/storage/banners/Yard-Sign-Plus-1000-Scholarship-Program-Banner-Desktop.webp'
+    %}
+
+    {% include 'common/_page_meta.html.twig' with {
+        title: title,
+        metaData: metaData,
+        pageUrl: pageUrl,
+        pageImageUrl: pageImageUrl,
+        storeInfo: storeInfo
+    } %}
+{% endblock %}
+{% block body %}
+    {{ include('common/common_mobile_bar.html.twig',{commonBarText: 'Order Online Or Call Now',commonBarTele: '+1-877-958-1499'}) }}
+    {{ include('common/_banner.html.twig',{
+        desktopImg:  storeInfo.isPromoStore ? 'https://static.yardsignplus.com/storage/promo-store/Footer-Banner-Desktop.png' : 'https://static.yardsignplus.com/storage/banners/Yard-Sign-Plus-1000-Scholarship-Program-Banner-Desktop.webp',
+        desktopAlt: 'Yard-Sign-Plus-1000-Scholarship-Program-Banner',
+        mobileImg:  storeInfo.isPromoStore ? 'https://static.yardsignplus.com/storage/promo-store/Footer-Banner-Mobile.png' : 'https://static.yardsignplus.com/storage/banners/Yard-Sign-Plus-1000-Scholarship-Program-Banner-Mobile.webp',
+        mobileAlt: 'Yard-Sign-Plus-1000-Scholarship-Program-Banner'
+    }) }}
+    {{ include('common/highlights.html.twig') }}
+    {{ include('common/breadcrumb.html.twig', { breadcrumbs: [
+        { name: 'Scholarship', active: true }
+    ]}) }}
+    <div class="page-content container">
+        <h4 class="my-4 fs-19 text-dark">{{storeInfo.storeName}} $1000 Scholarship Program</h4>
+        <p>We are thrilled to announce the {{storeInfo.storeName}} scholarship for students who strive for excellence and outstanding performance.</p>
+        <p>The {{storeInfo.storeName}} scholarship provides a one-time award of $1000 to pay for tuition, books, computers, room and board, or any education-related expense. There’s no GPA requirement and no application forms.</p>
+        <p>This scholarship will be open to both undergrad and graduate students attending any accredited college university within the United States, as well as high school seniors who will be attending classes.</p>
+
+        <ul class="text-dark">
+            <li>Scholarship Name: {{storeInfo.storeName}} $1000 Scholarship</li>
+            <li>Deadline:<strong> July 31, 2026 11:59 PM EST</strong></li>
+            <li>Scholarship Value: $1000</li>
+            <li>Available Scholarship Slots: 1</li>
+        </ul>
+
+        <h4 class="my-4 fs-19 text-dark">Criteria of who can apply:</h4>
+        <ul class="text-dark">
+            <li>Must be a legal resident of the United States or hold a valid student visa</li>
+            <li>Must be currently enrolled in or accepted to a full-time undergraduate or graduate program in an accredited U.S. college or university</li>
+            <li>Must be 18 years or older</li>
+        </ul>
+
+        <h4 class="my-4 fs-19 text-dark">How to Apply</h4>
+        <p>For a chance to win the scholarship, write a 500-word essay answering the question:</p>
+        <ul>
+            <li><strong>Impact of Advertising on Consumer Culture</strong </li>
+            <li><strong>The Power of Visual Storytelling in Advertising</strong></li>
+            <li><strong>The Role of Emotional Appeal in Advertising</strong></li>
+            <li><strong>How Advertising Shapes Public Opinion</strong></li>
+        </ul>
+        <p>Essays must be sent to <a href="mailto:{{storeInfo.storeScholarshipsEmail}}">{{storeInfo.storeScholarshipsEmail}}</a> as an attached Word document with your full name, address, phone number, school name, and date of birth. Use the subject line: {{storeInfo.storeName}} $1000 Scholarship | (Your Name).</p>
+        <h4 class="my-4 fs-19 text-dark">How to Win</h4>
+        <p>Send us your response following the guidelines above. Our team will pick the best essay and notify the winner via email on <strong>September 30, 2026</strong>. The winner should respond in 7 days; otherwise, another winner will be selected.</p>
+    </div>
+{% endblock %}

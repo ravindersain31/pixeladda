@@ -1,0 +1,280 @@
+<div class="card payment-methods" 
+    data-controller="saved-braintree-cards-checkout">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <div>{{ form_label(form.paymentMethod) }}</div>
+        <div class="total-amount">
+            <b>TOTAL:</b>
+            {% if amount is defined %}
+                {% set totalAmount = amount | number_format(2) %}
+            {% else %}
+                {% set totalAmount = cart.totalAmount | number_format(2) %}
+            {% endif %}
+            <span id="checkout-order-total-amount" data-amount="{{ totalAmount}}">
+                ${{ totalAmount }}
+            </span>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="payment-methods-list" role="tablist">
+            {% for choice in form.paymentMethod %}
+                <label class="payment-method-choice">
+                    {{ form_widget(choice) }}
+                </label>
+            {% endfor %}
+        </div>
+        <div class="payment-view" id="payment-view">
+            <div class="tab-content">
+                {% for choice in form.paymentMethod.vars.choices %}
+                    <div class="tab-pane {% if choice.value == form.paymentMethod.vars.data %}active show{% endif %}"
+                         id="payment-method-{{ choice.value | lower }}" role="tabpanel"
+                         aria-labelledby="payment-method-{{ choice.value | lower }}-tab" tabindex="{{ loop.index }}">
+                        {% if choice.value | lower == 'credit_card' %}
+                            {% if app.user %}
+                                {{ include('checkout/_saved_cards.html.twig', { form: form } ) }}
+                            {% else %}
+                                <div
+                                    id="braintree-dropin"
+                                    data-saved-braintree-cards-checkout-target="dropin">
+                                </div>
+                            {% endif %}
+                        {% elseif choice.value | lower == 'stripe' %}
+                            {{ include('checkout/_stripe.html.twig') }}
+                        {% elseif choice.value | lower == 'amazon_pay' %}
+                        {% else %}
+                            <div class="payment-message">
+                                {{ choice.attr['data-help-message'] }}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        {{ form_errors(form.paymentMethod) }}
+        {{ form_help(form.paymentMethod) }}
+        {{ form_widget(form.agreeTerms) }}
+        {% if form.recaptcha is defined %}
+            <div class="mt-3 recaptcha-container">
+                {{ form_row(form.recaptcha) }}
+                {{ form_errors(form.recaptcha) }}
+            </div>
+        {% endif %}
+        {% if app.request.pathInfo|trim('/') == 'checkout' %}
+            <div id="amazon-pay-button-wrapper-checkout" style="display: none;">
+                {% if amazonPay.signature %}
+                    <div class="d-flex justify-content-center ysp-express-payment-methods-wrapper">
+                        <div id="amazon-pay-blocker-checkout"></div>
+                        <div class="amazon-pay-checkout-choose">
+                            <div id="AmazonPayButtonChoose" style="display:none; margin-top: 10px; box-shadow: 3px 4px 2px #000000;"></div>
+                            <input
+                            type="hidden"
+                            id="amazon-pay-config-choose"
+                            data-payload="{{ amazonPay.payload | e('html_attr') }}"
+                            data-signature="{{ amazonPay.signature | e('html_attr') }}"
+                            data-merchant-id="{{ ysp.env('AMAZON_PAY_MERCHANT_ID') }}"
+                            data-public-key-id="{{ ysp.env('AMAZON_PAY_PUBLIC_ID') }}"
+                            data-algorithm="{{ ysp.env('AMAZON_ALGO_KEY') }}"
+                            data-amount="{{ cart.totalAmount | number_format(2, '.', '') }}"
+                            data-currency="USD"
+                            >
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        {% else %}
+            <div id="amazon-pay-button-wrapper" style="display: none;">
+                {% if amazonPay.signature %}
+                    <div class="d-flex justify-content-center ysp-express-payment-methods-wrapper">
+                        <div id="amazon-pay-blocker"></div>
+                        <div class="amazon-pay-checkout-choose">
+                            <div id="AmazonPayButtonLink" style="display:none; margin-top: 10px; box-shadow: 3px 4px 2px #000000;"></div>
+                            <input
+                            type="hidden"
+                            id="amazon-pay-config-link"
+                            data-payload="{{ amazonPay.payload | e('html_attr') }}"
+                            data-signature="{{ amazonPay.signature | e('html_attr') }}"
+                            data-merchant-id="{{ ysp.env('AMAZON_PAY_MERCHANT_ID') }}"
+                            data-public-key-id="{{ ysp.env('AMAZON_PAY_PUBLIC_ID') }}"
+                            data-algorithm="{{ ysp.env('AMAZON_ALGO_KEY') }}"
+                            data-amount="{{ paymentRequest.amount  | number_format(2, '.', '') }}"
+                            data-currency="USD"
+                            >
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        {% endif %}
+        
+        {{ form_row(form.paymentNonce, {attr: {value: ''}}) }}
+        {{ form_widget(form.submit, {attr: {
+            'data-action': 'saved-braintree-cards-checkout#submit live#action:prevent',
+            'data-live-action-param': 'submit',
+            'data-saved-braintree-cards-checkout-target': 'submitButton',
+        }}) }}
+    </div>
+</div>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    function readAddress(addressType = 'shippingAddress') {
+        return {
+            given_name: document.getElementById(`checkout_${addressType}_firstName`).value,
+            family_name: document.getElementById(`checkout_${addressType}_lastName`).value,
+            email: document.getElementById(`checkout_${addressType}_email`).value,
+            street_address: document.getElementById(`checkout_${addressType}_addressLine1`).value,
+            street_address2: document.getElementById(`checkout_${addressType}_addressLine2`).value,
+            postal_code: document.getElementById(`checkout_${addressType}_zipcode`).value,
+            city: document.getElementById(`checkout_${addressType}_city`).value,
+            region: document.getElementById(`checkout_${addressType}_state`).value,
+            phone: document.getElementById(`checkout_${addressType}_phone`).value.replace(/[^0-9 ]/g, "").replace(' ', ''),
+            country: document.getElementById(`checkout_${addressType}_country`).value,
+        };
+    }
+
+    function isElementVisible(el) {
+        return el && el.offsetParent !== null;
+    }
+
+    const agreeCheckbox = document.getElementById("checkout_agreeTerms");
+    const blocker = document.getElementById("amazon-pay-blocker-checkout");
+    const recaptchaContainer = document.getElementById("recaptcha_render_box__checkout_recaptcha");
+
+    const allFieldKeys = [
+        "firstName", "lastName", "email", "addressLine1", "addressLine2",
+        "zipcode", "city", "state", "phone", "country"
+    ];
+
+    function isRecaptchaCompleted() {
+        const token = document.getElementById("checkout_recaptcha_token")?.value;
+        return token && token.trim() !== "";
+    }
+
+    function validateAdrress() {
+        let hasEmptyValue = false;
+        let hasShippingAddressEmpty = false;
+        let hasBillingAddressEmpty = false;
+
+        const shippingAddress = readAddress('shippingAddress');
+        const billingAddress = readAddress('billingAddress');
+        const countriesArray = ['US', 'GB', 'CA', 'AU'];
+
+        for (const key in shippingAddress) {
+            if (key !== 'street_address2') {
+                if (!shippingAddress[key]) {
+                    if (key === 'region' && !countriesArray.includes(shippingAddress.country)) continue;
+                    hasShippingAddressEmpty = true;
+                }
+            }
+        }
+
+        for (const key in billingAddress) {
+            if (key !== 'street_address2') {
+                if (!billingAddress[key]) {
+                    if (key === 'region' && !countriesArray.includes(billingAddress.country)) continue;
+                    hasBillingAddressEmpty = true;
+                }
+            }
+        }
+
+        if (hasShippingAddressEmpty || hasBillingAddressEmpty || !agreeCheckbox.checked) {
+            hasEmptyValue = true;
+        }
+
+        if (recaptchaContainer && isElementVisible(recaptchaContainer) && !isRecaptchaCompleted()) {
+            hasEmptyValue = true;
+        }
+
+        return hasEmptyValue;
+    }
+
+    function toggleBlocker() {
+        const hasError = validateAdrress();
+        blocker.style.display = hasError ? "block" : "none";
+    }
+
+    function removeRecaptchaErrors() {
+        const customError = recaptchaContainer?.querySelector(".recaptcha-error");
+        if (customError) customError.remove();
+
+        const jqError = recaptchaContainer?.querySelector(".recaptcha-error-message");
+        if (jqError) {
+            jqError.innerHTML = '';
+            jqError.classList.remove("d-inline");
+        }
+    }
+
+    function showRecaptchaError() {
+        if (recaptchaContainer && isElementVisible(recaptchaContainer)) {
+            const alreadyShown = recaptchaContainer.querySelector(".recaptcha-error");
+            if (!alreadyShown) {
+                const errorMsg = document.createElement("div");
+                errorMsg.className = "recaptcha-error text-danger mt-2";
+                errorMsg.textContent = 'Please click "I\'m not a robot".';
+                recaptchaContainer.appendChild(errorMsg);
+            }
+            recaptchaContainer.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+    }
+
+    // Update blocker every 300ms
+    setInterval(toggleBlocker, 300);
+
+    // Field listeners
+    ["shippingAddress", "billingAddress"].forEach((addressType) => {
+        allFieldKeys.forEach((fieldKey) => {
+            const fieldId = `checkout_${addressType}_${fieldKey}`;
+            const field = document.getElementById(fieldId);
+            if (field) {
+                field.addEventListener("change", toggleBlocker);
+            }
+        });
+    });
+
+    if (agreeCheckbox) {
+        agreeCheckbox.addEventListener("change", toggleBlocker);
+    }
+
+    // Blocker click (for user trying to click Amazon Pay too early)
+    blocker.addEventListener("click", function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        const hasError = validateAdrress();
+        if (hasError) {
+            if (recaptchaContainer && isElementVisible(recaptchaContainer) && !isRecaptchaCompleted()) {
+                showRecaptchaError();
+            }
+            alert("Please complete all required fields.");
+        }
+    });
+
+    // reCAPTCHA success handler
+    window.onRecaptchaSuccess = function (token) {
+        console.log("reCAPTCHA completed:", token);
+        toggleBlocker();
+        removeRecaptchaErrors();
+    };
+});
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const amazonTabPane = document.getElementById("payment-method-amazon_pay");
+    const amazonButtonWrapper = document.getElementById("amazon-pay-button-wrapper-checkout");
+    const submitButton = document.getElementById("checkout_submit") ||  document.getElementById("payment_link_submit");
+
+    function toggleAmazonButton() {
+        const isActive = amazonTabPane.classList.contains("active") && amazonTabPane.classList.contains("show");
+        amazonButtonWrapper.style.display = isActive ? "block" : "none";
+        if (submitButton) {
+            if (isActive) {
+                submitButton.style.display = "none";
+            } else {
+                submitButton.style.removeProperty("display");
+            }
+        }
+    }
+    toggleAmazonButton();
+    const tabTriggers = document.querySelectorAll('[data-bs-toggle="tab"]');
+    tabTriggers.forEach(trigger => {
+        trigger.addEventListener("shown.bs.tab", toggleAmazonButton);
+    });
+});
+</script>

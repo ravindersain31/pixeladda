@@ -1,0 +1,80 @@
+{% set isCustom = isCustom is defined and isCustom %}
+{% if isCustom %}
+    {% set productUrl = url('custom_yard_sign_editor', {
+        variant: product.slug
+    }) %}
+{% endif %}
+
+<a href="{{ productUrl }}" class="card">
+    <div class="card-body">
+        <div class="postion-relative p-2">
+            {% if isCustom %}
+                {% if product.displayImageName is defined and product.displayImageName %}
+                    {% set productImage = "https://static.yardsignplus.com/product/fit-in/800x800/img/" ~ product.displayImageName %}
+                {% elseif product.imageName is defined and product.imageName %}
+                    {% set productImage = "https://static.yardsignplus.com/product/fit-in/800x800/img/" ~ product.imageName %}
+                {% else %}
+                    {% set productImage = null %}
+                {% endif %}
+            {% else %}
+                {% set productImage = productImage is defined ? productImage : null %}
+            {% endif %}
+
+            {% if productImage is null %}
+                <img width="245" height="184" loading="lazy" class="lazy product-image"
+                    src="https://static.yardsignplus.com/assets/grommets-none.png" alt="...">
+            {% else %}
+                <img width="245" height="184" loading="lazy" class="lazy product-image"
+                    src="{{ productImage | lazyDefaultImage }}"
+                    data-src="{{ productImage }}"
+                    alt="{{ product.name }}">
+            {% endif %}
+        </div>
+
+        <h4 class="card-text p-1 {% if isCustom and ribbon is defined and product.name in ribbon|keys %}fw-semibold{% endif %}">
+            {% if isCustom %}
+                Custom {{ product.name | addInchQuotes }} Outdoor Yard Signs
+            {% else %}
+                {{ product.name }}
+            {% endif %}
+        </h4>
+    </div>
+
+    <ul class="list-group list-group-flush border-0">
+        <li class="list-group-item border-0">
+            <span class="badge d-inline-flex align-items-center px-1 py-0 rounded-pill custom-badge-super-rush">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-lightning-fill me-1" viewBox="0 0 16 16">
+                    <path d="M11.3 1L4 9h4l-1 6 7-8H9l2.3-6z"/>
+                </svg>
+                Overnight Delivery
+            </span>
+        </li>
+
+        {{ include('common/_product_pricing_chart.html.twig') }}
+        <li class="list-group-item bg-transparent">
+            <div class="product-meta-data card-text">
+                <div class="product-price">
+                    {% if isCustom %}
+                        ${{ lowestPrice(product, product.name) | number_format(2) }}
+                    {% else %}
+                        ${{ product.lowestPrice | number_format(2) }}
+                    {% endif %}
+                </div>
+                <div class="product-min-qty">Min 1</div>
+                <div class="product-rating-star">
+                    {% for item in 0..4 %}
+                        <span class="star" data-rating="1"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-star"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></span>
+                    {% endfor %}
+                </div>
+                <div class="product-rating-count">({{ reviewCount() }})</div>
+            </div>
+        </li>
+    </ul>
+    <div class="card-button">
+        {% if buttonText is defined %}
+            <button class="btn btn-light btn-block btn-customize-now">
+                {{ buttonText }}
+            </button>
+        {% endif %}
+    </div>
+</a>

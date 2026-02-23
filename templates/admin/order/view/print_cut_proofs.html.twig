@@ -1,0 +1,33 @@
+{% if messages is defined %}
+    {% if messages | length <= 0 and 'ROLE_WAREHOUSE' in app.user.roles %}
+        <div class="alert alert-warning text-center p-1">
+            Currently there are no Cut or Print files. Please request from Design Team.
+        </div>
+    {% endif %}
+    {% for message in messages %}
+        {% set sentBy = message.sentBy %}
+        <div class="card mb-3 shadow-none">
+            <div class="card-body p-2">
+                {% for file in message.adminFiles %}
+                    {% if vich_s3.asset(file, 'fileObject') %}
+                        <a href="{{ vich_s3.asset(file, 'fileObject') }}" class="btn btn-sm btn-primary"
+                           target="_blank">
+                            {% if file.type == 'PRINT_FILE' %}
+                                Print File
+                            {% elseif file.type == 'CUT_FILE' %}
+                                Cut File
+                            {% elseif file.type == 'VECTOR_FILE' %}
+                                Vector File
+                            {% else %}
+                                View File {{ loop.index }}
+                            {% endif %}
+                        </a>
+                    {% endif %}
+                {% endfor %}
+                <span class="text-dark-emphasis mt-1">
+                 {{ message.content | raw }} ({{ getUserType(sentBy) }}) at {{ message.sentAt | date('D M d, Y H:i:s A') }}
+            </span>
+            </div>
+        </div>
+    {% endfor %}
+{% endif %}

@@ -1,0 +1,36 @@
+<div class="modal fade" id="move_to_upload_proof_{{ order.orderId }}" tabindex="-1"
+     aria-labelledby="move_to_upload_proof_{{ order.orderId }}_label" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header p-2">
+                <h5 class="modal-title h-auto" id="move_to_upload_proof_{{ order.orderId }}_label">
+                   Move to Upload Proof
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                {% if order.isOrderInOQ %}
+                    {% set warehouseOrder = order.warehouseOrder %}
+                    <div class="alert alert-warning p-2 text-center mb-2" style=" line-height: 1.5; ">
+                        This order is currently in <b>Order Queue</b>, assigned to <b>{{ warehouseOrder.printerName }}</b>
+                        <a href="{{ url('admin_warehouse_queue_by_printer', {printer: warehouseOrder.printerName, wq: order.orderId}) }}"
+                           target="_blank" class="text-decoration-none">
+                            <i class="fa fa-external-link small"></i>
+                        </a> on Ship By date <b>{{ warehouseOrder.shipBy | date('M d') }}</b> and current status
+                        is <b>{{ enum.warehouseOrderStatus(warehouseOrder.printStatus) | raw }}</b>
+                        <br/><br/>
+                        If you <b>Move to Upload Proof</b>, the order will be removed from <b>Order Queue</b>.
+                    </div>
+                {% endif %}
+                <p style=" line-height: 1.5; ">Are you sure? Ensure production has not been started or completed.</p>
+                <a href="{{ url('admin_order_move_to_upload_proof', { orderId: order.orderId }) }}"
+                   class="btn btn-primary btn-sm">
+                    Yes
+                </a>
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">
+                    No
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

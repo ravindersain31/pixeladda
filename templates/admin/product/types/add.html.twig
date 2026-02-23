@@ -1,0 +1,30 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Add Product Type{% endblock %}
+{% block pageTitle %}
+    <div class="page-header-icon">
+        <i class="fa-solid fa-plus"></i>
+    </div>
+    Add Product Type
+{% endblock %}
+
+{% block body %}
+    <div class="card card-header-actions mx-auto shadow-none">
+        <div class="card-header">
+            Add new Product Type
+            <div>
+                <a href="{{ url('admin_product_types') }}" class="btn btn-light btn-sm">
+                    <i class="fas fa-arrow-left me-2"></i>
+                    List
+                </a>
+            </div>
+        </div>
+        <div class="card-body">
+            {{ component('AdminTypeProductForm', {
+                form: form,
+                productType: productType,
+            }) }}
+        </div>
+    </div>
+
+{% endblock %}

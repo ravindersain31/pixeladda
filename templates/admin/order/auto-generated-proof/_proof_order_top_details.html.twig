@@ -1,0 +1,84 @@
+{% set groupedResults = {} %} 
+{% set totalItemsQty = 0 %}
+{% set firstTemplateTitle = '' %}
+{% set templateSizes = [] %}
+
+{% for item in order.orderItems %}
+    {% set totalQuantity = item.quantity | default('0') %}
+    {% set stakeFrameType = 'None' %}
+
+    {% if item.itemType == 'DEFUALT' or item.product %}
+        {% set product = item.product.parent %}
+        {% set template = item.product %}
+    {% endif %}
+
+    {% if item.metaData.isCustomSize is defined and item.metaData.isCustomSize %}
+        {% set templateSize = item.metaData.customSize.templateSize.width ~ 'x' ~ item.metaData.customSize.templateSize.height %} 
+    {% elseif item.product.parent.sku == 'WIRE-STAKE' %}
+        {% set templateSize = template.label ?? (template.name ~ ' Wire Stake')  %}
+        {% set defaultUnit = '' %}
+    {% else %}
+        {% set templateSize = template.name %}
+    {% endif %}
+
+    {% set templateSizes = templateSizes | merge([templateSize]) %}
+
+    {% if item.addOns.frame is defined and item.addOns.frame.key != 'NONE' %}
+        {% if 'PREMIUM' in item.addOns.frame.key %}
+            {% set stakeFrameType = 'Premium' %}
+        {% elseif 'SINGLE' in item.addOns.frame.key %}
+            {% set stakeFrameType = 'Single' %}
+        {% else %}
+            {% set stakeFrameType = 'Standard' %}
+        {% endif %}
+    {% endif %}
+
+    {% if stakeFrameType != 'None' %}
+        {% set groupedResults = groupedResults|merge({
+            (stakeFrameType): (groupedResults[stakeFrameType] | default(0)) + totalQuantity
+        }) %}
+    {% endif %}
+
+    {% set totalItemsQty = totalItemsQty + totalQuantity %}
+
+    {% if loop.first and item.addOns.sides is defined %}
+        {% set firstTemplateTitle = item.addOns.sides.displayText %}
+    {% endif %}
+
+{% endfor %} 
+
+{% set uniqueTemplateSizes = templateSizes|reduce((carry, item) =>
+    item in carry ? carry : carry|merge([item])
+, []) %}
+
+<div class="page-container order-top-details">
+    <div class="padding-box-y">    
+        <p class="text-order-id">
+            <span class="text-purple text-arial-black">Order ID:</span>
+            <span class="order-id">{{ order.orderId }}</span>
+        </p>
+        <p class="text-template-title">
+            <span class="text-purple text-arial-black">Custom {{ firstTemplateTitle }} Sign</span>
+        </p>
+        <div class="total-signs-stakes-group">
+            <p class="total-signs text-purple">
+                <span class="text-purple text-arial-black">Total Signs:</span> 
+                <span class="total-signs-quantity text-arial-regular"> {{ totalItemsQty }} </span>
+            </p>
+            {% if groupedResults is not empty %}
+                <p class="total-stakes text-purple">
+                    <span class="text-purple text-arial-black">Total Stakes:</span>
+                    <span class="total-stakes-quantity text-arial-regular">
+                        {% for frameType, totalQty in groupedResults %}
+                            {{ totalQty }} {{ frameType }}{% if not loop.last %}, {% endif %}
+                        {% endfor %}
+                    </span>
+                </p>
+            {% endif %}
+            <p class="total-signs text-purple">
+                <span class="text-purple text-arial-black">Sizes:</span> 
+                <span class="total-signs-quantity text-arial-regular"> {{ uniqueTemplateSizes | join(', ') }} </span>
+            </p>
+        </div>
+    </div>
+</div>

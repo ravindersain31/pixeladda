@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Quote</title>
+  <style>
+  @page {
+    margin: 20px;
+  }
+
+  body {
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 13px;
+    color: #000;
+    background: #fff;
+  }
+
+  .header {
+    text-align: center;
+    background-color: {{ primary }};
+    padding: 10px;
+  }
+
+  .header img {
+    width: 160px;
+  }
+
+  .quote-date {
+    margin: 10px 0 20px;
+    font-size: 12px;
+    color: #555;
+  }
+
+  .section-title,
+  .summary-title {
+    background: {{ primary }};
+    color: #fff;
+    padding: 8px 10px;
+    font-weight: bold;
+    font-size: 14px;
+    text-transform: uppercase;
+    margin-top: 20px;
+  }
+
+  table {
+    border-collapse: collapse;
+  }
+
+  th, td {
+    border: 1px solid #ccc;
+    padding: 6px 8px;
+  }
+
+  .product-card {
+    border: 1px solid #ccc;
+    margin-top: 15px;
+    width: 100%;
+    table-layout: fixed;
+  }
+
+  .product-card-body {
+    padding: 10px;
+    border: none;
+  }
+
+  .design-wrapper {
+    width: 260px;
+    border: none;
+    vertical-align: top;
+  }
+
+  .design-label {
+    font-size: 13px;
+    font-weight: bold;
+    margin-bottom: 6px;
+    text-align: center;
+  }
+
+  .info-table th {
+    width: 45%;
+    background: #f5f5f5;
+  }
+  .info-table td {
+    width: 55%;
+  }
+
+  .info-table th,
+  .info-table td {
+    border: 1px solid #ddd;
+    font-size: 14px;
+  }
+
+  .info-title {
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+  }
+
+  .text-right {
+    text-align: right;
+  }
+
+  .tag {
+    display: inline-block;
+    background: #0d6efd;
+    color: #fff;
+    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    margin: 4px 4px 0 0;
+  }
+
+
+  .resume-btn {
+    background-color: #efc825;
+    color: #000;
+    font-size: 18px;
+    text-transform: uppercase;
+    text-decoration: none;
+    padding: 12px 22px;
+    border-radius: 6px;
+    font-weight: bold;
+  }
+
+  .footer {
+    font-size: 11px;
+    color: #6c757d;
+    margin-top: 30px;
+    font-style: italic;
+  }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <img src="{{ storeInfo.storeYardLogo }}">
+  </div>
+
+  <div class="quote-date">Quote Date: {{ "now"|date("F d, Y h:i A") }}</div>
+
+  <div class="section-title">Product Details</div>
+  {% for item in cart.cartItems %}
+    {% set meta = item.metaData ?? {} %}
+    {% set design = meta.customerDesign ?? {} %}
+    {% set template = item.product %}
+    {% set canvasData = item.canvasData %}
+    {% set productImageUrl = item.data.image %}
+    {% set isCustom = item.data.isCustom %}
+    {% set isSample = item.data.isSample %}
+    {% set isWireStake = item.data.isWireStake %}
+    {% set isBlankSign = item.data.isBlankSign %}
+    {% if item.data.prePackedDiscount is defined and item.data.prePackedDiscount %}
+      {% set isYardLetter = item.data.prePackedDiscount.hasPrePacked %}
+    {% endif %}
+    {% set addons = item.data['addons'] %}
+    {% set useProductImage = productImageUrl and (isCustom or isSample or isWireStake or isBlankSign ) %}
+    {% set isDouble = addons.sides is defined and addons.sides.key == 'DOUBLE'%}
+
+      <table class="product-card" width="100%" cellpadding="0" cellspacing="0" style="table-layout:fixed;">
+        <tr>
+          <td valign="top" width="60%">
+            <table class="info-table" width="100%" cellpadding="0" cellspacing="0">
+              <tr>
+                <th colspan="2" class="info-title">
+                  Product {{ item.product.parent.sku }}
+                </th>
+              </tr>
+              <tr>
+                <th>Size</th>
+                <td class="text-right">
+                  {% if item.data.isCustomSize is defined and item.data.isCustomSize %}
+                    {{ item.data.customSize.templateSize.width }}x{{ item.data.customSize.templateSize.height }}
+                  {% else %}
+                    {{ template.label ?? template.name }}
+                  {% endif %}
+                </td>
+              </tr>
+              <tr>
+                <th>Quantity</th>
+                <td class="text-right">{{ item.quantity }}</td>
+              </tr>
+              <tr>
+                <th>Unit Price</th>
+                <td class="text-right">${{ item.getDataKey('unitAmount')|number_format(2) }}</td>
+              </tr>
+              <tr>
+                <th>Subtotal</th>
+                <td class="text-right">${{ item.getDataKey('totalAmount')|number_format(2) }}</td>
+              </tr>
+            </table>
+
+            <div style="margin-top:8px;">
+              {% if item.data.YSPLogoDiscount.hasLogo is defined and item.data.YSPLogoDiscount.hasLogo %}
+                  <span class="tag">{{storeInfo.logoTitle}}</span>
+              {% endif %}
+              {% for addon in labelForAddons(item.dataKey('addons')) %}
+                <span class="tag">{{ addon }}</span>
+              {% endfor %}
+
+              {% if item.data['isWireStake'] is defined and item.data['isWireStake'] %}
+                  <span class="tag">{{ item.product.label ?? item.product.name }}</span>
+              {% endif %}
+              {% if item.data['isHelpWithArtwork'] is defined and item.data['isHelpWithArtwork'] %}
+                  <span class="tag">Help With Artwork</span>
+              {% endif %}
+              {% if item.data['isEmailArtworkLater'] is defined and item.data['isEmailArtworkLater'] %}
+                  <span class="tag">Email Artwork Later</span>
+              {% endif %}
+              {% if item.data['deliveryMethod'] is defined and item.data['deliveryMethod']['key'] == 'REQUEST_PICKUP' %}
+                  <span class="tag">{{item.data['deliveryMethod']['label']}}</span>
+              {% endif %}
+              {% if item.data.isBlindShipping is defined and item.data.isBlindShipping %}
+                  <span class="tag">Blind Shipping</span>
+              {% endif %}
+              {% if item.data.isFreeFreight is defined and item.data.isFreeFreight %}
+                  <span class="tag">Free Freight: Scoring</span>
+              {% endif %}
+              {% if item.shipping.isSaturday is defined and item.shipping.isSaturday %}
+                  <span class="tag">Super Rush: Saturday Delivery</span>
+              {% endif %}
+              
+            </div>
+          </td>
+        </tr>
+      </table>
+  {% endfor %}
+
+  <div class="summary-title">Order Summary</div>
+  <table width="100%">
+    <tr>
+      <td>Subtotal</td>
+      <td class="text-right">${{ cart.subTotal|number_format(2) }}</td>
+    </tr>
+      {% if cart.dataKey('shipping') %}
+        <tr>
+          <td>Shipping (Delivery Date: {{ cart.dataKey('shipping').date|date('F d, Y') }})</td>
+            <td class="text-right">
+              {% if cart.totalShipping <= 0 %}
+                  <span class="free-shipping-text">
+                      FREE
+                  </span>
+              {% else %}
+                  +${{ cart.totalShipping | number_format(2) }}
+              {% endif %}
+            </td>
+        </tr>
+      {% endif %}
+
+      {% if cart.couponAmount %}
+        <tr>
+          <td>Coupon Discount (<strong>{{ cart.coupon.code }}</strong>)</td>
+          <td class="text-right">- ${{ cart.couponAmount|number_format(2) }}</td>
+        </tr>
+      {% endif %}
+      {% if cart.additionalDiscount is defined and cart.additionalDiscount is not empty %}
+        {% for key,discount in cart.additionalDiscount %}
+            <tr class="bg-light">
+                <td>Discount
+                    <small class="text-capitalize text-muted">
+                        ({{discount.name}})
+                    </small>
+                </td>
+                <td class="text-right">-${{discount.amount | number_format(2)}}</td>
+            </tr>
+        {% endfor %}
+      {% endif %}
+      <tr>
+        <td>Order Protection</td>
+        <td class="text-right">${{ cart.orderProtectionAmount|number_format(2) }}</td>
+      </tr>
+
+      <tr>
+        <td><strong>Order Total Amount</strong></td>
+        <td class="text-right"><strong>${{ cart.totalAmount|number_format(2) }}</strong></td>
+      </tr>
+  </table>
+    <div class="resume-order" style="text-align: center; margin-top: 20px;">
+        <a href="{{ url('cart_resume', {id: cart.cartId}) }}" 
+            class="resume-btn" 
+            target="_blank">
+            Resume Your Order
+        </a>
+    </div>
+
+
+  <div class="footer">
+    <p><sup>*</sup>This date is subject to change based on when you approve the final proof.</p>
+    <p>Our current estimate is that your order will be delivered by the delivery date selected.</p>
+    <p>Colors may slightly vary on the final product. The production process includes high temperatures,
+       cutting, and packaging which can affect color output.</p>
+    <p>Please note we match CMYK colors listed on your proof as closely as possible.</p>
+    <p>If any delays occur, please contact us at
+       <a href="mailto:{{ storeInfo.storeSupportEmail }}">{{ storeInfo.storeSupportEmail }}</a>.
+    </p>
+  </div>
+</body>
+</html>

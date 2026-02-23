@@ -1,0 +1,73 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Orders - History Report{% endblock %}
+{% block pageTitle %}
+    <div class="page-header-icon">
+        <i class="fa-solid fa-cubes"></i>
+    </div>
+    Orders History Report
+{% endblock %}
+
+{% block body %}
+    <div class="card card-header-actions mx-auto shadow-none">
+        <div class="card-header p-0 h-100 border-0 flex-column-reverse flex-sm-row">
+            <nav>
+                <div class="nav nav-tabs ps-2 pe-2 pt-2" id="nav-tab" role="tablist">
+                    <a class="nav-link {% if view == 'reports' %} active {% endif %}" href="{{ url('admin_history_reports') }}">Order Report</a>
+                    <a class="nav-link {% if view == 'sides' %} active {% endif %}" href="{{ url('admin_history_sides') }}"> Sides Report</a>
+                    <a class="nav-link {% if view == 'grommets' %} active {% endif %}" href="{{ url('admin_history_grommets') }}">Grommets Report</a>
+                    <a class="nav-link {% if view == 'imprint_color' %} active {% endif %}" href="{{ url('admin_history_imprint_color') }}">Imprint Colors Report</a>
+                    <a class="nav-link {% if view == 'frames' %} active {% endif %}" href="{{ url('admin_history_frames') }}">Frames Report</a>
+                    <a class="nav-link {% if view == 'referrals' %} active {% endif %}" href="{{ url('admin_history_referrals') }}">Referrals Report</a>
+                </div>
+            </nav>
+        </div>
+        <div class="card-body order-history">
+            <div class="row tab-content" id="nav-tabContent">
+                {% if view is defined %}
+                    {% include 'admin/reports/order_history/' ~ view ~ '.html.twig' %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/gh/tofsjonas/sortable@latest/sortable.min.js"></script>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const startInput = document.getElementById('orde_history_startDate');
+    const endInput   = document.getElementById('orde_history_endDate');
+
+    if (!startInput || !endInput) {
+        return;
+    }
+
+    startInput.addEventListener('change', function () {
+
+        if (!this.value) {
+            return;
+        }
+
+        // Parse start date
+        const startDate = new Date(this.value);
+
+        // Add 31 days
+        startDate.setDate(startDate.getDate() + 31);
+
+        // Format YYYY-MM-DD
+        const yyyy = startDate.getFullYear();
+        const mm   = String(startDate.getMonth() + 1).padStart(2, '0');
+        const dd   = String(startDate.getDate()).padStart(2, '0');
+
+        const endDateValue = `${yyyy}-${mm}-${dd}`;
+
+        // Set endDate value
+        endInput.value = endDateValue;
+
+        // 🔥 IMPORTANT: notify LiveComponent
+        endInput.dispatchEvent(new Event('change', { bubbles: true }));
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,72 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Reports - Cogs {{ month.date | date('M Y') }}{% endblock %}
+{% block pageTitle %}
+    <div class="page-header-icon">
+        <i class="fa-solid fa-cubes"></i>
+    </div>
+    COGs Report - {{ month.date | date('M Y') }}
+{% endblock %}
+
+{% block body %}
+    <div class="day-fixed-table-responsive card shadow-none table-responsive">
+       {{ component('CogsDailyReportEditComponent', {
+            orders: orders,
+            dailyCogsReport: day
+        }) }}
+        <div class="card-header p-2 text-dark fw-600 fs-6">Cancelled Orders for {{ day.date | date('M d, Y') }}</div>
+        <div class="table-responsive">
+            <table class="card-body table table-bordered mb-0 fw-500">
+                <thead>
+                <tr>
+                    <th class="fit-to-cell">Sr</th>
+                    <th class="fit-to-cell">Order ID</th>
+                    <th class="fit-to-cell">Status</th>
+                    <th class="fit-to-cell">Pay Status</th>
+                    <th class="fit-to-cell text-end">Order Total</th>
+                    <th class="fit-to-cell text-end">Refunded</th>
+                    <th class="fit-to-cell">Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% set totalSheetsUsed = 0 %}
+                {% set totalSales = 0 %}
+                {% set totalRefunded = 0 %}
+                {% set pendingPayments = 0 %}
+                {% for order in cancelledOrders %}
+                    {# {% set materialCost = order.materialCost %} #}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td class="fit-to-cell">{{ order.orderId }}</td>
+                        <td class="fit-to-cell">{{ order.status | badgeOrderStatus(true) | raw }}</td>
+                        <td class="fit-to-cell">{{ order.paymentStatus | badgePaymentStatus | raw }}</td>
+                        <td class="text-end">${{ order.totalAmount | number_format(2) }}</td>
+                        <td class="text-end">${{ order.refundedAmount | number_format(2) }}</td>
+                        <td>
+                            <a href="{{ path('admin_order_overview', {orderId: order.orderId}) }}"
+                               class="badge bg-primary text-decoration-none text-white" target="_blank">
+                                View
+                            </a>
+                        </td>
+
+                        {# {% set totalSheetsUsed = totalSheetsUsed + materialCost.sheetsUsed %} #}
+                        {% set totalSales = totalSales + order.totalAmount %}
+                        {% set totalRefunded = totalRefunded + order.refundedAmount %}
+                        {% if order.paymentStatus not in ['COMPLETED', 'PARTIALLY_REFUNDED'] %}
+                            {% set pendingPayments = pendingPayments + (order.totalAmount - order.totalReceivedAmount) %}
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+                </tbody>
+                <tfoot>
+                <tr>
+                    <td colspan="4" class="text-end">Total</td>
+                    <td class="text-end">${{ totalSales | number_format(2) }}</td>
+                    <td class="text-end">${{ totalRefunded | number_format(2) }}</td>
+                    <td></td>
+                </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+{% endblock %}

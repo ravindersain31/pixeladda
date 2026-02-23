@@ -1,0 +1,24 @@
+{% extends 'emails/base.html.twig' %}
+{% block title %}Contact Us - Enquiry Received{% endblock %}
+{% block subject %}Enquiry Received{% endblock %}
+{% block body %}
+    <p style="margin: 5px 0;">
+        <strong>Name:</strong>
+        {{ contact.name }}
+    </p>
+    <p style="margin: 5px 0;">
+        <strong>Email:</strong>
+        {{ contact.email }}
+    </p>
+    {% if contact.telephone is defined %}
+        <p style="margin: 5px 0;">
+            <strong>Phone:</strong>
+            {{ contact.telephone }}
+        </p>
+    {% endif %}
+    <p style="margin: 5px 0;">
+        <strong>Comments:</strong>
+        {{ contact.comment }}
+    </p>
+
+{% endblock %}

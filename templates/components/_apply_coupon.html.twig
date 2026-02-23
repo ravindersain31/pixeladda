@@ -1,0 +1,75 @@
+<div {{ attributes }}>
+	{{ form_start(form, {attr: {
+            'novalidate': true,
+            'data-action': 'live#action:prevent',
+            'data-live-action-param': 'applyCoupon'
+        }}) }}
+		<style>
+			.popover {
+				max-width: 400px;
+				width: auto;
+			}
+			.popover-body {
+				padding: 10px;
+				font-family: 'Montserrat', sans-serif;
+				font-size: 14px;
+			}
+			.coupon-text {
+				font-family: 'Montserrat', sans-serif;
+				font-size: 12px;
+				margin-bottom: 0;
+			}
+
+			@media (max-width: 767px) {
+				.coupon-text {
+					font-size: 11px;
+				}
+			}
+
+		</style>
+	<div class="card cart-step mb-3">
+		<div class="card-body">
+			<h5 class="gap-2">
+				Coupon Code
+				<span
+					class="d-flex align-items-center"
+					data-bs-toggle="popover"
+					data-bs-trigger="hover focus"
+					data-bs-html="true"
+					data-bs-content="
+						<div style='font-family: Montserrat, sans-serif !important; font-size: 60px !important'>
+							<h4 style='font-weight: 600;margin-bottom: 0px; color: #000; font-family: Montserrat, sans-serif; font-size: 20px!important;'>Coupon Disclaimer</h4>
+							<p style='font-size: 12px;margin-bottom: 0;font-family: Montserrat, sans-serif'>Discounts and max savings vary by coupon:</p>
+							{% set coupons = this.getMaxDiscountedCoupons() %}
+							{% set yard20 = coupons|filter(c => c.code == 'YARD20') %}
+							{% set rest = coupons|filter(c => c.code != 'YARD20') %}
+							{% set reordered = rest|slice(0, 1) | merge(yard20) | merge(rest|slice(1)) %}
+
+							{% for coupon in reordered %}
+								<p class='coupon-text'><b>{{coupon.code}}:</b> {{coupon.discount}}% off, up to <b>${{ coupon.type == 'F' ? coupon.discount : coupon.maximumDiscount ?? coupon.discount}}</b> ({{ coupon.minimumQuantity ?? 1 }} or more items ) </p>
+							{% endfor %}
+
+							<p style='font-size: 12px;margin-top: 5px;margin-bottom: 0;font-family: Montserrat, sans-serif'>Coupons cannot be combined, restrictions may apply. Subject to change or cancellation.</p>
+						</div>
+					"
+				>
+					<span class="apply-coupon-ysp-info-icon">
+						<i class="fa fa-question"></i>
+					</span>
+				</span>
+			</h5>
+			<div class="card-content d-flex mt-2">
+				{{ form_errors(form) }}
+				{{ form_row(form.code) }}
+				{{ form_row(form.submit) }}
+			</div>
+		</div>
+	</div>
+	{% if isSuccessful %}
+		<div class="alert alert-{{flashError}} alert-dismissible fade show" role="alert" data-auto-dismiss="5000">
+			{{ flashMessage }}
+			<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+		</div>
+	{% endif %}
+	{{ form_end(form) }}
+</div>

@@ -1,0 +1,82 @@
+{% extends 'base.html.twig' %}
+
+{% set title = metaData.title ?: metaData.pageTitle ~ ' - ' ~ storeInfo.storeTitle %}
+
+{% block title %}{{ title }}{% endblock %}
+{% block metaData %}
+    {% set pageUrl = url('teacher_discount') %}
+    {% set pageImageUrl = storeInfo.isPromoStore
+        ? 'https://static.yardsignplus.com/storage/promo-store/Teacher-Discount-Desktop-Banner.webp' 
+        : 'https://static.yardsignplus.com/storage/banners/Teachers-Discount-Banner-Desktop.webp'
+    %}
+
+    {% include 'common/_page_meta.html.twig' with {
+        title: title,
+        metaData: metaData,
+        pageUrl: pageUrl,
+        pageImageUrl: pageImageUrl,
+        storeInfo: storeInfo
+    } %}
+{% endblock %}
+{% block body %}
+    {{ include('common/common_mobile_bar.html.twig',{commonBarText: 'Order Online Or Call Now',commonBarTele: '+1-877-958-1499'}) }}
+
+    {% set desktopImg = storeInfo.isPromoStore 
+        ? 'https://static.yardsignplus.com/storage/promo-store/Teacher-Discount-Desktop-Banner.webp' 
+        : 'https://static.yardsignplus.com/storage/banners/Teachers-Discount-Banner-Desktop.webp' 
+    %}
+
+    {% set mobileImg = storeInfo.isPromoStore 
+        ? 'https://static.yardsignplus.com/storage/promo-store/Teachers-Discount-Mobile-Banner.webp' 
+        : 'https://static.yardsignplus.com/storage/banners/Teachers-Discount-Banner-Mobile.webp' 
+    %}
+    {{ include('common/_banner.html.twig', {
+        desktopImg: desktopImg,
+        desktopAlt: 'Teachers-Discount-Banner',
+        mobileImg: mobileImg,
+        mobileAlt: 'Teachers-Discount-Banner'
+    }) }}
+    {{ include('common/highlights.html.twig') }}
+    {{ include('common/breadcrumb.html.twig', { breadcrumbs: [
+        { name: 'Teacher Discount', active: true }
+    ]}) }}
+    <div class="page-content container">
+        <div class="text-center">
+            <p class="d-flex flex-column align-items-center text-center">
+                <span>We are delighted to offer an exclusive</span>
+                <span class="heading-purple"> Extra 15% OFF </span>
+                <span>on all purchases to show our appreciation for your dedication and commitment to education.</span>
+            </p>
+        </div>
+        <p class="text-center mt-3">We appreciate all the hard work and dedication you put into shaping young minds. This is our way of saying thank you for making a difference everyday.</p>
+        <section class="ysp-faq-wrapper faq">
+        {% for title,faqsList in faqs %}
+            <div class="col-md-12 my-4">
+                <div class="faq-title">
+                    <h4 class="fs-19">{{ title }}</h4>
+                </div>
+                {% set accordionFaqId = loop.index %}
+                <div class="accordion ysp-accordion mt-3" id="{{ accordionFaqId }}">
+                    {% for question, answer in faqsList %}
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="yspAccordion{{ loop.index }}">
+                                <button class="accordion-button p-2" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#yspAccord{{ loop.index }}" aria-expanded="true"
+                                        aria-controls="yspAccord{{ loop.index }}">
+                                    {{ question | raw }}
+                                </button>
+                            </h2>
+                            <div id="yspAccord{{ loop.index }}" class="accordion-collapse collapse" aria-labelledby="yspAccordion{{ loop.index }}"
+                                    data-bs-parent="#{{ accordionFaqId }}">
+                                <div class="accordion-body">
+                                    <p>{{ answer | raw }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endfor %}
+        </section>
+    </div>
+{% endblock %}

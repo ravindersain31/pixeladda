@@ -1,0 +1,20 @@
+<form class="form-inline me-auto {% if cssClass is defined %}{{ cssClass }}{% endif %}" action="{{ url('admin_warehouse_queue_search') }}" method="get">
+    <div class="flex-column input-group input-group-joined input-group-solid">
+        <div class="bg-white border-1 d-flex input-group-joined input-group-sm rounded-1">
+            <input class="form-control pe-0" type="search" name="wq" autocomplete="off"
+                   placeholder="Search orders By Order ID" aria-label="Search" value="{{ app.request.get('wq') }}">
+            {% if app.request.get('wq') | length > 0 %}
+                {% set currentPrinter = 'P1' %}
+                {% if printer is defined %}
+                    {% set currentPrinter = printer %}
+                {% endif %}
+                <a href="{{ url('admin_warehouse_queue_by_printer', {printer: currentPrinter}) }}" class="btn btn-link btn-sm">
+                    Clear
+                </a>
+            {% endif %}
+            <button type="submit" class="btn btn-sm btn-outline-primary">
+                Search
+            </button>
+        </div>
+    </div>
+</form>

@@ -1,0 +1,36 @@
+{% set moreUrl = '#' %}
+{% set isCustom = block.isCustom %}
+{% if isCustom %}
+    {% set moreUrl = url('custom_yard_sign_editor', {
+        variant: '24x18'
+    }) %}
+{% else %}
+    {% set moreUrl = url('category', {slug: category}) %}
+{% endif %}
+<div class="product-block">
+    <a href="{{ moreUrl }}">
+        <h3 class="product-block-title">
+            {{ title }}
+        </h3>
+    </a>
+    <div class="row product-list">
+        {% set ribbonColor = ['blue', 'green', 'blue'] %}
+        {% set ribbon = {'24x18': ['Best Seller', 'Standard'], '18x12': ['Best Seller']} %}
+        {% set blockClass = isCustom ? 'col-6 col-sm-4 col-md-3 col-xl-2 custom-product' : 'col-6 col-md-3 col-xl-3'%}
+        {% for product in products %}
+            <div class="{{ blockClass }} product-item item-{{ product.name }}">
+                {% if ribbon[product.name] is defined %}
+                    {% for ribbonText in ribbon[product.name] %}
+                        <div class="custom-ribbon ribbon-{{product.name}} {{ ribbonColor[(loop.index0) % ribbonColor|length] }}" style="top: {{ 5 + (loop.index0 * 25) }}px;">
+                            {{ ribbonText }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                {{ include('default/_product_card.html.twig') }}
+            </div>
+        {% endfor %}
+        <div class="{{ blockClass }} product-item more-product-item">
+            {% include 'default/_more_product_card.html.twig' with {moreUrl} %}
+        </div>
+    </div>
+</div>

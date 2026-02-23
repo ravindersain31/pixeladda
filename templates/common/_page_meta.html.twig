@@ -1,0 +1,13 @@
+<meta property="og:title" content="{{ title }}">
+<meta property="og:description" content="{{ metaData.description | default('') }}">
+
+<meta property="og:image" content="{{ pageImageUrl ?: storeInfo.storeYardLogo }}">
+<meta property="og:url" content="{{ pageUrl }}">
+
+<meta name="title" content="{{ title }}">
+<meta name="description" content="{{ metaData.description | default('') }}">
+<meta name="keywords" content="{{ metaData.keywords | default('') }}">
+
+<link rel="canonical" href="{{ pageUrl }}">
+
+{% include 'common/_default_schema.html.twig' %}

@@ -1,0 +1,59 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Email Reviews{% endblock %}
+{% block pageTitle %}
+    <div class="page-header-icon">
+        <i class="fas fa-list"></i>
+    </div>
+    Email Reviews
+{% endblock %}
+
+{% block body %}
+    <div class="card card-header-actions mx-auto shadow-none">
+        <div class="card-header">
+            List of Email Reviews
+        </div>
+        <div class="table-responsive">
+            <table class="card-body table table-striped mb-0">
+                <thead>
+                <tr>
+                    <th>Sr.</th>
+                    <th>Order Id</th>
+                    <th>Name</th>
+                    <th>Rating</th>
+                    <th>Comments</th>
+                    <th>Submitted At</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% if emailReviews | length > 0 %}
+                    {% for review in emailReviews %}
+                        {% set order = review.order %}
+                        <tr>
+                            <td>{{ emailReviews.getPaginationData.firstItemNumber + loop.index - 1 }}</td>
+                            <td>
+                                <a href="{{ path('admin_order_overview', {'orderId': order.orderId}) }}" target="_blank">
+                                    {{ order.orderId }}
+                                </a>
+                            </td>
+                            <td>{{ review.name }}</td>
+                            <td>{{ review.rating }}</td>
+                            <td>{{ review.comment }}</td>
+                            <td>{{ review.createdAt | date('M d, Y @ H:i A') }}</td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="6">No records</td>
+                    </tr>
+                {% endif %}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <div class="mt-4">
+        {{ knp_pagination_render(emailReviews) }}
+    </div>
+{% endblock %}

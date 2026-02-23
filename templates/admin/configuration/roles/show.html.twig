@@ -1,0 +1,27 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Roles Show{% endblock %}
+{% block pageTitle %}
+    <div class="page-header-icon">
+        <i class="fas fa-dashboard"></i>
+    </div>
+    Roles Show
+{% endblock %}
+
+{% block body %}
+    <div class="card card-header-actions mx-auto shadow-none">
+        <div class="card-header">
+            Show role
+            <div>
+                <a href="{{ url('admin_config_roles') }}" class="btn btn-light btn-sm">
+                    <i class="fas fa-arrow-left me-2"></i>
+                    List
+                </a>
+            </div>
+        </div>
+        <div class="card-body">
+            {{ dump(role) }}
+        </div>
+    </div>
+
+{% endblock %}

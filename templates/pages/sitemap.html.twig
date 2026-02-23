@@ -1,0 +1,190 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Site Map - {{storeInfo.storeTitle}}{% endblock %}
+{% block metaData %}
+    <link rel="canonical" href="{{ url('site_map') }}"/>
+    {% include 'common/_default_schema.html.twig' %}
+{% endblock %}
+{% block body %}
+    {{ include('common/common_mobile_bar.html.twig',{commonBarText: 'Order Online Or Call Now',commonBarTele: '+1-877-958-1499'}) }}
+    {{ include('customer/common/top_section.html.twig',
+        { section: { name: 'Site Map', active: true }}) }}
+    {{ include('common/highlights.html.twig') }}
+    {{ include('common/breadcrumb.html.twig', { breadcrumbs: [
+        { name: 'Site Map', active: true }
+    ]}) }}
+
+    <section class="common-sec-horizontal-pad ysp-site-map-wrapper mt-3 mb-2">
+        <div class="container-md">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <h2 class="title mt-0">Site Map</h2>
+                </div>
+                <div class="row">
+                    <div class="col-12 col-md-3">
+                        <h5 class="fw-semibold">Choose Your Sizes</h5>
+                        <hr/>
+                        <ul class="ysp-cat-site-map-list-wrapper p-0">
+                            <li><a href="{{ url('custom_yard_sign_editor', {variant: '18x24'}) }}">Custom 18x24 Yard
+                                    Sign</a></li>
+                            <li><a href="{{ url('custom_yard_sign_editor', {variant: '24x24'}) }}">Custom 24x24 Yard
+                                    Sign</a></li>
+                            <li><a href="{{ url('custom_yard_sign_editor', {variant: '12x18'}) }}">Custom 12x18 Yard
+                                    Sign</a></li>
+                            <li><a href="{{ url('custom_yard_sign_editor', {variant: '12x12'}) }}">Custom 12x12 Yard
+                                    Sign</a></li>
+                            <li><a href="{{ url('custom_yard_sign_editor', {variant: '9x24'}) }}">Custom 9x24 Yard
+                                    Sign</a></li>
+                            <li><a href="{{ url('custom_yard_sign_editor', {variant: '9x12'}) }}">Custom 9x12 Yard
+                                    Sign</a></li>
+                            <li><a href="{{ url('custom_yard_sign_editor', {variant: '6x24'}) }}">Custom 6x24 Yard
+                                    Sign</a></li>
+                            <li><a href="{{ url('custom_yard_sign_editor', {variant: '6x18'}) }}">Custom 6x18 Yard
+                                    Sign</a></li>
+                            <li><a href="{{ url('custom_yard_sign_editor', {variant: '20x30'}) }}">Custom 20x30 Yard
+                                    Sign</a></li>
+                            <li><a href="{{ url('custom_yard_sign_editor', {variant: '24x6'}) }}">Custom 24x6 Yard
+                                    Sign</a></li>
+                            <li><a href="{{ url('custom_yard_sign_editor', {variant: '24x30'}) }}">Custom 24x30 Yard
+                                    Sign</a></li>
+                            <li><a href="{{ url('custom_yard_sign_editor', {variant: '24x36'}) }}">Custom 24x36 Yard
+                                    Sign</a></li>
+                            <li><a href="{{ url('custom_yard_sign_editor', {variant: '30x24'}) }}">Custom 30x24 Yard
+                                    Sign</a></li>
+                            <li><a href="{{ url('custom_yard_sign_editor', {variant: '36x18'}) }}">Custom 36x18 Yard
+                                    Sign</a></li>
+                            <li><a href="{{ url('custom_yard_sign_editor', {variant: '36x24'}) }}">Custom 36x24 Yard
+                                    Sign</a></li>
+                            <li><a href="{{ url('custom_yard_sign_editor', {variant: '24x48'}) }}">Custom 24x48 Yard
+                                    Sign</a></li>
+                            <li><a href="{{ url('custom_yard_sign_editor', {variant: '48x48'}) }}">Custom 48x48 Yard
+                                    Sign</a></li>
+                            <li><a href="{{ url('custom_yard_sign_editor', {variant: '48x72'}) }}">Custom 48x72 Yard
+                                    Sign</a></li>
+                            <li><a href="{{ url('custom_yard_sign_editor', {variant: '48x96'}) }}">Custom 48x96 Yard
+                                    Sign</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <h5 class="fw-semibold">Categories</h5>
+                        <hr/>
+                        <div class="row">
+                            <div class="col-6">
+                                <ul class="ysp-cat-site-map-list-wrapper p-0">
+                                    {% for group in categoryCol1 %}
+                                        <li class="ysp-cat-dropdown">
+                                            <a href="{{ url('category', {slug: group.parent.slug}) }}">
+                                                {{ group.parent.name }}
+                                            </a>
+                                            {% if group.children|length > 0 %}
+                                                <button type="button" class="cat-toggle"></button>
+                                                <ul class="ysp-cat-children">
+                                                    {% for child in group.children %}
+                                                        <li>
+                                                            <a href="{{ url('category_shop', {'c': group.parent.slug, 'sc': child.slug}) }}" class="fst-italic fw-normal">
+                                                                {{ child.name }}
+                                                            </a>
+                                                        </li>
+                                                    {% endfor %}
+                                                </ul>
+                                            {% endif %}
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+
+                            <div class="col-6">
+                                <ul class="ysp-cat-site-map-list-wrapper p-0">
+                                    {% for group in categoryCol2 %}
+                                        <li class="ysp-cat-dropdown">
+                                            <a href="{{ url('category', {slug: group.parent.slug}) }}">
+                                                {{ group.parent.name }}
+                                            </a>
+                                            {% if group.children|length > 0 %} 
+                                            <button type="button" class="cat-toggle"></button>
+                                                <ul class="ysp-cat-children">
+                                                    {% for child in group.children %}
+                                                        <li>
+                                                            <a href="{{ url('category_shop', {'c': group.parent.slug, 'sc': child.slug}) }}" class="fst-italic fw-normal">
+                                                                {{ child.name }}
+                                                            </a>
+                                                        </li>
+                                                    {% endfor %}
+                                                </ul>
+                                            {% endif %}
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-3">
+                        <h5 class="fw-semibold">More Information</h5>
+                        <hr/>
+                        <ul class="ysp-cat-site-map-list-wrapper p-0">
+                            <li><a href="{{ url('about_us') }}">About Us</a></li>
+                            <li><a href="{{ url('contact_us') }}">Contact Us</a></li>
+                            <li><a href="{{ url('faqs') }}">FAQs</a></li>
+                            <li><a href="{{ url('return_policy') }}">Return Policy</a></li>
+                            <li><a href="{{ url('privacy_policy') }}">Privacy Policy</a></li>
+                            <li><a href="{{ url('subscribe_and_Save') }}">Subscribe & Save</a></li>
+                            <li><a href="{{ url('shop_now') }}">Shop Now</a></li>
+                            <li><a href="{{ url('customer_photos') }}">Customer Photos</a></li>
+                            <li><a href="{{ url('track_order') }}">Track Your Order</a></li>
+                            <li><a href="{{ url('view_proof') }}">View Your Proof</a></li>
+                            <li><a href="{{ url('terms_and_conditions') }}">Terms and Conditions</a></li>
+                            <li>{{ include("common/quick_quote.html.twig") }}</li>
+                            <li><a href="{{ url('bulk_order_program') }}">Bulk Order Program</a></li>
+                            <li><a href="{{ url('teacher_discount') }}">Teacher Discount</a></li>
+                            <li><a href="{{ url('healthcare_workers') }}">Healthcare Workers</a></li>
+                            <li><a href="{{ url('military_veterans') }}">Military & Veterans</a></li>
+                            <li><a href="{{ url('first_responder') }}">First Responders</a></li>
+                            <li><a href="{{ url('organization_members') }}">Organization Members</a></li>
+                            <li><a href="{{ url('scholarship') }}">Scholarship</a></li>
+                            <li><a href="{{ url('order_protection') }}">YSP Order Protection</a></li>
+                            <li><a href="{{ url('request_call_back') }}">Request Immediate Call</a></li>
+                            <li><button type="button" class="ysp-delivery-calendar-btn mt-0" data-bs-toggle="modal" data-bs-target="#ysp-delivery-calendar" tabIndex="-1">View Delivery Calendar</button></li>
+                            {% if not storeInfo.isPromoStore %}
+                                <li><a href="{{ url('customer_feedback') }}">Customer Reviews</a></li>
+                            {% endif %}
+                            <li><a href="{{ url('purchase_order') }}">Purchase Orders</a></li>
+                            <li><a href="{{ url('order_sample') }}">Order Samples</a></li>
+                            <li><a href="{{ url('order_wire_stake') }}">Order Wire Stakes</a></li>
+                            <li><a href="{{ url('order_blank_sign') }}">Order Blank Signs</a></li>
+                            <li><a href="{{ url('repeat_order') }}">Repeat Orders</a></li>
+                            <li><a href="{{ url('how_to_order') }}">How to Order</a></li>
+                            <li><a href="{{ url('my_account') }}">My Account</a></li>
+                            <li><a href="{{ url('ysp_rewards') }}">YSP Rewards</a></li>
+                            <li><a href="{{ url('shipping_information') }}">Shipping Information</a></li>
+                            <li><a href="{{ url('blogs') }}">YSP Blogs</a></li>
+                            <li><a href="{{ url('download_catalog') }}">Download Catalog</a></li>
+                            <li><a href="{{ url('pricing') }}">View Pricing</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    {{ include('common/_delivery_calendar.html.twig') }}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const allDropdowns = document.querySelectorAll(".ysp-cat-dropdown");
+        document.querySelectorAll(".cat-toggle").forEach(function (btn) {
+            btn.addEventListener("click", function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                const wrapper = btn.closest(".ysp-cat-dropdown");
+                allDropdowns.forEach(function (item) {
+                    if (item !== wrapper) {
+                        item.classList.remove("active");
+                    }
+                });
+
+                wrapper.classList.toggle("active");
+            });
+        });
+    });
+</script>
+{% endblock %}

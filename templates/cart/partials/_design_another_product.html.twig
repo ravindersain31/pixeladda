@@ -1,0 +1,57 @@
+<div class="container mt-0 mt-md-2 mb-3 add-sign-container col-12">
+	{% set lastItem = items.last %}
+	{% set editUrl = '' %}
+	{% set product = null %}
+
+	{% if lastItem.dataKey('isSample') %}
+		{% set editUrl = url('order_sample') %}
+	{% elseif lastItem.dataKey('isWireStake') %}
+		{% set editUrl = url('order_wire_stake') %}
+	{% elseif lastItem.dataKey('isBlankSign') %}
+		{% set editUrl = url('order_blank_sign') %}
+	{% else %}
+		{% if lastItem.data.isCustomSize is defined and lastItem.data.isCustomSize %}
+			{% if lastItem.data['isCustom'] or lastItem.data['isSample'] is defined %}
+				{% set product = ysp.getDefaultCustomProduct('CUSTOM') %}
+			{% else %}
+				{% set product = ysp.getDefaultCustomProduct(lastItem.data.customSize.sku) %}
+			{% endif %}
+		{% else %}
+			{% set product = lastItem.product.parent %}
+		{% endif %}
+
+		{% if product is defined %}
+			{% set editUrl = url('editor', {
+                                category: product.primaryCategory.slug,
+                                productType: product.productType.slug,
+                                sku: product.sku
+                            }) %}
+		{% endif %}
+
+		{% if lastItem.data.isCustom is defined and lastItem.data.isCustomSize is defined and lastItem.data.isCustom and not lastItem.data.isCustomSize %}
+			{% set editUrl = url('editor', {
+                                category: product.primaryCategory.slug,
+                                productType: product.productType.slug,
+                                sku: product.sku,
+                                variant: lastItem.data.templateSize.width ~ 'x' ~ lastItem.data.templateSize.height
+                            }) %}
+		{% endif %}
+	{% endif %}
+	<div class="d-flex flex-md-nowrap flex-wrap gap-2 justify-content-center justify-content-md-between">
+		<div class="order-1">
+			<a class="text-center mr-2 ml-2 " href="{{ editUrl }}" type="button">
+				<button class="btn btn-sm save-cart-modal text-center mr-2 ml-2 d-flex align-items-center justify-content-center">
+					<svg width="32" height="32" viewbox="0 0 461 406" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<path d="M106.668 274.24L182.986 247.953L380.912 50.031L330.876 0L132.954 197.922L106.668 274.24ZM154.203 211.201L330.876 34.527L346.376 50.027L169.707 226.704L146.062 234.85L154.203 211.201Z" fill="var(--primary-color)"/>
+						<path d="M431.773 325.522V87.305H357.591V111.72H407.36V325.52H282.517V349.935H435.663V362.504C435.659 367.424 433.704 372.142 430.225 375.621C426.747 379.101 422.03 381.058 417.11 381.064H42.968C38.0491 381.058 33.3333 379.102 29.8552 375.624C26.377 372.146 24.4206 367.43 24.415 362.511V349.936H177.561V325.522H52.718V111.716H197.756V87.301H28.306V325.522H0V362.506C0.0129689 373.898 4.54411 384.819 12.5994 392.875C20.6546 400.93 31.5762 405.461 42.968 405.474H417.11C428.502 405.461 439.423 400.93 447.479 392.875C455.534 384.819 460.065 373.898 460.078 362.506V325.522H431.773Z" fill="var(--primary-color)"/>
+						<path d="M108.015 278.272H237.491V302.687H108.015V278.272Z" fill="var(--primary-color)"/>
+					</svg>
+					<span class="fw-600">Design Another Product</span>
+				</button>
+			</a>
+		</div>
+		<div class="fs-14 order-md-1">
+			Orders over $1500 get <strong>FREE ITEMS</strong> up to $100 in value!
+		</div>
+	</div>
+</div>

@@ -1,0 +1,58 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Edit Product Types{% endblock %}
+{% block pageTitle %}
+    <div class="page-header-icon">
+        <i class="fas fa-edit"></i>
+    </div>
+    Edit Product Types - {{ productType.name }}
+{% endblock %}
+
+{% block body %}
+    <div class="card card-header-actions mx-auto shadow-none">
+        <div class="card-header p-0 h-100 border-0">
+            <nav class="w-100">
+                <div class="nav nav-tabs ps-2 pe-2 pt-2" role="tablist">
+                    <a href="{{ url('admin_product_type_edit', {id: productType.id}) }}"
+                       class="nav-link {% if app.request.get('_route') in ['admin_product_type_edit'] %}active{% endif %}"
+                       type="button">
+                        Overview
+                    </a>
+                    <a href="{{ url('admin_product_type_variant_meta_data', {id: productType.id}) }}"
+                       class="nav-link {% if app.request.get('_route') in ['admin_product_type_variant_meta_data'] %}active{% endif %}"
+                       type="button">
+                        Variant Meta Data
+                    </a>
+                    <a href="{{ url('admin_product_type_seo_meta_data', {id: productType.id, category: 'custom-signs'}) }}"
+                       class="nav-link {% if app.request.get('_route') in ['admin_product_type_seo_meta_data'] %}active{% endif %}"
+                       type="button">
+                        SEO Meta Data
+                    </a>
+                    <a href="{{ url('admin_product_type_pricing', {id: productType.id}) }}"
+                       class="nav-link {% if app.request.get('_route') in ['admin_product_type_pricing'] %}active{% endif %}"
+                       type="button">
+                        Pricing
+                    </a>
+                    <a href="{{ url('admin_product_type_shipping', {id: productType.id}) }}"
+                       class="nav-link {% if app.request.get('_route') in ['admin_product_type_shipping'] %}active{% endif %}"
+                       type="button">
+                        Shipping
+                    </a>
+                    <a href="{{ url('admin_product_type_custom_pricing', {id: productType.id}) }}"
+                       class="nav-link {% if app.request.get('_route') in ['admin_product_type_custom_pricing'] %}active{% endif %}"
+                       type="button">
+                        Custom Price
+                    </a>
+                    <a href="{{ url('admin_product_type_frame', {id: productType.id}) }}"
+                       class="nav-link {% if app.request.get('_route') in ['admin_product_type_frame'] %}active{% endif %}"
+                       type="button">
+                        Frame Price
+                    </a>
+                </div>
+            </nav>
+        </div>
+        <div class="card-body">
+            {% include 'admin/product/types/edit/'~ app.request.get('_route') | replace({'admin_product_type_': '', }) ~ '.html.twig' %}
+        </div>
+    </div>
+{% endblock %}

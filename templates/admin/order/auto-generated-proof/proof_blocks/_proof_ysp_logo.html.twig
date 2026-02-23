@@ -1,0 +1,37 @@
+{% set show_front = false %}
+{% set show_back = false %}
+{% if item.product.parent.primaryCategory.slug == "custom-signs" %}
+    {% if item.metaData['customArtwork'] is defined and item.metaData['customArtwork']|length > 0 %}
+        {% for artwork_type, sides in item.metaData['customArtwork'] %}
+            {% if sides['front'] is defined and sides['front']|length > 0 %}
+                {% set show_front = true %}
+            {% endif %}
+            {% if sides['back'] is defined and sides['back']|length > 0 %}
+                {% set show_back = true %}
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+{% else %}
+    {% if item.canvasData is defined %}
+        {% if item.canvasData['front'] is defined and item.canvasData['front'] is not null and item.canvasData['front']['objects'] is defined and item.canvasData['front']['objects']|length > 0 %}
+            {% for object in item.canvasData['front']['objects'] %}
+                {% if object['custom'] is defined and object['custom']['id'] is defined and object['custom']['id'] == 'ysp-logo' %}
+                    {% set show_front = true %}
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+        {% if item.canvasData['back'] is defined and item.canvasData['back'] is not null and item.canvasData['back']['objects'] is defined and item.canvasData['front']['objects']|length > 0 %}
+            {% for object in item.canvasData['back']['objects'] %}
+                {% if object['custom'] is defined and object['custom']['id'] is defined and object['custom']['id'] == 'ysp-logo' %}
+                    {% set show_back = true %}
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    {% endif %}
+{% endif %}
+{% if show_front %}
+    Front
+{% endif %}
+{% if show_back %}
+    and Back
+{% endif %}

@@ -1,0 +1,39 @@
+{% extends 'emails/base2.html.twig' %}
+{% block title %}Wholesale Account Approved {% endblock %}
+{% block subject %}Your Wholesale Account Has Been Approved{% endblock %}
+{% block body %}
+<tr>
+    <td colspan="3">
+        <p class="off-desc-small ys-mob-ryt-lft-pad15"
+           style="font-size: 16px; color: #000000; padding: 0 50px; line-height: 135%; margin: 25px 0 25px; text-align: left;">
+            Hello {{ customer.firstName ?? 'Valued Customer' }},
+        </p>
+        <p class="off-desc-small ys-mob-ryt-lft-pad15"
+           style="font-size: 16px; color: #000000; padding: 0 50px; line-height: 135%; margin: 25px 0 25px; text-align: left;">
+            Congratulations! Your <strong>Wholesale Account</strong> with <strong>Yard Sign Promo</strong> has been
+            <strong>approved</strong>.
+        </p>
+
+        <p class="off-desc-small ys-mob-ryt-lft-pad15"
+           style="font-size: 16px; color: #000000; padding: 0 50px; line-height: 135%; margin: 25px 0 25px; text-align: left;">
+            You can now log in to your account and start enjoying exclusive wholesale pricing and benefits.
+        </p>
+
+        <p class="off-desc-small ys-mob-ryt-lft-pad15"
+           style="font-size: 16px; color: #000000; padding: 0 50px; line-height: 135%; text-align: left;">
+            Thank you for choosing <strong>Yard Sign Promo</strong>!  
+            We look forward to helping your business grow.
+        </p>
+
+        <p class="off-desc-small ys-mob-ryt-lft-pad15"
+            style="font-size: 16px; color: #000000; padding: 0 50px; line-height: 135%; text-align: center;">
+            <a href="{{loginUrl}}"
+                class="btn-shop-now" style="background-color: #efc825; color: #000000; font-size: 20px; text-transform: uppercase; text-decoration: none; padding: 12px 24px; display: inline-block; font-weight: 600; border-radius: 8px; margin: 20px auto 40px; ine-height: 1.4;"
+                target="_blank">
+                Login to Your Account
+            </a>
+        </p>
+
+    </td>
+</tr>
+{% endblock %}

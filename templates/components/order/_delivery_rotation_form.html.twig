@@ -1,0 +1,15 @@
+{% if this.newDeliveryDate > this.order.deliveryDate %}
+    <div {{ attributes }}>
+        {# <div class="mt-1 p-2 rounded bg-danger bg-opacity-10 border-start border-4 border-danger">
+            <span class="text-danger fw-bold">
+                <i class="bi bi-x-circle-fill me-1"></i>Delivery Delayed
+            </span>
+            <div class="ms-4 mt-1 text-dark">
+                Waiting for proof approval from customer.
+                <span class="text-muted">Production will begin after approval is received.</span><br>
+                <strong>New Estimated Delivery Date:</strong>
+                <span class="text-dark">{{ this.newDeliveryDate|date('M d, Y') }}</span>
+            </div>
+        </div> #}
+    </div>
+{% endif %}

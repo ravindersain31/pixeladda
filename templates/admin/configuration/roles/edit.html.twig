@@ -1,0 +1,30 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Roles Edit{% endblock %}
+{% block pageTitle %}
+    <div class="page-header-icon">
+        <i class="fas fa-dashboard"></i>
+    </div>
+    Roles Edit
+{% endblock %}
+
+{% block body %}
+    <div class="card card-header-actions mx-auto shadow-none">
+        <div class="card-header">
+            Edit role
+            <div>
+                <a href="{{ url('admin_config_roles') }}" class="btn btn-light btn-sm">
+                    <i class="fas fa-arrow-left me-2"></i>
+                    List
+                </a>
+            </div>
+        </div>
+        <div class="card-body">
+            {{ component('AdminRoleForm', {
+                form: form,
+                role: role
+            }) }}
+        </div>
+    </div>
+
+{% endblock %}

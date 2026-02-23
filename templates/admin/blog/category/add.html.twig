@@ -1,0 +1,37 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Add Blog Category{% endblock %}
+{% block pageTitle %}
+    <div class="page-header-icon">
+        <i class="fas fa-dashboard"></i>
+    </div>
+    Add Blog Category
+{% endblock %}
+
+{% block body %}
+    <div class="card card-header-actions mx-auto shadow-none">
+        <div class="card-header">
+            Add new category
+            <div>
+                <a href="{{ url('admin_blog_categories') }}" class="btn btn-light btn-sm">
+                    <i class="fas fa-arrow-left me-2"></i>
+                    List
+                </a>
+            </div>
+        </div>
+        <div class="card-body">
+            {{ form_start(form) }}
+            {{ form_row(form.store) }}
+            {{ form_row(form.title) }}
+            {{ form_row(form.content) }}
+            {{ form_row(form.imageFile) }}
+            <div class="bg-light p-3 rounded mb-3">
+                <h6>SEO Meta Data</h6>
+                {{ form_row(form.seoMeta) }}
+            </div>
+            {{ form_row(form.enabled) }}
+            {{ form_end(form) }}
+        </div>
+    </div>
+
+{% endblock %}

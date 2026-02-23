@@ -1,0 +1,319 @@
+{% set ProductEnum = enum('App\\Enum\\ProductEnum') %}
+
+<div class="table-responsive">
+    <table class="table table-bordered mb-0">
+        <thead>
+        {% if order.metaData['deliveryMethod']['key'] is defined and order.metaData['deliveryMethod']['key'] == 'REQUEST_PICKUP' %}
+            <tr class="text-center">
+                <th colspan="5" class="text-uppercase bg-danger text-white">
+                    {{ order.metaData['deliveryMethod']['label'] }}
+                </th>
+            </tr>
+        {% endif %}
+        {% if order.metaData['isBlindShipping'] is defined and order.metaData['isBlindShipping'] %}
+            <tr class="text-center">
+                <th colspan="5" class="text-uppercase bg-success text-white">
+                    Blind Shipping
+                </th>
+            </tr>
+        {% endif %}
+        <tr>
+            {# <th class="text-start">#</th> #}
+            <td class="text-start proof-table-product-details"><b>Product Details</b></td>
+            <td style="width: 80px;" class="text-center"><b>Quantity</b></td>
+            <td style="width: 80px;" class="text-end"><b>Price</b></td>
+            <td style="width: 80px;" class="text-end"><b>Total</b></td>
+        </tr>
+        </thead>
+        <tbody>
+        {% set items = order.orderItemsAll %}
+        {% set orderItems = [] %}
+        {% set shopperApprovedSKU = constant('App\\Constant\\ShopperApproved::SKU') %}
+        {% set shopperApprovedOrderItems = [] %}
+        {% if items | length > 0 %}
+            {% for key, item in items %}
+            {% if item.itemType == 'DEFUALT' or item.product %}
+                {% set template = item.product %}
+                {% set product = template.parent %}
+                {% set orderItems = orderItems | merge([{
+                    index: loop.index,
+                    item_id: product.sku,
+                    item_name: product.sku ~ ' - ' ~ template.name,
+                    affiliation: ysp.storeName,
+                    currency: ysp.storeCurrency,
+                    discount: 0.00,
+                    item_brand: ysp.storeName,
+                    item_category: product.primaryCategory.name,
+                    price: item.totalAmount,
+                    quantity: item.quantity,
+                    coupon: "",
+                }]) %}
+
+                {% if product.sku in shopperApprovedSKU %}
+                    {% set shopperApprovedOrderItems = shopperApprovedOrderItems | merge({
+                        (product.sku): product.sku
+                    }) %}
+                {% else %}
+                    {% set saRandSku = random(shopperApprovedSKU) %}
+                    {% set shopperApprovedOrderItems = shopperApprovedOrderItems | merge({
+                        (saRandSku): saRandSku
+                    }) %}
+                {% endif %}
+                <tr>
+                    {# <td>{{ loop.index }}</td> #}
+                    <td>
+                        {% if product.sku == ProductEnum.SAMPLE.value %}
+                            Order Sample - {{ template.name }}
+                            {% if item.addOns | length > 0 %}
+                                <div class="mb-0 addon-badges d-flex flex-wrap align-items-center">
+                                    [
+                                    {% for addon in labelForAddons(item.addOns) %}
+                                        <small class="bg-primary proof-custom-badges text-white fw-400 me-1">{{ addon }}</small>
+                                    {% endfor %}
+                                    ]
+                                </div>
+                            {% endif %}
+                        {% elseif product.sku == ProductEnum.WIRE_STAKE.value %}
+                            {{ template.label ?? (template.name ~ ' Wire Stake') }}
+                        {% elseif product.sku == ProductEnum.BLANK_SIGN.value %}
+                            {{ product.name }} - {{ template.name }}
+                        {% else %}
+                            {% if item.metaData.isCustomSize is defined and item.metaData.isCustomSize %}
+                                {% if item.metaData.customSize.isSample is defined and item.metaData.customSize.isSample %}
+                                    {{ product.name }} : {{ item.metaData.customSize.templateSize.width }}x{{ item.metaData.customSize.templateSize.height }} - {{ item.metaData.customSize.parentSku }}
+                                {% else %}
+                                    {{ product.name }} : {{ item.metaData.customSize.templateSize.width }}x{{ item.metaData.customSize.templateSize.height }} - {{ product.name }}
+                                {% endif %}
+                            {% else %}
+                                {% if product.name %} {{ product.name }} {% endif %}:
+                                {{ product.label ?? template.name }} -  {{ product.sku }}
+                            {% endif %}
+                            {% if item.addOns | length > 0 %}
+                                <div class="mb-0 addon-badges d-flex flex-wrap align-items-center">
+                                    [
+                                        {% for addon in labelForAddons(item.addOns) %}
+                                            <small class="bg-primary proof-custom-badges text-white fw-400 me-1">{{ addon }}</small>
+                                        {% endfor %}
+                                    ]
+                                    
+                                    {% if item.metaData['YSPLogoDiscount']['hasLogo'] is defined and item.metaData['YSPLogoDiscount']['hasLogo'] %}
+                                        <small class="ysp-bg-purple proof-custom-badges text-white fw-400 me-1">{{storeInfo.logoTitle}}</small>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        {% endif %}
+                        {% if item.metaData['isWireStake'] is defined and item.metaData['isWireStake'] %}
+                            <div class="mb-0 addon-badges d-flex flex-wrap align-items-center">
+                                [<small class="bg-primary proof-custom-badges text-white fw-400 me-1">{{ template.label ?? (template.name ~ ' Wire Stake') }}</small>]
+                            </div>
+                        {% endif %}
+                        {% if item.metaData['isHelpWithArtwork'] is defined and item.metaData['isHelpWithArtwork'] %}
+                            <div class="mb-0 addon-badges d-flex flex-wrap align-items-center">
+                                [<small class="bg-info proof-custom-badges text-white fw-400 me-1">Help With Artwork</small>]
+                            </div>
+                        {% endif %}
+                        {% if item.metaData['isEmailArtworkLater'] is defined and item.metaData['isEmailArtworkLater'] %}
+                            <div class="mb-0 addon-badges d-flex flex-wrap align-items-center">
+                                [<small class="bg-info proof-custom-badges text-white fw-400 me-1">Email Artwork Later</small>]
+                            </div>
+                        {% endif %}
+                        {% if item.metaData['deliveryMethod']['key'] is defined and item.metaData['deliveryMethod']['key'] == 'REQUEST_PICKUP' %}
+                            <div class="mb-0 addon-badges d-flex flex-wrap align-items-center">
+                                [<small class="bg-danger proof-custom-badges text-white fw-400 me-1">{{ item.metaData['deliveryMethod']['label'] }}</small>]
+                            </div>
+                        {% endif %}
+                        {% if item.metaData['isBlindShipping'] is defined and item.metaData['isBlindShipping'] %}
+                            <div class="mb-0 addon-badges d-flex flex-wrap align-items-center">
+                                [<small class="bg-success proof-custom-badges text-white fw-400 me-1">Blind Shipping</small>]
+                            </div>
+                        {% endif %}
+                        {% if item.metaData['isFreeFreight'] is defined and item.metaData['isFreeFreight'] %}
+                            <div class="mb-0 addon-badges d-flex flex-wrap align-items-center">
+                                [<small class="bg-success proof-custom-badges text-white fw-400 me-1">Free Freight: Scoring</small>]
+                            </div>
+                        {% endif %}
+                        {% if item.metaData['isSaturdayDelivery'] is defined and item.metaData['isSaturdayDelivery'] %}
+                            <div class="mb-0 addon-badges d-flex flex-wrap align-items-center">
+                                <small class="badge bg-danger mt-1">Super Rush: Saturday Delivery</small>
+                            </div>
+                        {% endif %}
+                    </td>
+                    <td class="text-center">{{ item.quantity }}</td>
+                    <td class="text-end">${{ item.unitAmount | number_format(2) }}</td>
+                    <td class="text-end">${{ item.totalAmount | number_format(2) }}</td>
+                </tr>
+                {% elseif (not item.product and item.itemType == 'COMMENT_ITEM') %}
+                    <tr>
+                        <td colspan="4">
+                            <div class="product-info">
+                                <div>
+                                    <b>Comment</b>
+                                    <p class="mb-0">{{ item.itemDescription }}</p>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                {% elseif ((not item.product and item.itemType == 'CHARGED_ITEM') or (not item.product and item.itemType == 'DISCOUNT_ITEM')) %}
+                <tr>
+                    <td class="proof-table-product-details">
+                        {{ item.itemName }}
+                    </td>
+                    <td class="text-center">{{ item.quantity }}</td>
+                    <td class="text-end">
+                        {% if item.itemType == 'DISCOUNT_ITEM' %}
+                            -${{ item.unitAmount | number_format(2) }}
+                        {% else %}
+                            ${{ item.unitAmount | number_format(2) }}
+                        {% endif %}
+                    </td>
+                    <td class="text-end">
+                        {% if item.itemType == 'DISCOUNT_ITEM' %}
+                            -${{ item.totalAmount | number_format(2) }}
+                        {% else %}
+                            ${{ item.totalAmount | number_format(2) }}
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endif %}
+            {% endfor %}
+            <tr class="bg-light subtotal-row">
+                <td colspan="3">
+                    Sub Total Amount
+                </td>
+                <td class="text-end">
+                    ${{ order.subTotalAmount | number_format(2) }}
+                </td>
+            </tr>
+            {% if order.coupon %}
+                <tr class="bg-light">
+                    <td colspan="3">
+                        Coupon Discount <span class="badge bg-success text-uppercase">{{ order.coupon.code }}</span>
+                    </td>
+                    <td class="text-end">
+                        -${{ order.couponDiscountAmount | number_format(2) }}
+                    </td>
+                </tr>
+            {% endif %}
+            {% if order.adminDiscountAmount > 0 %}
+                <tr>
+                    <td colspan="3">
+                        Additional Discount<sup>*</sup>
+                    </td>
+                    <td class="text-end">
+                        -${{ order.adminDiscountAmount | number_format(2) }}
+                    </td>
+                </tr>
+            {% endif %}
+
+            {% if order.adminChargeAmount > 0 %}
+                <tr>
+                    <td colspan="3">
+                        Additional Charges<sup>*</sup>
+                    </td>
+                    <td class="text-end">
+                        -${{ order.adminChargeAmount | number_format(2) }}
+                    </td>
+                </tr>
+            {% endif %}
+
+            <tr class="bg-light">
+                <td colspan="3">
+                    Shipping
+                    <small>({% if order.metaData.deliveryMethod.key is defined and order.metaData.deliveryMethod.key == 'REQUEST_PICKUP' %}Pickup{% else %}Delivery{% endif %} Date: {{ order.deliveryDate | date('M d, Y') }})</small>
+                    {% if order.status in ['RECEIVED', 'PROOF_UPLOADED', 'CHANGES_REQUESTED', 'DESIGNER_ASSIGNED'] and order.ApprovedProof is empty %}
+                        <br>
+                        {{ component('DeliveryRotationForm', { order: order }) }}
+                    {% endif %}
+                </td>
+                <td class="text-end">
+                    +${{ order.shippingAmount | number_format(2) }}
+                </td>
+            </tr>
+
+            {% if order.additionalDiscount is defined and order.additionalDiscount is not empty %}
+                {% for key,discount in order.additionalDiscount %}
+                    <tr class="bg-light">
+                        <td colspan="3">Discount
+                            <small class="text-capitalize text-muted">
+                                ({{discount.name}})
+                            </small>
+                        </td>
+                        <td class="text-end">-${{discount.amount | number_format(2)}}</td>
+                    </tr>
+                {% endfor %}
+            {% endif %}
+            {% if order.orderProtectionAmount > 0 %}
+                <tr class="bg-light">
+                    <td colspan="3">
+                        Order Protection
+                    </td>
+                    <td class="text-end">
+                        +${{ order.orderProtectionAmount | number_format(2) }}
+                    </td>
+                </tr>
+            {% endif %}
+            {% if order.internationalShippingChargeAmount > 0 %}
+                <tr class="bg-light">
+                    <td colspan="3">
+                        International Shipping
+                    </td>
+                    <td class="text-end">
+                        +${{ order.internationalShippingChargeAmount | number_format(2) }}
+                    </td>
+                </tr>
+            {% endif %}
+            {% set balanceAmount = order.totalAmount - order.totalReceivedAmount %}
+            <tr class="bg-light">
+                <td colspan="3">
+                    Order Total
+                    {% if balanceAmount|number_format(2) <= 0 %}
+                        <span class="badge bg-success text-uppercase">Paid</span>
+                    {% endif %}
+                </td>
+                <td class="text-end">
+                    ${{ order.totalAmount | number_format(2) }}
+                </td>
+            </tr>
+            {% set paymentLinkAmount = order.transactions|filter(transaction => transaction.status in ['INITIATED', 'COMPLETED'] and transaction.isPaymentLink)|reduce((carry, transaction) => carry + transaction.amount, 0) %}
+            {% if paymentLinkAmount > 0 %}
+                <tr class="bg-light">
+                    <td colspan="3">
+                        Payment Link Amount
+                        {% if paymentLinkAmount <= order.paymentLinkAmountReceived %}
+                            <span class="badge bg-success text-uppercase">Paid</span>
+                        {% else %}
+                            <span class="badge bg-warning text-uppercase">Balance: ${{ (paymentLinkAmount - order.paymentLinkAmountReceived) | number_format(2) }}</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-end">
+                        +${{ paymentLinkAmount | number_format(2) }}
+                    </td>
+                </tr>
+            {% endif %}
+            {% if balanceAmount|number_format(2) > 0 %}
+                <tr>
+                    <td colspan="3" class="bg-warning">
+                        <strong>Balance</strong>
+                    </td>
+                    <td class="text-end bg-warning">
+                        ${{ balanceAmount|number_format(2) }}
+                    </td>
+                </tr>
+            {% endif %}
+        {% else %}
+            <tr>
+                <td colspan="3" class="text-center">No items for this order.</td>
+            </tr>
+        {% endif %}
+        </tbody>
+    </table>
+</div>
+{% set newOrder = app.session.remove('newOrder') %}
+{% set orderId = app.session.remove('orderId') %}
+<!-- End Google Tag Manager -->
+{% if not storeInfo.isPromoStore %}
+    {% if app.request.get('_route') in ['order_view'] and newOrder == true and order is defined and order.orderId == orderId %}
+        {% include 'account/order/_on_purchase_completed.html.twig' %}
+        {% include 'common/_shopper_approved.html.twig' %}
+    {% endif %}
+{% endif %}

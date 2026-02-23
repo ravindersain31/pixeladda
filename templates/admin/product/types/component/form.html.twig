@@ -1,0 +1,118 @@
+<div {{ attributes }}>
+    {{ form_start(form) }}
+    {{ form_errors(form) }}
+    <div class="row mb-3">
+        <div class="col-{% if form.slug is defined %}4{% else %}6{% endif %}">
+            {{ form_row(form.store) }}
+        </div>
+        <div class="col-{% if form.slug is defined %}4{% else %}6{% endif %}">
+            {{ form_row(form.name) }}
+        </div>
+        {% if form.slug is defined %}
+            <div class="col-4">
+                {{ form_row(form.slug) }}
+            </div>
+        {% endif %}
+        <div class="col-4">
+            {{ form_row(form.isCustomizable) }}
+        </div>
+        <div class="col-4">
+            {{ form_row(form.allowCustomSize) }}
+        </div>
+        <div class="col-4">
+            {{ form_row(form.beforeLoginEspType) }}
+        </div>
+        <div class="col-4">
+            {{ form_row(form.beforeLoginEspPercentage) }}
+        </div>
+        <div class="col-12 col-md-4">
+            {{ form_row(form.afterLoginEspType) }}
+        </div>
+        <div class="col-12 col-md-4">
+            {{ form_row(form.afterLoginEspPercentage) }}
+        </div>
+    </div>
+    <div class="defaultVariants mb-3">
+        <div class="d-flex align-items-center mb-2">
+            <strong>
+                {{ form_label(form.defaultVariants) }}
+            </strong>
+            <div class="ms-3">
+                {{ form_widget(form.defaultVariants.vars.button_add) }}
+            </div>
+        </div>
+        {% if form.defaultVariants | length > 0 %}
+            <div class="row">
+                {% for key, variant in form.defaultVariants %}
+                    <div class="col-12 col-md-6 mb-3 default-variants-container">
+                        <div class="row">
+                            <div class="col-12 col-md-3 d-flex justify-content-start align-items-center">
+                                <span>Variant {{ loop.index }}</span>
+                            </div>
+                            <div class="col-11 col-md-8">
+                                {{ form_widget(variant) }}
+                            </div>
+                            <div class="col-1 d-flex justify-content-end align-items-center">
+                                <label class="form-label">&nbsp;</label>
+                                {{ form_widget(variant.vars.button_delete) }}
+                            </div>
+                        </div>
+                        {{ form_errors(variant) }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="small text-danger no-alias mb-2">
+                No variants added. You can add by clicking "Add Variant"
+            </div>
+        {% endif %}
+        {{ form_errors(form.defaultVariants) }}
+    </div>
+    <div class="defaultVariants mb-3">
+        <div class="d-flex align-items-center mb-2">
+            <strong>
+                {{ form_label(form.customVariants) }}
+            </strong>
+            <div class="ms-3">
+                {{ form_widget(form.customVariants.vars.button_add) }}
+            </div>
+            <button class="btn btn-link" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#collapse_custom_variant" aria-expanded="false"
+                    aria-controls="collapse_custom_variant">
+                Show Variants
+            </button>
+        </div>
+        <div class="collapse" id="collapse_custom_variant">
+            <div class="card card-body shadow-none">
+                {% if form.customVariants | length > 0 %}
+                    <div class="row">
+                        {% for key, variant in form.customVariants %}
+                            <div class="col-12 col-md-6 mb-3 default-variants-container">
+                                <div class="row">
+                                    <div class="col-12 col-md-3 d-flex justify-content-start align-items-center">
+                                        <span>Variant {{ loop.index }}</span>
+                                    </div>
+                                    <div class="col-11 col-md-8">
+                                        {{ form_widget(variant) }}
+                                    </div>
+                                    <div class="col-1 d-flex justify-content-end align-items-center">
+                                        <label class="form-label">&nbsp;</label>
+                                        {{ form_widget(variant.vars.button_delete) }}
+                                    </div>
+                                </div>
+                                {{ form_errors(variant) }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="small text-danger no-alias mb-2">
+                        No variants added. You can add by clicking "Add Variant"
+                    </div>
+                {% endif %}
+                {{ form_errors(form.customVariants) }}
+            </div>
+        </div>
+    </div>
+    {{ form_row(form.submit) }}
+    {{ form_end(form) }}
+</div>

@@ -1,0 +1,73 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Stores{% endblock %}
+{% block pageTitle %}
+    <div class="page-header-icon">
+        <i class="fas fa-dashboard"></i>
+    </div>
+    Stores
+{% endblock %}
+
+{% block body %}
+    <div class="card card-header-actions mx-auto shadow-none">
+        <div class="card-header">
+            List of Stores
+            <div>
+                <a href="{{ url('admin_config_store_add') }}" class="btn btn-primary btn-sm">
+                    <i class="fas fa-plus me-2"></i>
+                    Add
+                </a>
+            </div>
+        </div>
+        <div class="table-responsive">
+        <table class="card-body table table-striped">
+            <thead>
+            <tr>
+                <th>Sr.</th>
+                <th>Name</th>
+                <th>Domain</th>
+                <th>Active</th>
+                <th>Edit</th>
+                <th>Store Settings</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% if stores | length > 0 %}
+                {% for store in stores %}
+                    <tr>
+                        <td>{{ stores.getPaginationData.firstItemNumber + loop.index - 1 }}</td>
+                        <td>{{ store.name }}</td>
+                        <td>{{ store.shortName }}</td>
+                        <td>
+                            {% if store.isEnabled %}
+                                <span class="badge bg-success">Active</span>
+                            {% else %}
+                                <span class="badge bg-danger">Inactive</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{{ url('admin_config_store_edit', {id: store.id}) }}" class="btn btn-info btn-sm">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                        </td>
+                        <td>
+                            <a href="{{ url('admin_config_store_settings', {id: store.id}) }}" class="btn btn-info btn-sm">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="6">No records</td>
+                </tr>
+            {% endif %}
+            </tbody>
+        </table>
+        </div>
+        <div class="mt-4">
+            {{ knp_pagination_render(stores) }}
+        </div>
+    </div>
+
+{% endblock %}

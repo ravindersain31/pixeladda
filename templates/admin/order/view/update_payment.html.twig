@@ -1,0 +1,147 @@
+<div class="table-responsive">
+    <table class="table table-bordered">
+        <thead>
+          <tr>
+              <td colspan="4">
+                  <table class="table table-bordered">
+                      <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Quantity</th>
+                            <th>Price</th>
+                            <th>Subtotal</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for item in order.orderItemsAll %}
+                            {% if item.itemType == 'DEFUALT' or item.product %}
+                            {% set product = item.product.parent %}
+                            {% set template = item.product %}
+                            <tr>
+                                <td>
+                                    <div class="product-info">
+                                        <p class="mb-0">
+                                            {% if product.sku == 'SAMPLE' %}
+                                                {{ product.sku }} <span class="badge badge-pill fw-bold bg-purple text-white text-decoration-none mx-2 ">{{ product.sku }}</span>
+                                            {% elseif item.metaData.isCustomSize is defined and item.metaData.isCustomSize %}
+                                                {% if item.metaData.customSize.sku is defined %}
+                                                    {% set product = ysp.getDefaultCustomProduct(item.metaData.customSize.sku) %}
+                                                    <a class="badge badge-pill fw-bold bg-yellow text-white" href="{{ url('editor', {category: product.primaryCategory.slug, productType: product.productType.slug, sku: product.sku}) }}" target="_blank">CUSTOM-SIZE</a>
+                                                {% else %}
+                                                    CUSTOM-SIZE
+                                                {% endif %}
+                                            {% else %}
+                                                <a href="{{ url('editor', {category: product.primaryCategory.slug, productType: product.productType.slug, sku: product.sku, variant: template.slug}) }}"
+                                                target="_blank">{{ product.sku }}</a>
+                                            {% endif %}
+                                        </p>
+                                        {% if item.metaData.isCustomSize is defined and item.metaData.isCustomSize %}
+                                            <p class="mb-0"><b>Variant:</b> {{ item.metaData.customSize.templateSize.width }}x{{ item.metaData.customSize.templateSize.height }}</p>
+                                            <p class="mb-0"><b>SKU:</b> {{ item.metaData.customSize.sku }}</p>
+                                        {% else %}
+                                            <p class="mb-0"><b>Variant:</b> {{ template.name }}</p>
+                                        {% endif %}
+                                        {% if item.addOns | length > 0 %}
+                                            <div class="mb-0 addon-badges d-flex flex-wrap align-items-center">
+                                                {% for addon in labelForAddons(item.addOns) %}
+                                                    <small class="badge bg-primary {% if not loop.last %}me-1{% endif %}">{{ addon }}</small>
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                        {% if item.metaData['isHelpWithArtwork'] is defined and item.metaData['isHelpWithArtwork'] %}
+                                            <div class="mb-0 addon-badges d-flex flex-wrap align-items-center">
+                                                <small class="badge bg-info mt-1">Help With Artwork</small>
+                                            </div>
+                                        {% endif %}
+                                        {% if item.metaData['isEmailArtworkLater'] is defined and item.metaData['isEmailArtworkLater'] %}
+                                            <div class="mb-0 addon-badges d-flex flex-wrap align-items-center">
+                                                <small class="badge bg-info mt-1">Email Artwork Later</small>
+                                            </div>
+                                        {% endif %}
+                                        {% if item.metaData['deliveryMethod']['key'] is defined and item.metaData['deliveryMethod']['key'] == 'REQUEST_PICKUP' %}
+                                            <div class="mb-0 addon-badges d-flex flex-wrap align-items-center">
+                                                <small class="badge bg-danger mt-1">{{ item.metaData['deliveryMethod']['label'] }}</small>
+                                            </div>
+                                        {% endif %}
+                                        {% if item.metaData['isBlindShipping'] is defined and item.metaData['isBlindShipping'] %}
+                                            <div class="mb-0 addon-badges d-flex flex-wrap align-items-center">
+                                                <small class="badge bg-success mt-1">Blind Shipping</small>
+                                            </div>
+                                        {% endif %}
+                                        {% if item.metaData['isFreeFreight'] is defined and item.metaData['isFreeFreight'] %}
+                                            <div class="mb-0 addon-badges d-flex flex-wrap align-items-center">
+                                                <small class="badge bg-success mt-1">Free Freight: Scoring</small>
+                                            </div>
+                                        {% endif %}
+                                        {% if item.metaDataKey('additionalNote') %}
+                                        <div class="mt-2">
+                                            <b>Order Comment</b>
+                                            <p class="mb-0">{{ item.metaDataKey('additionalNote') }}</p>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                                <td>{{ item.quantity }}</td>
+                                <td>${{ item.unitAmount | number_format(2) }}</td>
+                                <td>${{ item.totalAmount | number_format(2) }}</td>
+                            </tr>
+                            {% elseif (not item.product and item.itemType == 'COMMENT_ITEM') %}
+                                <tr>
+                                    <td colspan="4">
+                                        <div class="product-info">
+                                            <div>
+                                                <b>Comment</b>
+                                                <p class="mb-0">{{ item.itemDescription }}</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% elseif ((not item.product and item.itemType == 'CHARGED_ITEM') or (not item.product and item.itemType == 'DISCOUNT_ITEM')) %}
+                                <tr>
+                                    <td>
+                                        <div class="product-info">
+                                            <p class="mb-0">
+                                                {{ item.itemName }}
+                                                <span class="badge badge-pill fw-bold bg-purple text-white text-decoration-none mx-2">{{ item.itemType|replace({'_':' '}) }}</span>
+                                            </p>
+                                            <div class="mt-2">
+                                                <b>Description</b>
+                                                <p class="mb-0">{{ item.itemDescription }}</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {{ item.quantity }}
+                                    </td>
+                                    <td>
+                                        {% if item.itemType == 'DISCOUNT_ITEM' %}
+                                            -${{ item.unitAmount | number_format(2) }}
+                                        {% else %}
+                                            ${{ item.unitAmount | number_format(2) }}
+                                        {% endif %}
+                                    </td>
+
+                                    <td>
+                                        {% if item.itemType == 'DISCOUNT_ITEM' %}
+                                            -${{ item.totalAmount | number_format(2) }}
+                                        {% else %}
+                                            ${{ item.totalAmount | number_format(2) }}
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        {% endfor %}
+                      </tbody>
+                  </table>
+              </td>
+        </tr>
+        </thead>
+        <tfoot>
+          <tr>
+            <td>
+                  {{ form(updateCheckPoPaymentForm(url('admin_order_update_payment', {'orderId': order.orderId}))) }}
+            </td>
+          </tr>
+        </tfoot>
+    </table>
+</div>

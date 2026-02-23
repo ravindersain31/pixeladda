@@ -1,0 +1,24 @@
+{% extends 'emails/base.html.twig' %}
+{% block title %}WE HAVE RECEIVED YOUR ORDER{% endblock %}
+{% block subject %}WE HAVE RECEIVED YOUR ORDER{% endblock %}
+{% block body %}
+    <table style="width: 100%;max-width: 100%;margin: auto;text-align: center;font-family: sans-serif;background-color: #ffffff;">
+        <tr>
+            <td colspan="3">
+                <p style="font-size: 26px; font-weight: bold; color: #000000; padding: 0 50px; margin: 20px 0 10px;" class="user-name">
+                    Hi {{ order.billingAddress.firstName }} {{ order.billingAddress.lastName }}
+                </p>
+                <p class="off-desc ys-mob-ryt-lft-pad15"
+                   style="font-size: 17px; color: #000000; padding: 0 50px; line-height: 135%; margin: 0 0 20px;">
+                    Thank you for your interest in {{ store_name }} products. Your order has been received and will be
+                    processed once payment has been confirmed.
+                </p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                {% include 'emails/common/_order_info_table.html.twig' %}
+            </td>
+        </tr>
+    </table>
+{% endblock %}

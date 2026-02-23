@@ -1,0 +1,162 @@
+{% if isFraud is defined and isFraud %}
+    <div class="alert alert-danger border-1 text-center fw-bold mb-2 fs-2 p-2">
+        FRAUD ORDER - DO NOT WORK
+    </div>
+{% endif %}
+{% if order.isPause is defined and order.isPause == true %}
+    <div class="alert alert-danger border-1 text-center fw-bold mb-2 fs-2 p-2">
+        PAUSE: Do not send to Ready for Production.
+    </div>
+{% endif %}
+{% if order.metaData['deliveryMethod']['key'] is defined and order.metaData['deliveryMethod']['key'] == 'REQUEST_PICKUP' %}
+    <div class="alert alert-warning p-2 text-center mb-2">
+        This order is marked as <b>Request Pickup</b> by customer.
+    </div>
+{% elseif order.hasTag('REQUEST_PICKUP') %}
+    <div class="alert alert-warning p-2 text-center mb-2">
+        This order is marked as <b>Request Pickup</b> by customer.
+    </div>
+{% endif %}
+{% if order.isOrderInOQ %}
+    {% set warehouseOrder = order.warehouseOrder %}
+    <div class="alert alert-warning p-2 text-center mb-2">
+        This order is currently in <b>Order Queue</b>, assigned to <b>{{ warehouseOrder.printerName }}</b>
+        <a href="{{ url('admin_warehouse_queue_by_printer', {printer: warehouseOrder.printerName, wq: order.orderId}) }}"
+           target="_blank" class="text-decoration-none">
+            <i class="fa fa-external-link small"></i>
+        </a> on Ship By date <b>{{ warehouseOrder.shipBy | date('M d') }}</b> and current status
+        is <b>{{ enum.warehouseOrderStatus(warehouseOrder.printStatus) | raw }}</b>
+    </div>
+{% endif %}
+{% if isPromoStore(order.storeDomain) %}
+    <div class="alert alert-purple border-0 text-center font-weight-bold mb-0 p-2 mb-2">
+        This is a Promo order.
+    </div>
+{% endif %}
+{% set allowPushToSE = is_granted('order_push_to_shipping_easy') and order.isAllowPushToSE() %}
+<div class="alert alert-info border-0 text-center font-weight-bold mb-0 p-2 mb-2">
+    {% if order.status in ['CREATED'] %}
+        This is a temporary order which was created at the time of checkout but the customer has not completed the checkout process.
+        <br/>
+        Customer might have submitted the another order.
+    {% elseif order.status in ['RECEIVED'] and order.paymentStatus not in ['REFUNDED'] %}
+        This order is waiting to be picked any designer to design the proofs.
+    {% elseif order.status in ['DESIGNER_ASSIGNED'] and order.paymentStatus not in ['REFUNDED'] %}
+        Designer has been assigned
+        {% if order.orderMessages | length > 0 %}
+            and working on the requested changes by customer
+        {% else %}
+            and working on the proof.
+        {% endif %}
+        {% if order.proofDesigner %}
+            <br/><b>Proof Designer:</b> {{ order.proofDesigner.username }}
+        {% endif %}
+    {% elseif order.status in ['PROOF_UPLOADED'] and order.paymentStatus not in ['REFUNDED'] %}
+        The designer has uploaded the proofs. Waiting for customer review or approval.
+    {% elseif order.status in ['CHANGES_REQUESTED'] and order.paymentStatus not in ['REFUNDED'] %}
+        The customer has requested some changes.
+        <br/>
+        Waiting for a designer to pick the order to make the requested changes in proof by customer.
+    {% elseif order.status in ['PROOF_APPROVED'] and order.paymentStatus in ['COMPLETED', 'PARTIALLY_REFUNDED'] %}
+        <p class="mb-0">The proof was approved and waiting for to upload the order for production.</p>
+        {# <a href="{{ url('admin_order_move_to_ready_for_production', {orderId: order.orderId}) }}"
+           class="btn badge bg-primary text-decoration-none text-white"
+           onclick="return confirm('Are you sure? This action will move this order into the \'Ready for Production\' tab.')">
+            <i class="fa fa-arrow-right me-1"></i> Move to "Ready for Production"
+        </a> #}
+        <button class="btn badge bg-primary text-decoration-none text-white" data-bs-toggle="offcanvas"
+            data-bs-target="#order_action_{{ order.orderId }}" aria-controls="order_action_{{ order.orderId }}">
+            Move to "Ready for Production" / "Add to Queue"
+        </button>
+    {% elseif order.status in ['PROOF_APPROVED'] and order.paymentStatus in ['CHEQUE'] %}
+        <p class="mb-0">The proof was approved and waiting for customer payment by <b>Cheque/PO</b></p>
+        {# <a href="{{ url('admin_order_move_to_ready_for_production', {orderId: order.orderId}) }}"
+           class="btn badge bg-primary text-decoration-none text-white"
+           onclick="return confirm('Are you sure? This action will move this order into the \'Ready for Production\' tab.')">
+            <i class="fa fa-arrow-right me-1"></i> Move to "Ready for Production"
+        </a> #}
+        <button class="btn badge bg-primary text-decoration-none text-white" data-bs-toggle="offcanvas"
+            data-bs-target="#order_action_{{ order.orderId }}" aria-controls="order_action_{{ order.orderId }}">
+            Move to "Ready for Production" / "Add to Queue"
+        </button>
+    {% elseif order.status in ['PROOF_APPROVED'] and order.paymentStatus not in ['COMPLETED', 'PARTIALLY_REFUNDED'] %}
+        <div class="mb-0">
+            The proof was approved and waiting for to upload the order for production.
+            <p class="text-danger mb-0 fw-bold">Note: Payment is not received for this order yet.</p>
+        </div>
+        <button class="btn badge bg-primary text-decoration-none text-white" data-bs-toggle="offcanvas"
+            data-bs-target="#order_action_{{ order.orderId }}" aria-controls="order_action_{{ order.orderId }}">
+            Move to "Ready for Production" / "Add to Queue"
+        </button>
+    {% elseif order.status in ['SENT_FOR_PRODUCTION'] and order.paymentStatus not in ['REFUNDED'] %}
+        {% if order.warehouseOrder is defined and order.warehouseOrder is not null and order.warehouseOrder.printStatus == 'DONE' %}
+            <p class="mb-0">
+                This order has been marked as <b>Done</b> in the <b>Order Queue</b>. It was assigned to
+                <b>{{ order.warehouseOrder.printerName }}</b> and Ship By date
+                <b>{{ order.warehouseOrder.shipBy | date('M d') }}</b>
+            </p>
+            {#            {% if is_granted('order_push_to_shipping_easy') and allowPushToSE %} #}
+            {#                <button type="button" class="btn badge bg-primary text-decoration-none text-white" #}
+            {#                        data-bs-toggle="modal" data-bs-target="#push_to_se_{{ order.orderId }}"> #}
+            {#                    <i class="fa fa-upload me-1"></i> Push to Shippingeasy #}
+            {#                </button> #}
+            {#                {% include 'admin/order/view/_push_to_se_confirm.html.twig' with { order, from: 'order' } %} #}
+            {#            {% endif %} #}
+        {% else %}
+            <div class="mb-0">
+                This order has been sent for production/or ready for shipment.
+            </div>
+            {% if order.warehouseOrder is not null and not order.isOrderInOQ %}
+                <button class="btn badge bg-primary text-decoration-none text-white" data-bs-toggle="offcanvas"
+                    data-bs-target="#order_action_{{ order.orderId }}" aria-controls="order_action_{{ order.orderId }}">
+                    Add to Queue
+                </button>
+            {% endif %}
+        {% endif %}
+        {% if order.paymentStatus not in ['COMPLETED', 'PARTIALLY_REFUNDED'] %}
+            <p class="text-danger mb-0 fw-bold">Note: Payment is not received for this order yet.</p>
+        {% endif %}
+    {% elseif order.status in ['READY_FOR_SHIPMENT'] and order.paymentStatus not in ['REFUNDED'] %}
+        {% if order.shippingOrderId is null %}
+            This order has been marked as Ready to Ship but not created the shipment yet.
+        {% else %}
+            {% if order.shippingStatus == 'label_purchased' %}
+                The shipping label has been purchased, and the tracking information has been added to the order.<br/>
+                Please click "Mark Shipped" in Order Queue to confirm that the shipment is complete.
+            {% else %}
+                Shipment and Parcel information has been submitted and ready for purchasing label.
+            {% endif %}
+        {% endif %}
+    {% elseif order.status in ['SHIPPED'] %}
+        This order has been shipped.
+        {% if order.paymentStatus not in ['COMPLETED', 'PARTIALLY_REFUNDED'] %}
+            <p class="text-danger mb-0 fw-bold">Note: Payment is not received for this order yet.</p>
+        {% endif %}
+    {% elseif order.status in ['CANCELLED'] and order.paymentStatus in ['REFUNDED'] %}
+        The order was cancelled and all the associated payments was refunded{% if order.cancelledBy is defined and order.cancelledBy != null %} by {{ order.cancelledBy.name }}{% endif %}.
+    {% elseif order.status in ['CANCELLED'] and order.paymentStatus not in ['REFUNDED'] %}
+        The order was cancelled
+        {% if order.paymentStatus not in ['SEE_DESIGN_PAY_LATER'] %}
+            and no refund was processed.
+        {% endif %}
+    {% elseif order.paymentStatus in ['REFUNDED'] %}
+        The order payments was refunded but the order status is {{ order.status }}.
+    {% elseif order.status in ['COMPLETED'] %}
+        This order has been completed.
+    {% endif %}
+</div>
+{% if order.status == 'CANCELLED' %}
+    {% set remarks = order.getMetaDataKey('cancellationNotes') %}
+    {% if remarks %}
+        <div class="alert alert-danger text-center p-2 mt-2"><b>Cancellation Remarks:</b> {{ remarks | raw }}</div>
+    {% endif %}
+{% endif %}
+
+{% component BootstrapOffCanvas with { id: 'order_action_' ~ order.orderId } %}
+    {% block offcanvas_header %} Move to "Ready for Production / Add to Queue" {{ order.orderId }} {% endblock %}
+    {% block offcanvas_body %}
+        {{ component('ReadyForShipmnentComponent', {
+            order: order
+        }) }}
+    {% endblock %}
+{% endcomponent %}

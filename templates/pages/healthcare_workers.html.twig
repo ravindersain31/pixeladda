@@ -1,0 +1,118 @@
+{% extends 'base.html.twig' %}
+{% set title = metaData.title ?: metaData.pageTitle ~ ' - ' ~ storeInfo.storeTitle %}
+
+{% block title %}{{ title }}{% endblock %}{% block metaData %}
+    {% set pageUrl = url('healthcare_workers') %}
+    {% set pageImageUrl = null %}
+
+    {% include 'common/_page_meta.html.twig' with {
+        title: title,
+        metaData: metaData,
+        pageUrl: pageUrl,
+        pageImageUrl: pageImageUrl,
+        storeInfo: storeInfo
+    } %}
+{% endblock %}
+
+{% block body %}
+{{ include('common/common_mobile_bar.html.twig',{commonBarText: 'Order Online Or Call Now',commonBarTele: '+1-877-958-1499'}) }}
+
+<section class="header-design-one container-fluid header-cart-page">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="d-flex justify-content-center align-items-center">
+                <h2 class="heading text-white fw-bold text-uppercase text-center py-3" style="text-shadow: -4px 4px 4px #000; font-style: italic;">
+                    Healthcare Workers
+                </h2>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="container mt-4 mb-4">
+    <div class="row">
+        <div class="col-12 health-care-worker">
+            <h3>Healthcare Workers: Save 15% off on {{storeInfo.storeName}}</h3>
+            <p class="mt-4">
+                Our healthcare workers always rise to the challenge to keep everyone safe. You work long hours at great risk, even sacrificing rest days and quality time with loved ones to ensure your patients stay safe.
+                As our way of expressing our gratitude for all your services, {{storeInfo.storeName}} dedicates this special offer to all our heroes, first responders, and healthcare workers in the United States.
+                Enjoy <span class="ysp-heading-purple">Extra 15% OFF</span>
+            </p>
+            <div class="text-center">
+                on <b class="ysp-black">{{storeInfo.storeName}}</b> storewide with no minimum purchase.
+            </div>
+
+            <p class="mt-4">We are offering this discount to the healthcare workers, including:</p>
+            <ul>
+                <li><b>Healthcare professionals</b>
+                    <ul>
+                        <li>Hospital Nurses</li>
+                        <li>Doctors</li>
+                        <li>Medical Researchers</li>
+                        <li>Health Technologists and Technicians</li>
+                        <li>Flight Nurses &amp; Hospital Medical Pilots</li>
+                        <li>Physician Assistants</li>
+                        <li>Certified Medical Assistants</li>
+                        <li>Diagnostic Medical Personnel</li>
+                        <li>Pharmacists</li>
+                        <li>Other Hospital Employees</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <p>
+                If you are a healthcare worker and by any chance, we have not included your position in the list above, feel free to send us an email to
+                <a href="mailto:{{storeInfo.storeEmail}}">{{storeInfo.storeEmail}}</a> to further assist you.
+            </p>
+        </div>
+
+        <div class="col-12 health-care-worker-faqs">
+            <section class="ysp-faq-wrapper mt-4 mb-4">
+                <div class="container">
+                    <div class="row">
+                        {% for title, faqsList in faqs %}
+                            {% set parentAccordionId = random(99,999) %}
+                            <div class="col-md-12 mb-3">
+                                <div class="faq-title">
+                                    <h3 class="text-uppercase">{{ title }}</h3>
+                                </div>
+                                <div class="accordion ysp-accordion mt-3" id="accordionFaq{{ parentAccordionId }}">
+                                    {% for question, answer in faqsList %}
+                                        {% set index = random(99,999) %}
+                                        <div class="accordion-item">
+                                            <h2 class="accordion-header" id="yspAccordion{{ index }}">
+                                                <button class="accordion-button collapsed p-2"
+                                                        type="button"
+                                                        data-bs-toggle="collapse"
+                                                        data-bs-target="#yspAccord{{ index }}"
+                                                        aria-expanded="false"
+                                                        aria-controls="yspAccord{{ index }}">
+                                                    {{ question|raw }}
+                                                </button>
+                                            </h2>
+                                            <div id="yspAccord{{ index }}"
+                                                 class="accordion-collapse collapse"
+                                                 aria-labelledby="yspAccordion{{ index }}"
+                                                 data-bs-parent="#accordionFaq{{ parentAccordionId }}">
+                                                <div class="accordion-body">
+                                                    <p>{{ answer|raw }}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div class="col-12 mt-2 ps-4">
+            <p>
+                From all of us at <b class="ysp-black">{{storeInfo.storeName}}</b>, we thank you all for your hard work and dedication!
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

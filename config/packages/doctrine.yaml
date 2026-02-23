@@ -1,0 +1,106 @@
+doctrine:
+    dbal:
+        # *********************************************************************
+            # DISCLAIMER: Using Connections and Managers in Doctrine
+            #
+            # The 'default' and 'reader' connections are configured here.
+            # These connections should be used for different types of database access:
+            # - 'default' connection is the primary database.
+            # - 'reader' connection is the read-only secondary reader.
+            #
+            # The corresponding manager for each connection should be accessed via
+            # the `ManagerRegistry` service, and you should be aware of which connection
+            # to use depending on your application's needs.
+            #
+            # Example usage:
+            # To use the default connection:
+            #    $this->managerRegistry->getManager(InstanceEnum::toString(InstanceEnum::DEFAULT));
+            #
+            # To use the reader connection (if enabled):
+            #    $this->managerRegistry->getManager(InstanceEnum::toString(InstanceEnum::READER));
+            #
+            # You can configure your `DATABASE_URL_READER` environment variable
+            # to point to the reader database connection string if needed.
+            #
+            # Ensure that your application reads from the reader for non-mutating
+            # queries to reduce the load on the primary database.
+            #
+        # *********************************************************************
+
+        connections:
+            default:
+                url: '%env(resolve:DATABASE_URL)%'
+            reader:
+                url: '%env(resolve:DATABASE_URL_READER)%'
+        default_connection: default
+
+    orm:
+        default_entity_manager: default
+        auto_generate_proxy_classes: true
+        enable_lazy_ghost_objects: true
+        resolve_target_entities: true
+        entity_managers:
+            default:
+                connection: default
+                naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
+                auto_mapping: true
+                mappings:
+                    App:
+                        type: attribute
+                        dir: '%kernel.project_dir%/src/Entity'
+                        prefix: 'App\Entity'
+                        is_bundle: false
+                        alias: App
+                dql:
+                    string_functions:
+                        group_concat: DoctrineExtensions\Query\Mysql\GroupConcat
+                        json_contains: DoctrineExtensions\Query\Mysql\JsonContains
+                        JSON_EXTRACT: Scienta\DoctrineJsonFunctions\Query\AST\Functions\Mysql\JsonExtract
+                        JSON_UNQUOTE: Scienta\DoctrineJsonFunctions\Query\AST\Functions\Mysql\JsonUnquote
+                        replace: DoctrineExtensions\Query\Mysql\Replace
+
+            reader:
+                connection: reader
+                auto_mapping: false
+                naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
+                mappings:
+                    App:
+                        type: attribute
+                        dir: '%kernel.project_dir%/src/Entity'
+                        prefix: 'App\Entity'
+                        is_bundle: false
+                        alias: App
+                # Optional DQL functions (uncomment if needed)
+                dql:
+                    string_functions:
+                        group_concat: DoctrineExtensions\Query\Mysql\GroupConcat
+                        json_contains: DoctrineExtensions\Query\Mysql\JsonContains
+                        JSON_EXTRACT: Scienta\DoctrineJsonFunctions\Query\AST\Functions\Mysql\JsonExtract
+                        JSON_UNQUOTE: Scienta\DoctrineJsonFunctions\Query\AST\Functions\Mysql\JsonUnquote
+                        replace: DoctrineExtensions\Query\Mysql\Replace
+
+when@test:
+    doctrine:
+        dbal:
+            # "TEST_TOKEN" is typically set by ParaTest
+            dbname_suffix: '_test%env(default::TEST_TOKEN)%'
+
+when@prod:
+    doctrine:
+        orm:
+            auto_generate_proxy_classes: false
+            proxy_dir: '%kernel.build_dir%/doctrine/orm/Proxies'
+            query_cache_driver:
+                type: pool
+                pool: doctrine.system_cache_pool
+            result_cache_driver:
+                type: pool
+                pool: doctrine.result_cache_pool
+
+    framework:
+        cache:
+            pools:
+                doctrine.result_cache_pool:
+                    adapter: cache.app
+                doctrine.system_cache_pool:
+                    adapter: cache.system

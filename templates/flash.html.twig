@@ -1,0 +1,11 @@
+{% set bootstrapLabels = ['info', 'success', 'warning', 'danger', 'light', 'dark', 'primary', 'secondary'] %}
+
+{% for label in bootstrapLabels %}
+    {% set messages = app.flashes(label) %}
+    {% for message in messages %}
+        <div class="alert alert-{{ label }} {{ class | default('') }} {% if isFullScreen is defined and isFullScreen %}mb-0 p-2 text-center rounded-0{% endif %} alert-dismissible fade show" role="alert" data-auto-dismiss="6000">
+            {{ message | raw }}
+            <button type="button" class="btn-close {{ class | default('') }} {% if isFullScreen is defined and isFullScreen %}px-3 pt-0{% endif %}" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+{% endfor %}

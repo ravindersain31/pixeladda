@@ -1,0 +1,43 @@
+<div {{ attributes }} class="me-1">
+    {% if warehouseOrder and warehouseOrder.driveLink %}
+        <a href="{{ warehouseOrder.driveLink }}" target="_blank">Drive</a>
+        <button type="button" class="btn btn-link p-1" data-bs-toggle="modal"
+                data-bs-target="#addDriveLink_{{ order.orderId }}">
+            <i class="fa fa-edit"></i>
+        </button>
+    {% else %}
+        <button type="button" class="btn btn-link p-1" data-bs-toggle="modal"
+                data-bs-target="#addDriveLink_{{ order.orderId }}">
+            Add
+        </button>
+    {% endif %}
+
+    <!-- Modal -->
+    <div class="modal fade" id="addDriveLink_{{ order.orderId }}" tabindex="-1"
+         aria-labelledby="addDriveLink_{{ order.orderId }}_label" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <h6>#{{ order.orderId }}</h6>
+                    {{ form_start(form, {
+                        attr: {
+                            'novalidate': true,
+                            'data-action': 'live#action:prevent',
+                            'data-live-action-param': 'save'
+                        }
+                    }) }}
+                    {{ form_widget(form) }}
+                    <div class="form-group mb-sm-0 form-group-submit text-start">
+                        <button type="submit" data-action="live#action" data-live-action-param="save"
+                                data-loading="action(save)|addAttribute(disabled)"
+                                class="btn btn-primary btn-sm">
+                            <span data-loading="action(save)|show" style="display: none">Saving...</span>
+                            <span data-loading="action(save)|hide" style="display: block">Save</span>
+                        </button>
+                    </div>
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

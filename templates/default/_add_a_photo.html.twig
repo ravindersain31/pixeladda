@@ -1,0 +1,90 @@
+<div class="add-a-photo-alert-wrapper"></div>
+{% set addAPhotoForm = createFormView('App\\Form\\UploadPhotosFooterType') %}
+{{ form_start(addAPhotoForm, { attr: {'validation' : 'jquery-add-a-photo', "data-controller": "reset-modal-form"}}) }}
+{{ form_errors(addAPhotoForm) }}
+<div class="mt-0" id="save_photo_form">
+    <div class="ysp-cart-form-wrapper mt-0">
+        <div class="d-flex flex-column w-100 mb-3">
+            {{ form_label(addAPhotoForm.photoFile) }}
+            {{ form_widget(addAPhotoForm.photoFile) }}
+            {{ form_errors(addAPhotoForm.photoFile) }}
+        </div>
+        <div class="d-flex flex-column w-100">
+            {{ form_row(addAPhotoForm.comment) }}
+        </div>
+        <div class="d-flex flex-column w-100">
+            {{ form_row(addAPhotoForm.recaptcha) }}
+        </div>
+        <div class="text-center">
+            {{ form_row(addAPhotoForm.submit) }}
+        </div>
+    </div>
+</div>
+{{ form_end(addAPhotoForm) }}
+
+
+<script>
+    window.addEventListener('DOMContentLoaded', function () {
+
+        $('[validation="jquery-add-a-photo"]').validate({
+            rules: {
+                'photoFile[file]': {
+                    required: true,
+                    extension: "jpg|jpeg|png|gif",
+                    maxsize: 50000000,
+                },
+            },
+            messages: {
+                'photoFile[file]': {
+                    required: 'Please select a file',
+                    extension: 'Please upload a valid image file (JPEG, GIF, PNG).',
+                    maxsize: 'File size must be less than 50MB.',
+                },
+                'comment': {
+                    required: 'Please enter your comment',
+                },
+            },
+            submitHandler: function (form) {
+                $(form).find('button[type="submit"]').attr('disabled', true);
+                $(form).find('button[type="submit"]').text('Processing...');
+                const formData = new FormData(form);
+
+                $.ajax('{{ url('form_add_a_photo') }}', {
+                    method: 'POST',
+                    data: formData,
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    success: function (response) {
+                        if (response.success) {
+                            $('.add-a-photo-alert-wrapper').html(`<div class="alert alert-success" data-controller="flash" data-flash-auto-dismiss-value="5000">${response.message}</div>`);
+                            $(form)[0].reset();
+                            grecaptcha.enterprise.reset()
+                        } else {
+                            let messages = '';
+                            if(response.errors.length > 0) {
+                                response.errors.forEach(function (message) {
+                                    messages += `<div class="alert alert-danger">${message}</div>`;
+                                });
+                            } else {
+                                messages = `<div class="alert alert-danger">${response.message}</div>`;
+                            }
+                            $('.add-a-photo-alert-wrapper').html(messages);
+                        }
+                        setTimeout(function () {
+                            $('.contact-us-message-wrapper').html('');
+                        }, 5000);
+
+                        $(form).find('button[type="submit"]').attr('disabled', false);
+                        $(form).find('button[type="submit"]').text('Submit');
+                    },
+                    error: function () {
+                        $(form).find('button[type="submit"]').attr('disabled', false);
+                        $(form).find('button[type="submit"]').text('Submit');
+                    }
+                });
+                // form.submit();
+            }
+        });
+    });
+</script>

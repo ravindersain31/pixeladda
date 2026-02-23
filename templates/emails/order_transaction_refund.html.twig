@@ -1,0 +1,25 @@
+{% extends 'emails/base.html.twig' %}
+{% block title %}WE HAVE ISSUED YOU A REFUND{% endblock %}
+{% block subject %}WE HAVE ISSUED YOU A REFUND{% endblock %}
+{% block body %}
+<table style="width: 100%;max-width: 100%;margin: auto;text-align: center;font-family: sans-serif;background-color: #ffffff;">
+    <tr>
+        <td colspan="3">
+            <p style="font-size: 26px; font-weight: bold; color: #000000; padding: 0 50px; margin: 20px 0 10px;" class="user-name">
+                Hi {{ order.billingAddress.firstName }} {{ order.billingAddress.lastName }}
+            </p>
+            <p class="off-desc ys-mob-ryt-lft-pad15"
+               style="font-size: 17px; color: #000000; padding: 0 50px; line-height: 135%; margin: 0 0 20px;">
+                As per your request, we have refunded your order
+            </p>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="3" class="refunded-text" style="font-size: 22px; font-weight: bold; padding: 0 50px 20px;">
+            Amount Refunded: ${{ refund.amount | number_format(2) }}
+        </td>
+    </tr>
+    {{ include('emails/common/_order_info_basic_table.html.twig') }}
+    {{ include('emails/common/_contact_us_message.html.twig') }}
+</table>
+{% endblock %}

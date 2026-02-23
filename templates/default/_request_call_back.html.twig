@@ -1,0 +1,115 @@
+{% set requestCallBackForm = createFormView('App\\Form\\Page\\RequestCallBackType') %}
+{{ form_start(requestCallBackForm, { attr: {'validation' : 'jquery-request-call-back'}}) }}
+    {{ form_errors(requestCallBackForm) }}
+<div class="ysp-ft-form-wrapper" id="top_footer_form">
+    <div class="request-call-back-message-wrapper"></div>
+    <div class="form-group">
+        {{ form_row(requestCallBackForm.name) }}
+        {{ form_errors(requestCallBackForm.name) }}
+    </div>
+
+    <div class="form-group">
+        {{ form_row(requestCallBackForm.telephone) }}
+        {{ form_errors(requestCallBackForm.telephone) }}
+    </div>
+
+    <div class="form-group">
+        {{ form_row(requestCallBackForm.comment) }}
+        {{ form_errors(requestCallBackForm.comment) }}
+    </div>
+
+    {% if requestCallBackForm.recaptcha is defined %}
+        <div class="form-group d-flex justify-content-center">
+            {{ form_row(requestCallBackForm.recaptcha) }}
+            {{ form_errors(requestCallBackForm.recaptcha) }}
+        </div>
+    {% endif %}
+
+    <div class="form-group mt-3 form-group-submit text-center">
+        <button type="submit" class="btn">Submit</button>
+    </div>
+</div>
+
+{{ form_end(requestCallBackForm) }}
+
+<script>
+    window.addEventListener('DOMContentLoaded', function () {
+        $.validator.addMethod(
+            "noEmoji",
+            function (value) {
+                return window.hasNoEmoji(value);
+            },
+            "Emojis are not allowed."
+        );
+
+        $('[validation="jquery-request-call-back"]').validate({
+            rules: {
+                'request_call_back[name]': {
+                    required: true,
+                    noEmoji: true,
+                    pattern: /^(?=.*[A-Za-zÀ-ÿ])[A-Za-zÀ-ÿ' -]+$/,
+                },
+                'request_call_back[telephone]': {
+                    required: true,
+                    minlength: 14,
+                },
+                'request_call_back[comment]': {
+                    required: true,
+                    noEmoji: true,
+                },
+            },
+            messages: {
+                'request_call_back[name]': {
+                    required: 'Please enter your name',
+                    noEmoji: 'Emojis are not allowed in name'
+                    pattern: 'Please enter a valid name (letters only).',
+                },
+                'request_call_back[telephone]': {
+                    required: 'Please enter your phone number',
+                    minlength: 'Phone number must be at least 10 characters long',
+                },
+                'request_call_back[comment]': {
+                    noEmoji: 'Emojis are not allowed in comment'
+                    required: 'Please enter your comment',
+                },
+            },
+            submitHandler: function (form) {
+                $(form).find('button[type="submit"]').attr('disabled', true);
+                $(form).find('button[type="submit"]').text('Processing...');
+                $.ajax('{{ url('form_request_call_back') }}', {
+                    method: 'POST',
+                    data: $(form).serialize(),
+                    success: function (response) {
+                        if (response.success) {
+                            $('.request-call-back-message-wrapper').html(`<div class="alert alert-success">${response.message}</div>`);
+                            $(form)[0].reset();
+                            grecaptcha.enterprise.reset()
+                        } else {
+                            let messages = '';
+                            if (response.errors.length > 0) {
+                                response.errors.forEach(function (message) {
+                                    messages += `<div class="alert alert-danger">${message}</div>`;
+                                });
+                            } else {
+                                messages = `<div class="alert alert-danger">${response.message}</div>`;
+                            }
+                            grecaptcha.enterprise.reset()
+                            $('.request-call-back-message-wrapper').html(messages);
+                        }
+                        setTimeout(function () {
+                            $('.request-call-back-message-wrapper').html('');
+                        }, 5000);
+
+                        $(form).find('button[type="submit"]').attr('disabled', false);
+                        $(form).find('button[type="submit"]').text('Submit');
+                    },
+                    error: function () {
+                        $(form).find('button[type="submit"]').attr('disabled', false);
+                        $(form).find('button[type="submit"]').text('Submit');
+                    }
+                });
+                // form.submit();
+            }
+        });
+    });
+</script>

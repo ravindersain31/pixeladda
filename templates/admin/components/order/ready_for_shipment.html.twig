@@ -1,0 +1,67 @@
+<div {{ attributes }}>
+    {% set warehouseOrder = order.warehouseOrder %}
+    {% include 'flash.html.twig' with { class: 'p-2' } %}
+    {% set epAddress = order.metaDataKey('epShippingAddress') %}
+
+    <button class="btn btn-sm btn-info text-white ms-1 d-none"
+            data-action="live#action"
+            data-live-action-param="markReadyToShip"
+            data-loading="addClass(opacity-50 disabled)"
+            data-bs-toggle="tooltip" data-bs-placement="top" title="Move this order to 'Ready for Production'">
+        Mark "Ready for Production"
+    </button>
+
+    {% if order and order.warehouseOrder is null and not order.isOrderInOQ or order.isOrderReadyForOQ and order.warehouseOrder %}
+        <div class="alert alert-warning d-flex align-items-center mb-2 p-1">
+            <i class="fa fa-exclamation-triangle me-1"></i>
+            <p class="mb-0" style="font-size: 0.875rem;">
+                Are you sure? This action will move this order into the <b>'Ready for Production'</b> tab.
+            </p>
+        </div>
+        
+        <button class="btn btn-sm btn-info text-white ms-1"
+                data-action="live#action"
+                data-live-action-param="markReadyToShip"
+                data-loading="addClass(opacity-50 disabled)"
+                data-bs-toggle="tooltip" data-bs-placement="top" title="Move this order to 'Ready for Production'">
+            Mark "Ready for Production"
+        </button>
+    {% elseif order and order.status == 'PROOF_APPROVED' %}
+            <div class="alert alert-warning d-flex align-items-center mb-2 p-1">
+                <i class="fa fa-exclamation-triangle me-1"></i>
+                <p class="mb-0" style="font-size: 0.875rem;">
+                    Are you sure? This action will move this order into the <b>'Ready for Production'</b> tab.
+                </p>
+            </div>
+
+            <button class="btn btn-sm btn-info text-white ms-1"
+                    data-action="live#action"
+                    data-live-action-param="markReadyToShip"
+                    data-loading="addClass(opacity-50 disabled)"
+                    data-bs-toggle="tooltip" data-bs-placement="top" title="Move this order to 'Ready for Production'">
+                Mark "Ready for Production"
+            </button>
+    {% else %}
+        {% if warehouseOrder is not null and warehouseOrder.shipBy is null %}
+            <div class="alert alert-warning d-flex align-items-center mb-2 p-1">
+                <p class="mb-0" style="font-size: 0.875rem;">
+                    ShipBy date could not be generated due to an incomplete or incorrect address. Please update the shipping address. or manually enter the ShipBy date.
+                </p>
+                {# regenerate button #}
+                <button class="btn btn-sm btn-info text-white ms-1"
+                        data-action="live#action"
+                        data-live-action-param="regenerateShipByDate"
+                        data-loading="addClass(opacity-50 disabled)"
+                        data-bs-toggle="tooltip" data-bs-placement="top" title="Regenerate ShipBy">
+                    <i class="fa fa-refresh" aria-hidden="true"></i>
+                </button>
+            </div>
+        {% endif %}
+
+        {% if warehouseOrder is not null %}
+            <div class="mt-2">
+                {{ include('admin/order/view/actions/_add_to_queue.html.twig') }}
+            </div>
+        {% endif %}
+    {% endif %}
+</div>

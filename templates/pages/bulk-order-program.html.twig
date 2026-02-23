@@ -1,0 +1,289 @@
+{% extends 'base.html.twig' %}
+{% set title = metaData.title ?: metaData.pageTitle ~ ' - ' ~ storeInfo.storeTitle %}
+
+{% block title %}{{ title }}{% endblock %}
+{% block metaData %}
+    {% set pageUrl = url('bulk_order_program') %}
+    {% set pageImageUrl = null %}
+
+    {% include 'common/_page_meta.html.twig' with {
+        title: title,
+        metaData: metaData,
+        pageUrl: pageUrl,
+        pageImageUrl: pageImageUrl,
+        storeInfo: storeInfo
+    } %}
+{% endblock %}
+
+{% block additionalHeader %}
+    {{ include('common/common_mobile_bar.html.twig', {
+        commonBarText: 'Order Online Or Call Now',
+        commonBarTele: '+1-877-958-1499'
+    }) }}
+
+    <section class="header-design-one container-fluid header-cart-page" style="background-color: var(--primary-color)">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="d-flex justify-content-center align-items-center">
+                    <h2 class="heading" style="color: #fff; font-weight: 700; padding: 12px !important; text-shadow: -4px 4px 4px #000;font-style: italic;text-transform: uppercase;">Bulk Order Program</h2>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+
+{% block body %}
+<div class="container w-80 pb-1">
+    <div class="row">
+        <div class="col-lg-12 custom-bulk-info">
+            <div class="row pb-md-1">
+                <div class="col-md-12">
+                    <div class="custom-bulk-info text-center">
+                        <h3 class="text-sgs-purple mt-3 fs-26 fw-600">ENHANCE VISIBILITY WITH OUR SIGNAGE SOLUTIONS</h3>
+                        <p class="fs-18 fw-400 mb-3">
+                            <span class="fw-500">Yard Signs & Stakes –</span> Ideal for events, promotions, and directional advertising.<br>
+                            <span class="fw-500">Customizable Designs –</span> Personalize your branding, messages, or logos.<br>
+                            <span class="fw-500">Durable Materials –</span> Weather-resistant products for both outdoor and indoor use.<br>
+                            <span class="fw-500">Bulk Ordering –</span> The more you buy, the more you save.<br>
+                        </p>
+                        <h3 class="text-sgs-purple mt-2 ">
+                            <a class="fs-26 fw-600" href="/bulk-order-enquiry" target="_self"><span class="text-sgs-purple">ORDER TODAY, RECEIVE WHOLESALE DISCOUNTS!</span></a>
+                        </h3>
+                        <p class="fs-18 fw-400 mb-4">
+                            <span class="fw-500">Competitive Pricing –</span> Enjoy discounted rates for large orders.<br>
+                            <span class="fw-500">Dedicated Support –</span> Our team assists you from design to delivery.<br>
+                            <span class="fw-500">Seamless Process –</span> Streamlined ordering and delivery to meet your needs.<br>
+                        </p>
+                        <h3 class="text-sgs-purple mt-2">
+                            <a class="w-fit-content m-auto fs-26 fw-600 d-flex align-items-center justify-content-center phone text-sgs-purple" href="tel: +1-877-958-1499">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-phone">
+                                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg> 
+                                <span class="ml-1 ms-2">Call Us: +1-877-958-1499</span>
+                            </a>
+                        </h3>
+                        <h3 class="text-sgs-purple mt-2">
+                            <a class="w-fit-content m-auto fs-26 fw-600 d-flex align-items-center justify-content-center" href="mailto:{{storeInfo.storeEmail}}">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" 
+                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" 
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" 
+                                    class="feather feather-mail">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4
+                                        c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                                <polyline points="22,6 12,13 2,6"/>
+                                </svg>
+                                <span class="ml-1 ms-2">Email Us: {{storeInfo.storeEmail}}</span>
+                            </a>
+                        </h3>
+                    </div>
+                </div>
+                
+            </div>
+            
+        </div>
+    </div>
+   <div class="row categories-bulk-section g-3 mb-4">
+    {% set categories = [
+        {
+            img: 'https://static.yardsignplus.com/fit-in/1000x1000/storage/images/Elections.webp',
+            alt: 'Political Campaigns',
+            label: 'Political Campaigns'
+        },
+        {
+            img: 'https://static.yardsignplus.com/fit-in/1000x1000/storage/images/Commercial%20Advertisements.webp',
+            alt: 'Commercial Advertisements',
+            label: 'Commercial Advertisements'
+        },
+        {
+            img: 'https://static.yardsignplus.com/fit-in/1000x1000/storage/images/Sport-teams.webp',
+            alt: 'Sport Teams',
+            label: 'Sport Teams & Graduation'
+        },
+        {
+            img: 'https://static.yardsignplus.com/fit-in/1000x1000/storage/images/real-estate(1).webp',
+            alt: 'Real Estate',
+            label: 'Real Estate'
+        }
+    ] %}
+
+    {% for category in categories %}
+        <div class="col-6 col-sm-6 col-md-3 text-center">
+            <img class="img-fluid w-100 rounded-top"
+                 src="{{ category.img }}"
+                 alt="{{ category.alt }}"
+                 style="height: 200px;  width: 200px;">
+            <div class="bg-purple rounded-bottom text-white p-2 fw-semibold small-category-label">
+                <span class="d-inline-block">{{ category.label }}</span>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
+
+    <div class="d-flex justify-content-center get-quote-now-btn mt-2">
+        <a class="btn btn-sgs-white text-uppercase  my-2 px-2 text-uppercase" href="/bulk-order-enquiry">Get a Quote Now</a>
+    </div>
+    <div class="mt-4">
+        <div class="row categories-bulk-section">
+            <div class="col-md-3 category col-sm-6 col-6 text-center">
+                <div class="p-2">
+                    <a href="{{ url('category', {slug: 'political'}) }}">
+                        <span>Election Signs</span>
+                    </a>
+                </div>
+                <a href="{{ url('category', {slug: 'political'}) }}">
+                    <img class="w-100 rounded-top bulk-img"src="https://static.yardsignplus.com/fit-in/1000x1000/storage/images/election.webp" alt="Election Sign">
+                </a>
+            </div>
+            <div class="col-md-3 category col-sm-6 col-6 text-center">
+                <div class="p-2">
+                    <a href="{{ url('category', {slug: 'business-ads'}) }}">
+                        <span>Commercial Advertisements Signs</span>
+                    </a>
+                </div>
+                <a href="{{ url('category', {slug: 'business-ads'}) }}">
+                    <img class="w-100 rounded-top bulk-img"src="https://static.yardsignplus.com/fit-in/1000x1000/storage/images/commercial-advertisement.webp" alt="commercial Advertisement Sign">
+                </a>
+            </div>
+            <div class="col-md-3 category col-sm-6 col-6 text-center">
+                <div class="p-2">
+                    <a href="{{ url('category', {slug: 'graduation'}) }}">
+                        <span>Graduation Signs</span>
+                    </a>
+                </div>
+                <a href="{{ url('category', {slug: 'graduation'}) }}">
+                    <img class="w-100 rounded-top bulk-img"src="https://static.yardsignplus.com/fit-in/1000x1000/storage/images/Graduation.webp" alt="Graduation Sign">
+                </a>
+            </div>
+            <div class="col-md-3 category col-sm-6 col-6 text-center">
+                <div class="p-2">
+                    <a href="{{ url('category', {slug: 'sports'}) }}">
+                        <span>Sport Teams Signs</span>
+                    </a>
+                </div>
+                <a href="{{ url('category', {slug: 'sports'}) }}">
+                    <img class="w-100 rounded-top bulk-img"src="https://static.yardsignplus.com/fit-in/1000x1000/storage/images/Landing.webp" alt="Sport Teams Sign">
+                </a>
+            </div>
+        </div>
+
+        <div class="row categories-bulk-section mt-4">
+            <div class="col-md-3 category col-sm-6 col-6 text-center">
+                <div class="p-2">
+                    <a href="{{ url('category', {slug: 'real-estate'}) }}">
+                        <span>Real Estate Signs</span>
+                    </a>
+                </div>
+                <a href="{{ url('category', {slug: 'real-estate'}) }}">
+                    <img class="w-100 rounded-top bulk-img" src="https://static.yardsignplus.com/fit-in/1000x1000/storage/images/Real-Estate.webp" alt="Real Estate Sign">
+                </a>
+            </div>
+            <div class="col-md-3 category col-sm-6 col-6 text-center">
+                <div class="p-2">
+                    <a href="{{ url('category', {slug: 'business-ads'}) }}">
+                        <span>Event Signs</span>
+                    </a>
+                </div>
+                <a href="{{ url('category', {slug: 'business-ads'}) }}">
+                    <img class="w-100 rounded-top bulk-img-event mx-auto d-block" src="https://static.yardsignplus.com/fit-in/1000x1000/storage/images/Wedding.webp" alt="Event Sign">
+                </a>
+            </div>
+            <div class="col-md-3 category col-sm-6 col-6 text-center">
+                <div class="p-2">
+                    <a href="{{ url('category', {slug: 'business-ads'}) }}">
+                        <span>School Election Signs</span>
+                    </a>
+                </div>
+                <a href="{{ url('category', {slug: 'business-ads'}) }}">
+                    <img class="w-100 rounded-top bulk-img"src="https://static.yardsignplus.com/fit-in/1000x1000/storage/images/school-election.webp" alt="School Election Sign">
+                </a>
+            </div>
+            <div class="col-md-3 category col-sm-6 col-6 text-center">
+                <div class="p-2">
+                    <a href="{{ url('category', {slug: 'business-ads'}) }}">
+                        <span>Sponsors Signs</span>
+                    </a>
+                </div>
+                <a href="{{ url('category', {slug: 'business-ads'}) }}">
+                    <img class="w-100 rounded-top bulk-img"src="https://static.yardsignplus.com/fit-in/1000x1000/storage/images/sponsors-Sign.webp" alt="Sponsors Sign">
+                </a>
+            </div>
+        </div>
+
+        <div class="row categories-bulk-section mt-4">
+            <div class="col-md-3 category col-sm-6 col-6 text-center">
+                <div class="p-2">
+                    <a href="{{ url('category', {slug: 'big-head-cutouts'}) }}">
+                        <span>Big Head Cutouts</span>
+                    </a>
+                </div>
+                <a href="{{ url('category', {slug: 'big-head-cutouts'}) }}">
+                    <img class="w-100 rounded-top bulk-img"src="https://static.yardsignplus.com/fit-in/1000x1000/storage/images/BH1.webp" alt="Big Head">
+                </a>
+            </div>
+            <div class="col-md-3 category col-sm-6 col-6 text-center">
+                <div class="p-2">
+                    <a href="{{ url('category', {slug: 'yard-letters'}) }}">
+                        <span>Yard Letters Signs</span>
+                    </a>
+                </div>
+                <a href="{{ url('category', {slug: 'yard-letters'}) }}">
+                    <img class="w-100 rounded-top bulk-img"src="https://static.yardsignplus.com/fit-in/1000x1000/storage/images/Mock-up-Trick-or-Treat.webp" alt="yard-letters">
+                </a>
+            </div>
+            <div class="col-md-3 category col-sm-6 col-6 text-center">
+                <div class="p-2">
+                    <a href="{{ url('category', {slug: 'die-cut'}) }}">
+                        <span>Die-Cut Signs</span>
+                    </a>
+                </div>
+                <a href="{{ url('category', {slug: 'die-cut'}) }}">
+                    <img class="w-100 rounded-top bulk-img"src="https://static.yardsignplus.com/fit-in/1000x1000/storage/images/die-cut.webp" alt="Die-Cut Sign">
+                </a>
+            </div>
+            <div class="col-md-3 category col-sm-6 col-6 text-center">
+                <div class="p-2">
+                    <a href="{{ url('category', {slug: 'business-ads'}) }}">
+                        <span>Giant Signs</span>
+                    </a>
+                </div>
+                <a href="{{ url('category', {slug: 'business-ads'}) }}">
+                    <img class="w-100 rounded-top bulk-img"src="https://static.yardsignplus.com/fit-in/1000x1000/storage/images/Sharez10.webp" alt="Giant Sign">
+                </a>
+            </div>
+        </div>
+    </div>
+    {{ include('common/_faqs.html.twig') }}
+
+    <div class="container text-center mb-2 mt-3 custom-bulk-info">
+        <h3 class="text-center">Contact Us 24 Hours a Day, 7 Days a Week!</h3>
+        <div class="d-flex flex-wrap justify-content-between justify-content-evenly gap-4 mt-3 bulk-list-item bulk-order">
+            <a class="btn border rounded-pill d-flex align-items-center gap-2 px-4 text-dark " href="tel:+1-877-958-1499">
+                <i class="fa fa-phone text-sgs-purple"></i> +1-877-958-1499
+            </a>
+            <a class="btn border rounded-pill d-flex align-items-center gap-2 px-4 text-dark" href="#" onclick="Tawk_API.toggle(); return false;" oncontextmenu="return false;">
+                {# <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-message-square text-sgs-purple"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg> #}
+                <i class="fa-regular fa-message text-sgs-purple"></i>Live Chat
+            </a>
+            <a class="btn border rounded-pill d-flex align-items-center gap-2 px-4 text-dark" href="mailto:{{storeInfo.storeEmail}}">
+                <i class="fa fa-envelope text-sgs-purple"></i>{{ storeInfo.storeEmail|upper }}
+            </a>
+        </div>
+    </div>
+</div>
+   
+
+    <script type="text/javascript">
+        var sa_review_count = 5;
+        var sa_date_format = 'F j, Y';
+
+        function saLoadScript(src) {
+            var js = window.document.createElement("script");
+            js.src = src;
+            js.type = "text/javascript";
+            document.getElementsByTagName("head")[0].appendChild(js);
+        }
+
+        saLoadScript("https://www.shopperapproved.com/merchant/36686.js");
+    </script>
+
+{% endblock %}

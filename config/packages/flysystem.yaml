@@ -1,0 +1,129 @@
+# Read the documentation at https://github.com/thephpleague/flysystem-bundle/blob/master/docs/1-getting-started.md
+flysystem:
+    storages:
+        default.storage:
+            adapter: 'aws'
+            options:
+                client: 'aws.s3'
+                bucket: '%env(resolve:AWS_S3_BUCKET)%'
+                prefix: 'assets'
+                streamReads: true
+        category.storage:
+            adapter: 'aws'
+            options:
+                client: 'aws.s3'
+                bucket: '%env(resolve:AWS_S3_BUCKET)%'
+                prefix: 'category'
+                streamReads: true
+        product.images.storage:
+            adapter: 'aws'
+            options:
+                client: 'aws.s3'
+                bucket: '%env(resolve:AWS_S3_BUCKET)%'
+                prefix: 'product/img'
+                streamReads: true
+        product.template.storage:
+            adapter: 'aws'
+            options:
+                client: 'aws.s3'
+                bucket: '%env(resolve:AWS_S3_BUCKET)%'
+                prefix: 'product/template'
+                streamReads: true
+        clipart.storage:
+            adapter: 'aws'
+            options:
+                client: 'aws.s3'
+                bucket: '%env(resolve:AWS_S3_BUCKET)%'
+                prefix: 'clipart'
+                streamReads: true
+        artwork.storage:
+            adapter: 'aws'
+            options:
+                client: 'aws.s3'
+                bucket: '%env(resolve:AWS_S3_BUCKET)%'
+                prefix: 'storage/artwork'
+                streamReads: true
+        custom.design.storage:
+            adapter: 'aws'
+            options:
+                client: 'aws.s3'
+                bucket: '%env(resolve:AWS_S3_BUCKET)%'
+                prefix: 'storage/custom-design'
+                streamReads: true
+        user.files.storage:
+            adapter: 'aws'
+            options:
+                client: 'aws.s3'
+                bucket: '%env(resolve:AWS_S3_BUCKET)%'
+                prefix: 'uploads/user-files'
+                streamReads: true
+        product.imageFiles.storage:
+            adapter: 'aws'
+            options:
+                client: 'aws.s3'
+                bucket: '%env(resolve:AWS_S3_BUCKET)%'
+                prefix: 'storage/product-images'
+                streamReads: true
+        customerphotos.files.storage:
+            adapter: 'aws'
+            options:
+                client: 'aws.s3'
+                bucket: '%env(resolve:AWS_S3_BUCKET)%'
+                prefix: 'storage/customer-photos'
+                streamReads: true
+        communityuploads.files.storage:
+            adapter: 'aws'
+            options:
+                client: 'aws.s3'
+                bucket: '%env(resolve:AWS_S3_BUCKET)%'
+                prefix: 'storage/community-uploads'
+                streamReads: true
+        product.canvas-template.storage:
+            adapter: 'aws'
+            options:
+                client: 'aws.s3'
+                bucket: '%env(resolve:AWS_S3_BUCKET)%'
+                prefix: 'product/canvas-template'
+                streamReads: true
+        order.files.storage:
+            adapter: 'aws'
+            options:
+                client: 'aws.s3'
+                bucket: '%env(resolve:AWS_S3_BUCKET)%'
+                prefix: 'order/files'
+                streamReads: true
+        blog.files.storage:
+            adapter: 'aws'
+            options:
+                client: 'aws.s3'
+                bucket: '%env(resolve:AWS_S3_BUCKET)%'
+                prefix: 'blog'
+                streamReads: true
+        proof.template.storage:
+            adapter: 'aws'
+            options:
+                client: 'aws.s3'
+                bucket: '%env(resolve:AWS_S3_BUCKET)%'
+                prefix: 'storage/proof-template'
+                streamReads: true
+        editor.storage:
+            adapter: 'aws'
+            options:
+                client: 'aws.s3'
+                bucket: '%env(resolve:AWS_S3_BUCKET)%'
+                prefix: 'storage/editor'
+                streamReads: true
+        banner.storage:
+            adapter: 'aws'
+            options:
+                client: 'aws.s3'
+                bucket: '%env(resolve:AWS_S3_BUCKET)%'
+                prefix: 'storage/banners'
+                streamReads: true
+        image.storage:
+            adapter: 'aws'
+            options:
+                client: 'aws.s3'
+                bucket: '%env(resolve:AWS_S3_BUCKET)%'
+                prefix: 'storage/images'
+                streamReads: true

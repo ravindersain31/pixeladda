@@ -1,0 +1,9 @@
+ <div class="alert alert-warning text-center">
+    <form action="{{ url('apply_free_shipping') }}" method="post">
+        <input type="hidden" name="cartId" value="{{ cartId }}"/>
+        <button type="submit" class="btn btn-ysp-outline mb-2">Get Free Shipping</button>
+    </form>
+    <p class="mb-0">
+        By applying, your entire order will be delivered by <u>{{ sampleFreeShipping.date | date('M d, Y') }}</u>
+    </p>
+</div>

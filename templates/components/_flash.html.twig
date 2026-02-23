@@ -1,0 +1,6 @@
+{% if flashMessage %}
+    <div class="alert alert-{{ flashError }} alert-dismissible fade show" role="alert" data-auto-dismiss="7000">
+        {{ flashMessage }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+{% endif %}

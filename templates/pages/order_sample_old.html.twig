@@ -1,0 +1,122 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Order Samples - YardSignPlus{% endblock %}
+{% block metaData %}
+    <link rel="canonical" href="{{ url('order_sample') }}" />
+    {% include 'common/_default_schema.html.twig' %}
+{% endblock %}
+{% block body %}
+    {{ include('common/common_mobile_bar.html.twig',{commonBarText: 'Order Online Or Call Now',commonBarTele: '+1-877-958-1499'}) }}
+    {{ include('common/breadcrumb.html.twig', { breadcrumbs: [
+        { name: 'Order Samples', active: true }
+    ]}) }}
+
+    <div class="container-lg">
+        <div class="order-sample">
+            <div class="d-flex justify-content-center align-items-center">
+                <h4 class="heading order-samples-title">Order Samples</h4>
+            </div>
+            <div class="free-sample-alert-wrapper text-center">
+                <b>*Free Samples:</b> Undamaged samples returned within 30 days of delivery will be issued a full
+                refund. Samples must return in original packaging. You are required to fulfill return shipping costs.
+                Please mention your order number on the package. For questions, please visit our
+                <a href="{{ url('contact_us') }}">Contact Us</a> page or message us on our
+                <a href="javascript:void(Tawk_API.toggle())">Live Chat</a>.
+            </div>
+            {{ component('OrderSampleForm',{
+                product: product,
+                editData: editData,
+            }) }}
+        </div>
+    </div>
+{% endblock %}
+{% block footerJavascripts %}
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const sizes = document.querySelectorAll('[id^="order_sample_variants_"]');
+            sizes.forEach((size) => {
+
+                size.addEventListener('keyup', (e) => {
+                    size.dispatchEvent(new Event('change', {bubbles: true}));
+                });
+            });
+
+            function initializeSizeInputListeners() {
+                const customSizes = document.querySelectorAll('[id^="order_sample_customSize_"]');
+
+                customSizes.forEach((size) => {
+                    size.addEventListener('input', (e) => {
+                        size.dispatchEvent(new Event('change', { bubbles: true }));
+                    });
+                });
+            }
+
+            initializeSizeInputListeners();
+
+            const targetNode = document.getElementById('customSizeCollapse');
+
+            const config = { childList: true, subtree: true };
+
+            const observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    if (mutation.addedNodes.length > 0) {
+                        initializeSizeInputListeners();
+                    }
+                });
+            });
+
+            // Start observing the target node for configured mutations
+            if (targetNode) {
+                observer.observe(targetNode, config);
+            }
+
+            const inputs = document.querySelectorAll('input[data-disable-zero]');
+            inputs.forEach(function(input) {
+                input.addEventListener('input', function(event) {
+                    if (input.value === '0' && input.value.length === 1) {
+                        input.value = '';
+                    }
+                });
+            });
+
+            const form = document.getElementById('orderSampleForm');
+
+            form.addEventListener('submit', function (event) {
+                setTimeout(function () {
+                    const errorElements = form.querySelectorAll('.invalid-feedback');
+                    if (errorElements.length > 0) {
+                        errorElements[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                    const quantities = document.querySelectorAll('input[data-scroll]');
+                    const step2 = document.getElementById('step-2');
+                    let allEmpty = true;
+
+                    quantities.forEach(function(quantity) {
+                        if (quantity.value !== '') {
+                            allEmpty = false;
+                        }
+                    });
+
+                    const totalSampleQty = document.querySelector('.total-sample-qty').getAttribute('data-total-qty');
+                    if(totalSampleQty > 20) {
+                        step2.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+
+                    if (allEmpty) {
+                        step2.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                }, 100);
+            });
+
+        });
+
+        function clearCustomSize() {
+            const customSizeInputs = document.querySelectorAll('[id^="order_sample_customSize_"]');
+            customSizeInputs.forEach((input) => {
+                input.value = '';
+                input.dispatchEvent(new Event('input', { bubbles: true }));
+            });
+        }
+
+    </script>
+{% endblock %}

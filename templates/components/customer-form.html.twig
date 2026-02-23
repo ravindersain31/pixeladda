@@ -1,0 +1,45 @@
+<div {{ attributes }}>
+	{{ form_start(form) }}
+	{{ form_errors(form) }}
+	<div class="form-group">
+		<label class="ysp-label-mrt" for="inputEmailAddress">First Name</label>
+		<div class="input-group mb-3">
+			<div class="input-group-prepend">
+				<span class="input-group-text">
+					<i class="fa fa-user" aria-hidden="true"></i>
+				</span>
+			</div>
+			{{ form_widget(form.firstName) }}
+			{{ form_errors(form.firstName) }}
+		</div>
+	</div>
+	<div class="form-group">
+		<label class="ysp-label-mrt" for="inputEmailAddress">Last Name</label>
+		<div class="input-group mb-3">
+			<div class="input-group-prepend">
+				<span class="input-group-text">
+					<i class="fa-solid fa-user"></i>
+				</span>
+			</div>
+			{{ form_widget(form.lastName) }}
+			{{ form_errors(form.lastName) }}
+		</div>
+	</div>
+	<div class="form-group">
+		<label class="ysp-label-mrt" for="inputEmailAddress">Email</label>
+		<div class="input-group mb-3">
+			<div class="input-group-prepend">
+				<span class="input-group-text">
+					<i class="fa fa-envelope" aria-hidden="true" data-acsb-hidden="true" data-acsb-force-hidden="true"></i>
+				</span>
+			</div>
+			{{ form_widget(form.email) }}
+			{{ form_errors(form.email) }}
+		</div>
+	</div>
+	<div class="form-group mt-3 mb-0">
+		{{ form_row(form.submit) }}
+	</div>
+	{{ form_end(form) }}
+</div>
+

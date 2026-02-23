@@ -1,0 +1,46 @@
+<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasUploadProof" aria-labelledby="offcanvasUploadProofLabel">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="offcanvasUploadProofLabel">Upload Proof</h5>
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        {% set proofForm = createProofForm(url('admin_order_proof_upload', {'orderId': order.orderId}), null, {'order': order}) %}
+        {% set isDisabled = order.status == 'PROOF_APPROVED' and order.needProof %}
+
+        {% if isDisabled %}
+            <div class="alert alert-warning small">
+                Proof has already been <b>APPROVED</b> for this order.
+            </div>
+        {% endif %}
+
+        {{ form_start(proofForm) }}
+
+        {% for field in proofForm %}
+            {{ form_row(field, {'attr': isDisabled ? {'disabled': 'disabled'} : {}}) }}
+        {% endfor %}
+
+        {{ form_end(proofForm, {'render_rest': false}) }}  
+        <script>
+            window.addEventListener('DOMContentLoaded', function () {
+                $('#proof_proofImage_file').on('change', function() {
+                    var file = this.files[0]; // Get the selected file
+                    var maxSize = 6 * 1024 * 1024; // 6MB in bytes
+
+                    if (file.size > maxSize) {
+                        alert('Proof Image size must be less than 6MB.');
+                        this.value = ''; // Clear the file input
+                    }
+                });
+                $('#proof_proofFile_file').on('change', function() {
+                    var file = this.files[0]; // Get the selected file
+                    var maxSize = 50 * 1024 * 1024; // 6MB in bytes
+
+                    if (file.size > maxSize) {
+                        alert('Proof File size must be less than 50MB.');
+                        this.value = ''; // Clear the file input
+                    }
+                });
+            });
+        </script>
+    </div>
+</div>

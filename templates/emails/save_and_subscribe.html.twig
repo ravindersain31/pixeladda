@@ -1,0 +1,16 @@
+{% extends 'emails/base.html.twig' %}
+{% block title %}WE HAVE RECEIVED YOUR CATALOG REQUEST{% endblock %}
+{% block subject %}WE HAVE RECEIVED YOUR CATALOG REQUEST{% endblock %}
+{% block body %}
+    <tr>
+        <td colspan="3">
+            <p class="off-desc-small ys-mob-ryt-lft-pad15" style="font-size: 18px;color: #000000;padding: 0 50px;line-height: 135%;margin: 25px 0 25px;">Thank you for your interest in {{storeName}} Store products.</p>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="3">
+            <a href="https://static.yardsignplus.com/storage/catalog/Ysp-Catalog.pdf" class="btn-shop-now" style="background-color: #e8c94c;color: #000000 !important;font-size: 32px;text-transform: uppercase;text-decoration: none;padding: 10px 25px;
+            display: inline-block;font-weight: normal;border-radius: 6px;margin-bottom: 40px;" target="_blank">DOWNLOAD CATALOG NOW</a>
+        </td>
+    </tr>
+{% endblock %}

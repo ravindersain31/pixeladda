@@ -1,0 +1,68 @@
+<div {{ attributes }}>
+    {{ form_start(form) }}
+    {{ form_errors(form) }}
+
+    <div class="pricing-row mb-3">
+        {% for key, pricings in form.children %}
+            {% if key starts with 'pricing' %}
+                <div class="card shadow-none mb-3 card-header-actions">
+                    <div class="card-header h-100 text-dark">
+                        {{ form_label(pricings) }}
+                        <div class="actions d-flex gap-2">
+                            <a href="{{ url('admin_product_type_frame_pricing_copy', {id: productType.id, frameType: pricings.vars.name}) }}"
+                               class="btn btn-sm btn-info"
+                               onclick="return confirm('*** WARNING *** \n\nAre you sure? \nIt will copy the pricing data from the variant which has high number of tiers and delete the current data if any.')">
+                                <i class="fa fa-copy me-2"></i>
+                                Copy
+                            </a>
+                            <a href="{{ url('admin_product_type_frame_pricing_delete', {id: productType.id, frameType: pricings.vars.name}) }}"
+                               class="btn btn-sm btn-danger"
+                               onclick="return confirm('*** WARNING *** \n\nAre you sure? \nIt will delete the pricing data if any.')">
+                                <i class="fa fa-trash me-2"></i>
+                                Delete
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        {% if pricings | length > 0 %}
+                            {% for pricing in pricings %}
+                                <div class="pricing-fields-container d-flex align-items-center">
+                                    <div class="row w-100 mb-3">
+                                        {% for field, price in pricing %}
+                                            {{ form_row(price) }}
+                                        {% endfor %}
+                                        <div class="col-12">
+                                            {{ form_errors(pricing) }}
+                                        </div>
+                                    </div>
+                                    <div class="delete-button ps-3 mt-3">
+                                        {{ form_widget(pricing.vars.button_delete) }}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="small text-danger no-alias mb-2">
+                                No pricing added. You can add by clicking "Add Price"
+                            </div>
+                        {% endif %}
+                        {{ form_widget(pricings.vars.button_add) }}
+                    </div>
+                </div>
+            {% endif %}
+        {% endfor %}
+        <a type="button" class="btn btn-link p-0 btn-sm btn" data-bs-toggle="modal" data-bs-target="#addNewFrameType">
+            Add Frame Type
+        </a>
+    </div>
+    <div class="row">
+        <div class="col-6 mb-3">
+            {{ form_widget(form.submit) }}
+        </div>
+    </div>
+    {{ form_end(form) }}
+    {% component BootstrapModal with { id: 'addNewFrameType' } %}
+        {% block modal_full_content %}
+            {{ component('NewFrameTypeForm', { productType: productType }) }}
+        {% endblock %}
+    {% endcomponent %}
+</div>

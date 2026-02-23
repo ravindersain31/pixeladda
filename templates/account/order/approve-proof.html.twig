@@ -1,0 +1,152 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Order #{{ order.orderId }} - {{storeInfo.storeTitle}}{% endblock %}
+{% block javascripts %}
+    <script src="https://js.braintreegateway.com/web/dropin/1.39.1/js/dropin.min.js"></script>
+    <script src="https://js.braintreegateway.com/web/3.97.3/js/client.min.js"></script>
+    <script src="https://js.braintreegateway.com/web/3.97.3/js/google-payment.min.js"></script>
+    <script src="https://js.braintreegateway.com/web/3.97.3/js/apple-pay.min.js"></script>
+    <script src="https://pay.google.com/gp/p/js/pay.js"></script>
+    <script src="https://js.stripe.com/v3/"></script>
+    <script defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyApxy-puRWe0-tyK_eH-1NjadBfucNNmks&loading=async&libraries=places"></script>
+{% endblock %}
+{% block body %}
+    <div class="page-header">
+        <div class="page-header-content order-view">
+            {% if order.status in ['RECEIVED', 'PROOF_UPLOADED', 'CHANGES_REQUESTED', 'DESIGNER_ASSIGNED'] %}
+                Approve Your Proof
+            {% else %}
+                Thank You for Choosing <span class="break-mobile">{{ storeInfo.storeName }}!</span>
+            {% endif %}
+        </div>
+    </div>
+    {{ include('common/breadcrumb.html.twig', { breadcrumbs: [
+        { name: 'Account' },
+        { name: 'Order #'~order.orderId },
+        { name: 'Proofs', active: true }
+    ]}) }}
+    {% set user = order.user %}
+    {% set approvedProof = order.approvedProof %}
+    <div class="container my-3">
+        {{ include('common/flash.html.twig') }}
+        <div class="row mb-2">
+            <div class="col-12">
+                <h5>Order ID #<span class="text-success">{{ order.orderId }}</span></h5>
+                <h5>Total Amount: ${{ order.totalAmount | number_format(2) }}</h5>
+                {% set balanceAmount = order.totalAmount - order.totalReceivedAmount %}
+                {% if balanceAmount > 0 %}
+                    <h6>Balance: ${{ (balanceAmount) | number_format(2) }}</h6>
+                {% endif %}
+            </div>
+        </div>
+        {% if order.status == 'CHANGES_REQUESTED' %}
+            <div class="alert alert-info my-3 text-center">
+                You have requested the changes for this order, Please wait until our designer make the changes.
+            </div>
+        {% endif %}
+        <div class="accordion mb-2" id="productDetailsAccordion1">
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="product_heading_1">
+                    <button class="accordion-button d-block collapsed bg-light text-dark approved-proof"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#product_collapse_1"
+                            aria-expanded="false"
+                            aria-controls="product_collapse_1">
+                        <span class="float-start">
+                            Product Details
+                        </span>
+                        <span class="float-end">
+                            <i class="fa-solid fa-angles-down"></i>
+                        </span>
+                        <span class="clearfix"></span>
+                    </button>
+                </h2>
+                <div id="product_collapse_1"
+                        class="accordion-collapse collapse"
+                        aria-labelledby="product_heading_1"
+                        data-bs-parent="#productDetailsAccordion1">
+                    <div class="accordion-body">
+                        {% include 'account/order/_order_items_table.html.twig' %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="proofs_approval">
+            <div class="accordion" id="proofsAccordion">
+                {% for message in messages %}
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="proof_heading_{{ message.id }}">
+                            <button class="accordion-button d-block collapsed bg-light text-dark approved-proof"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#proof_collapse_{{ message.id }}"
+                                    aria-expanded="false"
+                                    aria-controls="proof_collapse_{{ message.id }}">
+                                <span class="float-start">
+                                    Final Proof & Shipping Address
+                                    {% if approvedProof is not null and approvedProof == message %}
+                                        <small>(Approved)</small>
+                                    {% endif %}
+                                </span>
+                                <span class="float-end">
+                                 <i class="fa-solid fa-angles-down"></i>
+                                </span>
+                                <span class="clearfix"></span>
+                            </button>
+                        </h2>
+                        <div id="proof_collapse_{{ message.id }}"
+                             class="accordion-collapse collapse"
+                             aria-labelledby="proof_heading_{{ message.id }}"
+                             data-bs-parent="#proofsAccordion">
+                            <div class="accordion-body">
+                                <div class="row">
+                                    <div class="col-12 col-md-7 mb-3">
+                                        <div class="text-center">
+                                            {% for file in message.files %}
+                                                {% if file.type == 'PROOF_IMAGE' %}
+                                                    <img src="{{ vich_s3.asset(file, 'fileObject') }}"
+                                                        alt="Proof Image {{ loop.index }}"
+                                                        class="img-fluid mb-2 d-block m-auto">
+                                                {% elseif file.type == 'PROOF_FILE' %}
+                                                    <a href="{{ vich_s3.asset(file, 'fileObject') }}"
+                                                    class="btn btn-sm btn-primary my-2" target="_blank">
+                                                        Download Proof File
+                                                    </a>
+                                                {% else %}
+                                                    <a href="{{ vich_s3.asset(file, 'fileObject') }}"
+                                                    class="btn btn-sm btn-primary" target="_blank">
+                                                        View File {{ loop.index }}
+                                                    </a>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                        <p>{{ message.content | raw }}</p>
+                                    </div>
+                                    <div class="col-12 col-md-5 approved-form">
+                                        {% include 'account/order/_update_address_tabs.html.twig' %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="mt-3 checkout-page" data-controller="saved-braintree-cards-checkout">
+                {{ component('ApproveProofForm', {
+                    order: order,
+                    data: data,
+                    amazonPay: amazonPay,
+                    savedCards: savedCards
+                }) }}
+            </div>
+        </div>
+    </div>
+    {% include 'components/_amazon_pay_modal.html.twig' with { 
+        checkoutSession: amazonPay.checkoutSession,
+        payment_cancel: 'order_proof_approve',
+        oid: order.orderId
+    } %}
+
+{% endblock %}

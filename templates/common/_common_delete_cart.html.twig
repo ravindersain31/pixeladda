@@ -1,0 +1,9 @@
+<!-- Modal Delete Cart -->
+{% component BootstrapModal with { id: 'deleteCartModal' ~ item.id } %}
+{% block modal_full_content %}
+	{{ component('DeleteCartForm',{
+        cartId: cartId,
+        itemId: item.id
+    }) }}
+{% endblock %}
+{% endcomponent %}

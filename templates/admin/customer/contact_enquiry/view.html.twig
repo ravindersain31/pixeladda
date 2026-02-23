@@ -1,0 +1,71 @@
+{% extends 'admin/base.html.twig' %}
+{% block title %}view #{{ contactUs.id }} {% endblock %}
+{% block pageTitle %}
+	<div class="page-header-icon">
+		<i class="fas fa-dashboard"></i>
+	</div>
+	Enquiry view #{{ contactUs.id }}
+{% endblock %}
+
+{% block body %}
+	<div class="card card-header-actions mx-auto shadow-none">
+		<div class="card-header">
+			Enquiry ID: #{{ contactUs.id }}
+			<div>
+				<a href="{{ url('admin_contact_us') }}" class="btn btn-dark btn-sm">
+					<i class="fas fa-arrow-left me-2"></i>
+					List
+				</a>
+			</div>
+		</div>
+		<div class="card-body">
+			<table class="table table-hover">
+                <tbody>
+                    <tr>
+                        <th scope="row">Name</th>
+                        <td>{{ contactUs.name }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Email</th>
+                        <td>{{ contactUs.email }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Phone</th>
+                        <td>{{ contactUs.phone }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Comment</th>
+                        <td>{{ contactUs.comment }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Received On</th>
+                        <td>{{ contactUs.createdAt|date }}</td>
+                    </tr><tr>
+                        <th scope="row">Status</th>
+                        <td>
+                            <span class="badge {{ contactUs.isOpened ? 'bg-warning' : 'bg-success' }}">
+								{{ contactUs.isOpened ? 'OPEN' : 'CLOSED' }}
+							</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Website</th>
+                        <td>{{ contactUs.store.shortName | default('-') }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Completed On</th>
+                        <td>
+                            {% if contactUs.updatedAt is not null %}
+								{{ contactUs.updatedAt|date('Y-m-d H:i:s') }}
+							{% else %}
+								-
+							{% endif %}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+		</div>
+	</div>
+
+{% endblock %}
+

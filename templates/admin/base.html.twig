@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+{% set theme = themeColors() %}
+<html style="
+    --primary-color: {{ theme.primary }};
+    --primary-color-light: {{ theme.primaryColorLight }};
+    --secondary-color: {{ theme.secondary }};
+    --light-color: {{ theme.light }};
+    --background-color_1: {{ theme.background1 }};
+    --border: {{ theme.border }};
+">
+<head>
+    {% set storeInfo = storeInfo() %}
+    <meta charset="UTF-8">
+    <title>{% block title %}Yard Sign Plus{% endblock %}</title>
+    <link rel="icon" type="image/x-icon"
+        href="{{ asset(storeInfo.isPromoStore
+          ? 'app-images/logo/promo/favicon.ico'
+          : 'app-images/logo/favicon.ico') }}?v=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <script data-search-pseudo-elements defer
+            src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/js/all.min.js"
+            crossorigin="anonymous"></script>
+    <script type="text/javascript">
+        window.braintreeClientAuth = "{{ ysp.env('BRAINTREE_CLIENT_AUTH') }}"
+        window.googlePayEnv = "{{ ysp.env('GOOGLE_PAY_ENV') }}"
+        window.googleMerchantId = "{{ ysp.env('GOOGLE_PAY_MERCHANT_ID') }}"
+    </script>
+    {% block preStylesheets %}{% endblock %}
+    {% block stylesheets %}
+        {{ encore_entry_link_tags('admin') }}
+    {% endblock %}
+</head>
+{% set showFooter = true %}
+{% set containerClass = 'container-xl' %}
+{% set isFullScreen = false %}
+{% if fullScreen is defined and fullScreen == true %}
+    {% set showFooter = false %}
+    {% set isFullScreen = true %}
+    {% set containerClass = 'container-fluid' %}
+{% endif %}
+<body class="nav-fixed {% if isFullScreen and not isMobile() %}sidenav-toggled overlay-screen{% endif %}">
+{{ include('admin/common/header.html.twig') }}
+<div id="layoutSidenav">
+    <div id="layoutSidenav_nav">
+        {{ include('admin/common/sidebar.html.twig') }}
+    </div>
+    <div id="layoutSidenav_content" class="{% if isFullScreen %}m-0 p-0{% endif %}">
+        <main>
+            {% if not isFullScreen %}
+                <header class="page-header page-header-compact page-header-light border-bottom bg-white mb-4">
+                    <div class="{{ containerClass }} px-4">
+                        <div class="page-header-content">
+                            <div class="row align-items-center justify-content-between pt-3">
+                                <div class="col-auto mb-3">
+                                    <h1 class="page-header-title">
+                                        {% block pageTitle %}
+                                            <div class="page-header-icon">
+                                                <i class="fas fa-dashboard"></i>
+                                            </div>
+                                            Admin
+                                        {% endblock %}
+                                    </h1>
+                                </div>
+                                <div class="col-auto mb-3">
+                                    {% block pageTitleAction %}{% endblock %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </header>
+            {% endif %}
+            <div class="{{ containerClass }} {% if isFullScreen == false %}px-3 px-md-4 mt-4 overflow-auto{% else %}rounded-0 p-0{% endif %}">
+                {{ include('common/flash-dismissible.html.twig') }}
+                {% block body %}{% endblock %}
+            </div>
+        </main>
+        {% if showFooter %}
+{#            <footer class="footer-admin mt-auto footer-light">#}
+{#                {{ include('admin/common/footer.html.twig') }}#}
+{#            </footer>#}
+        {% endif %}
+    </div>
+</div>
+{% block preJavascripts %}{% endblock %}
+{% block javascripts %}{{ encore_entry_script_tags('admin') }}{% endblock %}
+{% block postJavascripts %}{% endblock %}
+<script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', function () {
+        if (typeof $ !== 'undefined') {
+            $(function () {
+                $('[data-toggle="tooltip"]').tooltip()
+            });
+        }
+    })
+    window.addEventListener('open:url:new-tab', (event) => {
+        window.open(event.detail.url, '_blank');
+    });
+</script>
+</body>
+</html>

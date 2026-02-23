@@ -1,0 +1,115 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Distributor List{% endblock %}
+
+{% block pageTitle %}
+<div class="page-header-icon">
+    <i class="fa-solid fa-users"></i>
+</div>
+Distributor
+{% endblock %}
+
+{% block body %}
+
+{% if isFilterFormSubmitted %}
+    Showing results for:
+    <div class="small">
+        {% if filterForm.vars.value.email %}
+            <span><b>Email: </b>{{ filterForm.vars.value.email }}</span>
+        {% endif %}
+        {% if filterForm.vars.value.phoneNumber %}
+            <span><b>Phone: </b>{{ filterForm.vars.value.phoneNumber }}</span>
+        {% endif %}
+    </div>
+{% endif %}
+
+{{ include('common/flash.html.twig') }}
+
+<div class="card card-header-actions mx-auto shadow-none" id="destributorIndex">
+    <div class="card-header">
+        List of Distributors
+        <div class="card-header-actions">
+            {{ include('admin/distributor/component/_filter_distributor.html.twig') }}
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="card-body table table-striped mb-0">
+            <thead>
+                <tr>
+                    <th>Sr.</th>
+                    <th>Company Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Status</th>
+                    <th>Created On</th>
+                    <th>Updated On</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for key, distributor in distributors %}
+                <tr>
+                    <td>{{ distributors.getPaginationData.firstItemNumber + loop.index - 1 }}</td>
+                    <td>{{ distributor.companyName }}</td>
+                    <td>{{ distributor.email }}</td>
+                    <td>{{ distributor.phoneNumber }}</td>
+                    <td>
+                        {% if distributor.status == 0 %}
+                            <span class="badge bg-success">{{ distributor.statusLabel }}</span>
+                        {% elseif distributor.status == 1 %}
+                            <span class="badge bg-warning">{{ distributor.statusLabel }}</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ distributor.createdAt ? distributor.createdAt|date('Y-m-d H:i') : '' }}</td>
+                    <td>{{ distributor.updatedAt ? distributor.updatedAt|date('Y-m-d H:i') : '' }}</td>
+                    <td class="text-right">
+                        {% if is_granted('admin_update_distributor_enquiry_status') %}
+                            {% if distributor.status == 0 %}
+                                <a class="btn btn-success btn-xs"
+                                href="{{ path('admin_update_distributor_enquiry_status', { id: distributor.id, status: 1 }) }}"
+                                onclick="return confirm('Are you sure to close this distributor request?')">
+                                Completed
+                                </a>
+                            {% elseif distributor.status == 1 %}
+                                <a class="btn btn-warning btn-xs"
+                                href="{{ path('admin_update_distributor_enquiry_status', { id: distributor.id, status: 0 }) }}"
+                                onclick="return confirm('Are you sure to re-open this distributor request?')">
+                                Reopen
+                                </a>
+                            {% endif %}
+                        {% endif %}
+
+                        <a class="btn btn-primary btn-xs"
+                           href="{{ path('admin_distributor_show',{id: distributor.id}) }}">View</a>
+
+                        {# DELETE FORM #}
+                        <form method="post"
+                            action="{{ path('admin_distributor_delete', { id: distributor.id }) }}"
+                            style="display:inline-block"
+                            onsubmit="return confirm('Are you sure you want to delete this distributor?');">
+
+                            <input type="hidden" name="_token"
+                                value="{{ csrf_token('delete_distributor_' ~ distributor.id) }}">
+
+                            <button class="btn btn-danger btn-xs">
+                                Delete
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="8">No records</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="mt-4">
+    {{ knp_pagination_render(distributors) }}
+</div>
+
+{% endblock %}

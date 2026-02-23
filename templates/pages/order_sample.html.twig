@@ -1,0 +1,59 @@
+{% extends 'base.html.twig' %}
+
+{% set title = metaData.title ?: metaData.pageTitle ~ ' - ' ~ storeInfo.storeTitle %}
+
+{% block title %}{{ title }}{% endblock %}
+{% block metaData %}
+    {% set pageUrl = url('order_sample') %}
+    {% set pageImageUrl = null %}
+
+    {% include 'common/_page_meta.html.twig' with {
+        title: title,
+        metaData: metaData,
+        pageUrl: pageUrl,
+        pageImageUrl: pageImageUrl,
+        storeInfo: storeInfo
+    } %}
+{% endblock %}
+{% block preStylesheets %}
+    {{ encore_entry_link_tags('order-sample') }}
+{% endblock %}
+{% block preJavascripts %}
+    {{ encore_entry_script_tags('order-sample') }}
+{% endblock %}
+{% block body %}
+    {{ include('common/common_mobile_bar.html.twig',{commonBarText: 'Order Online Or Call Now',commonBarTele: '+1-877-958-1499'}) }}
+    {{ include('common/breadcrumb.html.twig', { breadcrumbs: [
+        { name: 'Order Samples', active: true }
+    ]}) }}
+
+    <div class="container-lg container-fluid p-1">
+        <div class="order-sample">
+            <div class="d-flex justify-content-center align-items-center">
+                <h4 class="heading order-samples-title fs-1">Order Samples</h4>
+            </div>
+            <div class="text-center free-sample-alert-wrapper">
+                <b>*Free Samples:</b> Undamaged samples returned within 30 days of delivery will be issued a full
+                refund. Samples must return in original packaging. You are required to fulfill return shipping costs.
+                Please mention your order number on the package. For questions, please visit our
+                <a href="{{ url('contact_us') }}">Contact Us</a> page or message us on our
+                <a href="javascript:void(Tawk_API.toggle())">Live Chat</a>.
+            </div>
+            <div id="order-wire-stake-container" {{ react_component('OrderSample', {
+                    cart: cart,
+                    product: product,
+                    links: links,
+                    cartOverview: cartOverview,
+                    editData: editData,
+                    initialData: initialData
+                })}}>
+
+                <div class="loading-product-editor">
+                    <div class="d-flex justify-content-center align-items-center ">
+                        <img src="{{ asset(storeInfo.isPromoStore ? 'app-images/Loader-ysp.svg' : 'app-images/spinner.svg') }}" alt="Loading...">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,203 @@
+$ysp-purple: var(--primary-color);
+$light-gray: #f3f3f3;
+$dark-text: #1a1a1a;
+$hover-bg: #e0d2f5;
+$border-color: #ddd;
+$box-shadow-color: #000;
+
+.header-design-one{
+    background-color: $ysp-purple !important;
+}
+
+.health-care-worker {
+    padding: 0 1.5rem;
+
+    h3 {
+        font-family: "Montserrat", sans-serif;
+        font-size: 25px;
+        font-weight: 600;
+        color: $ysp-purple;
+    }
+
+    p {
+        font-family: "Montserrat", sans-serif;
+        font-size: 1rem;
+        line-height: 1.6;
+        color: #333;
+        margin-bottom: 1rem;
+    }
+
+    ul {
+        margin-left: 1rem;
+        padding-left: 1rem;
+        list-style-type: disc;
+        font-family: "Montserrat", sans-serif;
+
+        li {
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+
+            ul {
+                margin-top: 0.25rem;
+                margin-left: 1rem;
+                font-family: "Montserrat", sans-serif;
+
+                li {
+                    font-size: 0.9rem;
+                    color: #444;
+                }
+            }
+        }
+    }
+}
+
+.ysp-black {
+    color: $dark-text;
+}
+
+.ysp-heading-purple {
+    display: block;
+    text-align: center;
+    color: $ysp-purple;
+    font-weight: 600;
+    font-size: 2rem;
+}
+
+.health-care-worker-faqs {
+    .ysp-faq-wrapper {
+        h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: $ysp-purple;
+            font-size: 25px !important;
+            font-weight: 700 !important;
+        }
+
+        .accordion-button {
+            font-size: 1rem;
+            font-weight: 500;
+            background-color: #f8f8f8;
+            color: #333;
+            transition: all 0.2s ease;
+
+            &:focus {
+                box-shadow: none;
+            }
+
+            &:not(.collapsed) {
+                background-color: $ysp-purple;
+                color: #fff;
+            }
+        }
+
+        .accordion-body {
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: #555;
+        }
+    }
+}
+
+
+@media (max-width: 992px) {
+    .health-care-worker {
+        h3 {
+            font-size: 1.25rem;
+        }
+
+        ul li {
+            font-size: 0.9rem;
+        }
+    }
+
+    .health-care-worker-faqs {
+        .ysp-faq-wrapper {
+            h3 {
+                font-size: 1.2rem;
+            }
+
+            .accordion-button {
+                font-size: 0.95rem;
+                padding: 0.75rem;
+            }
+        }
+    }
+}
+
+@media (max-width: 768px) {
+    .health-care-worker {
+        padding: 0 1rem;
+
+        h3 {
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        p {
+            font-size: 0.9rem;
+        }
+
+        ul {
+            margin-left: 0.5rem;
+            padding-left: 0.5rem;
+
+            li {
+                font-size: 0.85rem;
+            }
+        }
+    }
+
+    .health-care-worker-faqs {
+        .ysp-faq-wrapper {
+            h3 {
+                text-align: center;
+            }
+
+            .accordion-button {
+                font-size: 0.9rem;
+            }
+
+            .accordion-body {
+                font-size: 0.85rem;
+            }
+        }
+    }
+}
+
+@media (max-width: 576px) {
+    .header-design-one h2.heading {
+        font-size: 1.3rem !important;
+        padding: 8px !important;
+        text-align: center;
+    }
+
+    .health-care-worker {
+        margin-left: 0;
+        padding: 0 0.75rem;
+
+        h3 {
+            font-size: 1rem;
+            text-align: center;
+        }
+
+        p {
+            font-size: 0.85rem;
+        }
+
+        ul li {
+            font-size: 0.8rem;
+        }
+    }
+    .health-care-worker-faqs {
+        .ysp-faq-wrapper {
+            .accordion-button {
+                font-size: 0.85rem;
+                padding: 0.5rem;
+            }
+
+            .accordion-body {
+                font-size: 0.8rem;
+            }
+        }
+    }
+}

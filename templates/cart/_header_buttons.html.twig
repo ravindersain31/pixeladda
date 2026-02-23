@@ -1,0 +1,79 @@
+<div class="cart-header-actions">
+    {# <a title="Hide" type="button" data-bs-toggle="collapse"
+            data-bs-target="#cartItem{{ item.id }}" aria-expanded="true"
+            aria-controls="cartItem{{ item.id }}">
+       <i class="far fa-eye-slash"></i>
+    </a> #}
+    {% if not item.dataKey('isSample') and not item.dataKey('isWireStake') and not item.dataKey('isBlankSign') %}
+        <a title="Preview" href="{{ url('cart_item_preview', {
+            cartId: cartId,
+            itemId: item.itemId
+        }) }}" type="button">
+            <i class="fa fa-eye" aria-hidden="true"></i>
+        </a>
+    {% endif %}
+    {% if item.dataKey('isSample') %}
+        <a title="Edit" href="{{ url('order_sample', {
+            cartId: cartId,
+            itemId: item.id
+        }) }}" type="button">
+            <i class="fa fa-edit" aria-hidden="true"></i>
+        </a>
+    {% elseif item.dataKey('isWireStake') %}
+        <a title="Edit" href="{{ url('order_wire_stake', {
+            cartId: cartId,
+            itemId: item.id
+        }) }}" type="button">
+            <i class="fa fa-edit" aria-hidden="true"></i>
+        </a>
+    {% elseif item.dataKey('isBlankSign') %}
+        <a title="Edit" href="{{ url('order_blank_sign', {
+            cartId: cartId,
+            itemId: item.id
+        }) }}" type="button">
+            <i class="fa fa-edit" aria-hidden="true"></i>
+        </a>
+    {% else %}
+        {% if item.data.isCustomSize is defined and item.data.isCustomSize and item.data.customSize.sku is defined %}
+        {% if item.data['isCustom'] and item.data.isCustomSize or item.data['isSample'] is defined  %}
+            {% set product = ysp.getDefaultCustomProduct('CUSTOM') %}
+        {% else %}
+            {% set product = ysp.getDefaultCustomProduct(item.data.customSize.sku) %}
+        {% endif %}
+            <a title="Edit" href="{{ url('editor', {
+                category: product.primaryCategory.slug,
+                productType: product.productType.slug,
+                sku: product.sku,
+                cartId: cartId,
+                itemId: item.id,
+                variant: item.data.templateSize.width ~ 'x' ~ item.data.templateSize.height,
+                qty: item.quantity,
+            }) }}" type="button">
+                <i class="fa fa-edit" aria-hidden="true"></i>
+            </a>
+        {% else %}
+            <a title="Edit" href="{{ url('editor', {
+                category: product.primaryCategory.slug,
+                productType: product.productType.slug,
+                sku: product.sku,
+                cartId: cartId,
+                itemId: item.id
+            }) }}" type="button">
+                <i class="fa fa-edit" aria-hidden="true"></i>
+            </a>
+        {% endif %}
+    {% endif %}
+    {# <form class="d-inline" method="post" action="{{ url('remove_item_from_cart') }}">
+        <input type="hidden" name="cartId" value="{{ cartId }}">
+        <input type="hidden" name="itemId" value="{{ item.id }}">
+        <input type="hidden" name="action" value="remove">
+        <button class="btn btn-primary btn-sm" type="submit"
+                onclick="return confirm('Are you sure to delete this item from cart?')">
+            Remove
+        </button>
+    </form> #}
+    <button title="Delete" class="delete-cart-modal" data-bs-toggle="modal"
+       data-bs-target="#deleteCartModal{{ item.id }}" type="button">
+        <i class="fa fa-trash" aria-hidden="true"></i>
+    </button>
+</div>

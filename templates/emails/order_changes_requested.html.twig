@@ -1,0 +1,26 @@
+{% extends 'emails/base.html.twig' %}
+{% block title %}You requested the changes in Proof{% endblock %}
+{% block subject %}YOU REQUESTED THE CHANGES IN PROOF{% endblock %}
+{% block body %}
+    <tr>
+        <td colspan="3">
+            <p style="font-size: 26px; font-weight: bold; color: #000000; padding: 0 50px; margin: 10px 0 10px;"
+               class="user-name">Hi
+                {{ order.billingAddress.firstName }} {{ order.billingAddress.lastName }}</p>
+            <p class="off-desc ys-mob-ryt-lft-pad15 request-recevie-info"
+               style="font-size: 20px; color: #000000; padding: 0 50px; line-height: 135%; margin: 15px 0 20px;">
+                We have received your request to make changes on the Proof. We have forwarded this to our Design
+                Experts.<br/> You will receive an updated version of the proof today.
+            </p>
+            <p class="proof-approve-info" style="font-size:25px; font-weight: bold;">YOUR ORDER WILL NOT BE PRODUCED UNTIL PROOF IS APPROVED.</p>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="3" class="req-change">
+            {% include 'emails/common/_order_info_table.html.twig' %}
+        </td>
+    </tr>
+{% endblock %}
+
+
+

@@ -1,0 +1,54 @@
+<div id="saved-cards-container" class="mt-3">
+    {% if savedCards|length %}
+        <div class="saved-cards-wrap">
+            <h6 class="fw-bold mb-3">Saved Cards</h6>
+
+            <div class="saved-cards" {% if savedCards|length > 1 %}style="max-height: 200px; overflow-y: auto;"{% endif %}>
+                {% for card in savedCards %}
+                    {{ include('/checkout/saved-cards/_card.html.twig', { card: card }) }}
+                {% endfor %}
+            </div>
+
+            <button
+                type="button"
+                class="btn btn-ysp-outline d-flex align-items-center justify-content-center gap-2 mt-3 btn-sm"
+                data-action="saved-braintree-cards-checkout#selectNewCard">
+                <i class="fas fa-plus"></i> Add new card
+            </button>
+
+            <input
+                type="radio"
+                name="saved_card"
+                value="new"
+                class="d-none"
+                data-saved-braintree-cards-checkout-target="newCardRadio">
+        </div>
+    {% endif %}
+
+    <div
+        id="braintree-dropin"
+        class="d-none mt-3"
+        data-saved-braintree-cards-checkout-target="dropin">
+    </div>
+
+    <div
+        class="save-braintree-card-check d-none mt-3"
+        data-saved-braintree-cards-checkout-target="saveOption">
+        <div class="form-check p-0">
+            {{ form_widget(form.saveCard, {
+                attr: {
+                    class: 'form-check-input',
+                    'data-saved-braintree-cards-checkout-target': 'saveCheckbox'
+                }
+            }) }}
+
+            {{ form_label(form.saveCard, null, {
+                label_attr: { class: 'form-check-label' }
+            }) }}
+        </div>
+
+        <span class="fs-14 text-muted">
+            Your payment information will be securely saved in your <a href="{{ path('my_account') }}" target="_blank">My Account</a> and will automatically populate the payment method section at checkout when logged in.
+        </span>
+    </div>
+</div>

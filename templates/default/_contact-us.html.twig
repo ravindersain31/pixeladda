@@ -1,0 +1,128 @@
+{% set contactUsForm = createFormView('App\\Form\\Page\\ContactUsType') %}
+{{ form_start(contactUsForm, { attr: {'validation' : 'jquery-contact-us'}}) }}
+    {{ form_errors(contactUsForm) }}
+<div class="ysp-ft-form-wrapper" id="top_footer_form">
+    <div class="contact-us-message-wrapper"></div>
+    <div class="form-group">
+        {{ form_row(contactUsForm.name) }}
+        {{ form_errors(contactUsForm.name) }}
+    </div>
+
+    <div class="form-group">
+        {{ form_row(contactUsForm.email) }}
+        {{ form_errors(contactUsForm.email) }}
+    </div>
+    <div class="form-group">
+        {{ form_row(contactUsForm.telephone) }}
+        {{ form_errors(contactUsForm.telephone) }}
+    </div>
+
+    <div class="form-group">
+        {{ form_row(contactUsForm.comment) }}
+        {{ form_errors(contactUsForm.comment) }}
+    </div>
+
+    {% if contactUsForm.recaptcha is defined %}
+        <div class="form-group">
+            {{ form_row(contactUsForm.recaptcha) }} 
+            {{ form_errors(contactUsForm.recaptcha) }}
+        </div>
+    {% endif %}
+
+    <div class="form-group mb-sm-1 form-group-submit">
+        <button type="submit" class="btn btn-dark">Submit</button>
+    </div>
+</div>
+
+{{ form_end(contactUsForm) }}
+
+<script>
+    window.addEventListener('DOMContentLoaded', function () {
+        const recaptchaContactUs = $(`[validation="jquery-contact-us"] [id^="recaptcha_render_box_"]`);
+        const recaptchaIdContactUs = recaptchaContactUs.attr('id') || null; 
+            $.validator.addMethod(
+                "noEmoji",
+                function (value) {
+                    return window.hasNoEmoji(value);
+                },
+                "Emojis are not allowed."
+            );
+
+        $('[validation="jquery-contact-us"]').validate({
+            rules: {
+                'contact_us[name]': {
+                    required: true,
+                    noEmoji: true
+                },
+                'contact_us[email]': {
+                    required: true,
+                    email: true,
+                    noEmoji: true
+                },
+                'contact_us[comment]': {
+                    required: true,
+                    noEmoji: true
+                },
+                'contact_us[telephone]': {
+                    required: true,
+                    pattern: /^\s*(?:\+?(\d{1,3}))?[-. (]*(\d{3})[-. )]*(\d{3})[-. ]*(\d{4})(?: *x(\d+))?\s*$/,
+                },
+            },
+            messages: {
+                'contact_us[name]': {
+                    required: 'Please enter your name',
+                    noEmoji: 'Emojis are not allowed in name',
+                },
+                'contact_us[email]': {
+                    required: 'Please enter your email',
+                    email: 'Please enter a valid email address',
+                    noEmoji: 'Emojis are not allowed in email',
+                },
+                'contact_us[telephone]': {
+                    required: 'Please enter your phone number',
+                    pattern: 'Please enter a valid phone number',
+                },
+                'contact_us[comment]': {
+                    required: 'Please enter your comment',
+                    noEmoji: 'Emojis are not allowed in comment',
+                },
+            },
+            submitHandler: function (form) {
+                $(form).find('button[type="submit"]').attr('disabled', true);
+                $(form).find('button[type="submit"]').text('Processing...');
+                $.ajax('{{ url('form_contact_us') }}', {
+                    method: 'POST',
+                    data: $(form).serialize(),
+                    success: function (response) {
+                        if (response.success) {
+                            $('.contact-us-message-wrapper').html(`<div class="alert alert-success">${response.message}</div>`);
+                            $(form)[0].reset();
+                            resetSpecificRecaptcha(recaptchaIdContactUs);
+                        } else {
+                            let messages = '';
+                            if (response.errors.length > 0) {
+                                response.errors.forEach(function (message) {
+                                    messages += `<div class="alert alert-danger">${message}</div>`;
+                                });
+                            } else {
+                                messages = `<div class="alert alert-danger">${response.message}</div>`;
+                            }
+                            $('.contact-us-message-wrapper').html(messages);
+                        }
+                        setTimeout(function () {
+                            $('.contact-us-message-wrapper').html('');
+                        }, 5000);
+
+                        $(form).find('button[type="submit"]').attr('disabled', false);
+                        $(form).find('button[type="submit"]').text('Submit');
+                    },
+                    error: function () {
+                        $(form).find('button[type="submit"]').attr('disabled', false);
+                        $(form).find('button[type="submit"]').text('Submit');
+                    }
+                });
+                // form.submit();
+            }
+        });
+    });
+</script>

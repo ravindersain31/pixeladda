@@ -1,0 +1,31 @@
+<div {{ attributes }}>
+
+    {{ form_start(form, { attr: {'data-order-id': order.orderId, requirePayment: 'yes' }}) }}
+    {% if data.showPaymentOption %}
+        {{ include('account/order/_payment_method.html.twig') }}
+    {% endif %}
+    <div class="d-flex justify-content-center align-items-center flex-column mt-4">
+        {% if data.showPaymentOption is not defined or data.showPaymentOption == null %}
+            {{ form_row(form.agreeTerms) }}
+        {% endif %}
+        {{ form_row(form.submit, {
+            attr: {
+                'data-action': 'saved-braintree-cards-checkout#submit',
+                'data-saved-braintree-cards-checkout-target': 'submitButton'
+            }
+        }) }}
+    </div>
+    {{ form_end(form) }}
+</div>
+<script>
+    var seeDesignPayLater = document.querySelector(".SEE_DESIGN_PAY_LATER");
+    var creditCard = document.querySelector(".CREDIT_CARD");
+
+    if(seeDesignPayLater){
+        seeDesignPayLater.addEventListener('change', function() {
+            if (this.checked) {
+                creditCard.click();
+            }
+        });
+    }
+</script>

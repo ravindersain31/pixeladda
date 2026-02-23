@@ -1,0 +1,188 @@
+<div class="fixed-table-responsive invoice-orders-fixed-table-responsive">
+    <div class="fixed-table-responsive table-responsive">
+        <table class="table table-bordered fw-500">
+            <thead>
+            <tr>
+                <th class="fit-to-cell" style="z-index: 4">Sr</th>
+                <th class="fit-to-cell" style="z-index: 4">Order Id</th>
+                <th class="fit-to-cell">Order Date</th>
+                <th class="fit-to-cell text-end">Order Total</th>
+                <th class="fit-to-cell text-end">Material Cost</th>
+                <th class="fit-to-cell text-end">Warehouse Labor</th>               
+                <th class="fit-to-cell text-end">Ads Cost</th>
+                <th class="fit-to-cell text-end">Shipping Charges</th>
+                <th class="fit-to-cell text-end">Shipping Adjustment</th>
+                <th class="fit-to-cell text-end">Shipping Total</th>
+                <th class="fit-to-cell text-end">Profit/Loss</th>
+                <th class="fit-to-cell text-end">Gross Margin</th>
+                <th class="fit-to-cell text-end">Net Margin</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            {% set totalShippingCharges = 0 %}
+            {% set totalShippingAdjustment = 0 %}
+            {% set totalShippingTotal = 0 %}
+            {% set totalReceivedAmount = 0 %}
+            {% set totalLaborCost = 0 %}
+            {% set totalAdsCost = 0 %}
+            {% set totalMaterialCost = 0 %}
+            {% set totalShippingCost = 0 %}
+            {% set totalProfitAndLoss = 0 %}
+            {% set totalPaymentLinkAmountReceived = 0 %}
+            {% set totalRefunded = 0 %}
+
+            {% for order in orders|default([]) %}
+                {% set grossMarginPercentage = order.grossMarginPercentage|default(0) %}
+                {% set netMarginPercentage = order.netMarginPercentage|default(0) %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td class="fit-to-cell">
+                        <a href="{{ url('admin_order_overview', {orderId: order.orderId}) }}" target="_blank">
+                            {{ order.orderId }}
+                        </a>
+                    </td>
+                    <td class="fit-to-cell">{{ order.orderAt | date('M d, Y h:i A') }}</td>
+                    <td class="text-end">${{ order.totalReceivedAmount|default(0)|number_format(2) }}</td> 
+                    <td class="text-end">${{ order.materialCost.totalMaterialCost|default(0)|number_format(2) }}</td> 
+                    <td class="text-end">${{ order.totalLaborCost|default(0)|number_format(2) }}</td> 
+                    <td class="text-end">${{ order.weightedAdsCost|default(0)|number_format(2) }}</td> 
+                    <td class="text-end">${{ order.shippingCosts.shippingCharges|default(0)|number_format(2) }}</td> 
+                    <td class="text-end">${{ order.shippingCosts.shippingAdjustment|default(0)|number_format(2) }}</td> 
+                    <td class="text-end">${{ order.shippingCosts.shippingTotal|default(0)|number_format(2) }}</td>                         
+                    <td class="text-end">${{ order.profitAndLoss|default(0)|number_format(2) }}</td>                         
+                    <td class="text-end" style="
+                        {% if grossMarginPercentage > 55 %}
+                            background-color:rgba(0, 255, 0, 0.45);
+                        {% elseif grossMarginPercentage > 30 and grossMarginPercentage < 55 %}
+                            background-color:rgba(0, 255, 0, 0.3);
+                        {% elseif grossMarginPercentage > 20 and grossMarginPercentage < 30 %}
+                            background-color:rgba(255, 255, 0, 0.3);
+                        {% elseif grossMarginPercentage < 20 and grossMarginPercentage > 0 %}
+                            background-color:rgba(255, 0, 0, 0.2);
+                        {% else %}
+                            background-color:rgba(255, 0, 0, 0.6);
+                        {% endif %}
+                    ">
+                        ${{ order.grossMargin|default(0)|number_format(2) }}<br>
+                        ({{ grossMarginPercentage|number_format(2) }}%)
+                    </td>                         
+                    <td class="text-end" style="
+                        {% if netMarginPercentage > 55 %}
+                            background-color:rgba(0, 255, 0, 0.45);
+                        {% elseif netMarginPercentage > 30 and netMarginPercentage < 55 %}
+                            background-color:rgba(0, 255, 0, 0.3);
+                        {% elseif netMarginPercentage > 20 and netMarginPercentage < 30 %}
+                            background-color:rgba(255, 255, 0, 0.3);
+                        {% elseif netMarginPercentage < 20 and netMarginPercentage > 0 %}
+                            background-color:rgba(255, 0, 0, 0.2);
+                        {% else %}
+                            background-color:rgba(255, 0, 0, 0.6);
+                        {% endif %}
+                    ">
+                        ${{ order.netMargin|default(0)|number_format(2) }}<br>
+                        ({{ netMarginPercentage|number_format(2) }}%)
+                    </td> 
+                </tr>
+
+                {% set totalShippingCharges = totalShippingCharges + order.shippingCosts.shippingCharges|default(0) %}
+                {% set totalShippingAdjustment = totalShippingAdjustment + order.shippingCosts.shippingAdjustment|default(0) %}
+                {% set totalShippingCost = totalShippingCost + order.totalShippingCost|default(0) %}
+                {% set totalMaterialCost = totalMaterialCost + order.materialCost.totalMaterialCost|default(0) %}
+                {% set totalReceivedAmount = totalReceivedAmount + order.totalReceivedAmount|default(0) %}
+                {% set totalLaborCost = totalLaborCost + order.totalLaborCost|default(0) %}
+                {% set totalAdsCost = totalAdsCost + order.weightedAdsCost|default(0) %}
+                {% set totalProfitAndLoss = totalProfitAndLoss + order.profitAndLoss|default(0) %}
+                {% set totalPaymentLinkAmountReceived = totalPaymentLinkAmountReceived + order.paymentLinkAmountReceived %}
+                {% set totalRefunded = totalRefunded + order.refundedAmount %}
+
+            {% else %}
+                <tr>
+                    <td colspan="13" class="text-center text-muted">No records found!</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr class="fw-bold">
+                    <td colspan="3" class="text-end">Total</td>
+                    <td class="fit-to-cell text-end">
+                        <span class="badge bg-success">SUM</span>
+                        ${{ totalReceivedAmount|number_format(2) }}
+                    </td>
+                    <td class="fit-to-cell text-end">
+                        <span class="badge bg-success">SUM</span>
+                        ${{ totalMaterialCost|number_format(2) }}
+                    </td>
+                    <td class="fit-to-cell text-end">
+                        <span class="badge bg-success">SUM</span>
+                        ${{ totalLaborCost|number_format(2) }}
+                    </td>
+                    <td class="fit-to-cell text-end">
+                        <span class="badge bg-success">SUM</span>
+                        ${{ totalAdsCost|number_format(2) }}
+                    </td>
+                    <td class="fit-to-cell text-end">
+                        <span class="badge bg-success">SUM</span>
+                        ${{ totalShippingCharges|number_format(2) }}
+                    </td>
+                    <td class="fit-to-cell text-end">
+                        <span class="badge bg-success">SUM</span>
+                        ${{ totalShippingAdjustment|number_format(2) }}
+                    </td>
+                    <td class="fit-to-cell text-end">
+                        <span class="badge bg-success">SUM</span>
+                        ${{ totalShippingCost|number_format(2) }}
+                    </td>
+                    <td class="text-end" data-toggle="tooltip" title="P/L =  Paid Sale - (Refunds + Shipping + Material + Weighted Ads + Labor)">
+                        <span class="badge bg-success">SUM</span>
+                        ${{ totalProfitAndLoss|number_format(2) }}
+                    </td>
+                    {% set grossMargin = (totalReceivedAmount + totalPaymentLinkAmountReceived) - (totalShippingCost + totalRefunded + totalMaterialCost + totalLaborCost) %}
+                    <td class="text-end" data-toggle="tooltip" title="Gross = Paid Sales - (Shipping + Refunds + Material + Labor)" style="
+                        {% if grossMargin > 55 %}
+                            background-color:rgba(0, 255, 0, 0.45);
+                        {% elseif grossMargin > 30 and grossMargin < 55 %}
+                            background-color:rgba(0, 255, 0, 0.3);
+                        {% elseif grossMargin > 20 and grossMargin < 30 %}
+                            background-color:rgba(255, 255, 0, 0.3);
+                        {% elseif grossMargin < 20 and grossMargin > 0 %}
+                            background-color:rgba(255, 0, 0, 0.2);
+                        {% else %}
+                            background-color:rgba(255, 0, 0, 0.6);
+                        {% endif %}
+                    ">
+                        <span class="badge bg-secondary">GM</span>
+                        ${{ grossMargin|number_format(2) }}<br/>
+                        {% if (totalReceivedAmount + totalPaymentLinkAmountReceived) != 0 %}
+                            ({{ ((grossMargin / (totalReceivedAmount + totalPaymentLinkAmountReceived)) * 100) | number_format(2) }}%)
+                        {% else %}
+                            (0%)
+                        {% endif %}
+                    </td>
+                    {% set netMargin = (totalReceivedAmount + totalPaymentLinkAmountReceived) - (totalShippingCost + totalRefunded + totalMaterialCost + totalLaborCost + totalAdsCost) %}
+                    <td class="text-end" data-toggle="tooltip" title="Net = Paid Sales - (Shipping + Refunds + Material + Labor + Weighted Ads)" style="
+                        {% if netMargin > 55 %}
+                            background-color:rgba(0, 255, 0, 0.45);
+                        {% elseif netMargin > 30 and netMargin < 55 %}
+                            background-color:rgba(0, 255, 0, 0.3);
+                        {% elseif netMargin > 20 and netMargin < 30 %}
+                            background-color:rgba(255, 255, 0, 0.3);
+                        {% elseif netMargin < 20 and netMargin > 0 %}
+                            background-color:rgba(255, 0, 0, 0.2);
+                        {% else %}
+                            background-color:rgba(255, 0, 0, 0.6);
+                        {% endif %}
+                    ">
+                        <span class="badge bg-secondary">NM</span>
+                        ${{ netMargin|number_format(2) }}<br/>
+                        {% if (totalReceivedAmount + totalPaymentLinkAmountReceived) != 0 %}
+                            ({{ ((netMargin / (totalReceivedAmount + totalPaymentLinkAmountReceived)) * 100) | number_format(2) }}%)
+                        {% else %}
+                            (0%)
+                        {% endif %}
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>

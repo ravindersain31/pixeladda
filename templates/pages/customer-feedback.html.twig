@@ -1,0 +1,63 @@
+{% extends 'base.html.twig' %}
+
+{% set title = metaData.title ?: metaData.pageTitle ~ ' - ' ~ storeInfo.storeTitle %}
+
+{% block title %}{{ title }}{% endblock %}
+{% block metaData %}
+    {% set pageUrl = url('customer_feedback') %}
+    {% set pageImageUrl = storeInfo.isPromoStore 
+        ? 'https://static.yardsignplus.com/storage/promo-store/Customer-Feedback-Banner-Mobile.webp' 
+        : 'https://static.yardsignplus.com/customer-feedback_20230104-ffce6c10-8c29-11ed-969e-3dd8722216a6.png'
+     %}
+
+    {% include 'common/_page_meta.html.twig' with {
+        title: title,
+        metaData: metaData,
+        pageUrl: pageUrl,
+        pageImageUrl: pageImageUrl,
+        storeInfo: storeInfo
+    } %}
+{% endblock %}
+{% block body %}
+    {{ include('common/common_mobile_bar.html.twig',{commonBarText: 'Order Online Or Call Now',commonBarTele: '+1-877-958-1499'}) }}
+    <div class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <picture>
+                    <source srcset="{{ storeInfo.isPromoStore ? 'https://static.yardsignplus.com/storage/promo-store/Customer-Feedback-Banner-Mobile.webp' : 'https://static.yardsignplus.com/customer-feedback_20230104-ffce6c10-8c29-11ed-969e-3dd8722216a6.png'}}"
+                            media="(max-width: 765px)">
+                    <img fetchpriority="high" width="1905" height="338" class="d-block w-100 h-auto"
+                         src="{{ storeInfo.isPromoStore ? 'https://static.yardsignplus.com/storage/promo-store/Customer-Feedback-Banner-Desktop.webp' : 'https://static.yardsignplus.com/customer-feedback_20221226-43901480-84e4-11ed-8e16-13a3485bc7e4.jpg'}}"
+                         alt="YSP Customer Reviews Banner">
+                </picture>
+            </div>
+        </div>
+    </div>
+    {{ include('common/highlights.html.twig') }}
+    {{ include('common/breadcrumb.html.twig', { breadcrumbs: [
+        { name: 'Customer Reviews', active: true }
+    ]}) }}
+    <div class="container pt-3 pt-md-4">
+        <div id="shopper_review_page">
+            <div id="review_header"></div>
+            <div id="merchant_page"></div>
+            <div id="review_image"><a href="https://www.shopperapproved.com/reviews/yardsignplus.com/"
+                                      target="_blank" rel="nofollow"></a></div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        var sa_review_count = 5;
+        var sa_date_format = 'F j, Y';
+
+        function saLoadScript(src) {
+            var js = window.document.createElement("script");
+            js.src = src;
+            js.type = "text/javascript";
+            document.getElementsByTagName("head")[0].appendChild(js);
+        }
+
+        saLoadScript("https://www.shopperapproved.com/merchant/36686.js");
+    </script>
+
+{% endblock %}

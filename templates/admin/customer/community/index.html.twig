@@ -1,0 +1,62 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Community Uploads
+{% endblock %}
+{% block pageTitle %}
+	<div class="page-header-icon">
+		<i class="fas fa-list"></i>
+	</div>
+	Community Uploads
+{% endblock %}
+
+{% block body %}
+	<div class="card card-header-actions mx-auto shadow-none">
+		<div class="card-header">
+			List of Community Uploads
+		</div>
+		<div class="table-responsive">
+			<table class="card-body table table-striped mb-0">
+				<thead>
+					<tr>
+						<th>Sr.</th>
+						<th>Website</th>
+						<th>Name</th>
+						<th>Comment</th>
+						<th>Photos</th>
+						<th class='text-nowrap'>Updated At / Added At</th>
+						<th>Action</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for key,photo in communityUploads %}
+						<tr>
+							<td>{{ key + 1 }}</td>
+							<td>{{ photo.store.shortName | default('-') }}</td>
+							<td>{{ photo.name | default('-') }}</td>
+							<td class="w-25">{{ photo.comment }}</td>
+							<td><img src="{% if photo.photo.name is null %}https://placehold.co/400x400?text=Awating+Image{% else %}{{ vich_s3.asset(photo, 'photoFile') }}{% endif %}" width="100px"></td>
+							<td>{{ photo.updatedAt|date }} / <br>{{ photo.createdAt|date }}</td>
+							<td>
+								{% set toggleStatus =  photo.isEnabled ? 1 : 0  %}
+								<a href="{{ path('admin_community_uploads_status', { id:photo.id,status: toggleStatus }) }}" class="btn btn-{{ toggleStatus ? 'success' : 'warning' }} btn-xs">
+									{{ toggleStatus ? 'Enabled' : 'Disabled' }}
+								</a>
+								<a href="{{ path('admin_community_uploads_remove',{id:photo.id}) }}" class="btn btn-danger btn-xs mt-1 mt-md-0"><i class="fas fa-trash me-1"></i>Delete</a>
+							</td>
+						</tr>
+					{% else %}
+						<tr>
+							<td colspan="6">No records</td>
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+		
+	</div>
+
+	<div class="mt-4">
+		{{ knp_pagination_render(communityUploads) }}
+	</div>
+{% endblock %}
+

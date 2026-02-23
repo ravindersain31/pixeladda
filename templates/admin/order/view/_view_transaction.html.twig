@@ -1,0 +1,41 @@
+<button class="btn btn-primary btn-xs text-nowrap" type="button" data-bs-toggle="offcanvas"
+        data-bs-target="#offcanvasTransactionView_{{ transaction.id }}"
+        aria-controls="offcanvasTransactionView_{{ transaction.id }}">
+            View
+    {% if transaction.status != 'REFUNDED' and transaction.status in ['COMPLETED', 'PARTIALLY_REFUNDED'] %}
+        / Refund
+    {% endif %}
+</button>
+<div class="offcanvas  text-start offcanvas-end" tabindex="-1" id="offcanvasTransactionView_{{ transaction.id }}"
+     aria-labelledby="offcanvasTransactionViewLabel_{{ transaction.id }}">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="offcanvasTransactionViewLabel_{{ transaction.id }}">View
+            {% if transaction.status != 'REFUNDED' and transaction.status in ['COMPLETED', 'PARTIALLY_REFUNDED'] %}
+                / Refund
+            {% endif %}
+            #{{ transaction.transactionId | upper }}</h5>
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        {{ include('admin/order/view/_view_transaction_info.html.twig') }}
+        {{ include('admin/order/view/_refunded_transaction.html.twig') }}
+        <div class="text-center">
+            <a href="{{ storeBasedUrl(url('payment_link', {requestId: transaction.transactionId}), order.storeDomain) }}" target="_blank">
+                Payment Link
+            </a>
+        </div>
+        <div class="notes">
+            {% if transaction.metaDataKey('internalNote') %}
+                <h5>Internal Notes</h5>
+                <div class="mb-2">{{ transaction.metaDataKey('internalNote') | raw }}</div>
+            {% endif %}
+            {% if transaction.metaDataKey('customerNote') %}
+                <h5>Customer Notes</h5>
+                <div class="mb-2">{{ transaction.metaDataKey('customerNote') | raw }}</div>
+            {% endif %}
+        </div>
+        {% if transaction.status in ['COMPLETED', 'PARTIALLY_REFUNDED'] %}
+            {{ component('RefundTransactionForm', { order: order, transaction: transaction }) }}
+        {% endif %}
+    </div>
+</div>

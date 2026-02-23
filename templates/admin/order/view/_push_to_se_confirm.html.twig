@@ -1,0 +1,61 @@
+<div class="modal fade push-to-se" data-bs-backdrop="false" id="push_to_se_{{ order.orderId }}" tabindex="-1"
+     aria-labelledby="push_to_se_{{ order.orderId }}_label" aria-hidden="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header p-2">
+                <h5 class="modal-title h-auto" id="push_to_se_{{ order.orderId }}_label">
+                    Push to Shippingeasy Order
+                    <a href="{{ url('admin_order_overview', {orderId: order.orderId}) }}"
+                       target="_blank">
+                        #{{ order.orderId }}
+                    </a>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-start p-0">
+                <table class="table table-striped mb-0">
+                    <tbody>
+                    <tr>
+                        <th>Order Status</th>
+                        <td>{{ enum.orderStatusLabel(order.status) }}</td>
+                    </tr>
+                    <tr>
+                        <th>Payment Status</th>
+                        <td>{{ enum.paymentStatusLabel(order.paymentStatus) }}</td>
+                    </tr>
+                    <tr>
+                        <th>Proof Approved</th>
+                        <td>
+                            {% if order.approvedProof %}
+                                <span class="badge bg-success">Yes</span>
+                                <a href="{{ vich_s3.asset(order.approvedProofFile, 'fileObject') }}"
+                                   class="small" target="_blank">
+                                    <span class="badge bg-light text-dark">
+                                        <i class="fa fa-external-link"></i> View
+                                    </span>
+                                </a>
+                            {% else %}
+                                <span class="badge bg-warning">No</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="p-2">
+                    <div class="alert alert-warning p-2 text-wrap mb-1">
+                        Are you sure you want to push this order to ShippingEasy?
+                        <br/>Please ensure that payment has been received and proof has been approved for this order.
+                        <br/>Also, ensure the production is completed for this order before pushing to ShippingEasy.
+                    </div>
+                    <a href="{{ url('admin_order_push_to_shipping_easy', { orderId: order.orderId, from }) }}"
+                       class="btn btn-primary btn-sm">
+                        Yes, I confirm, Push to SE
+                    </a>
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

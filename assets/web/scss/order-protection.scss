@@ -1,0 +1,185 @@
+$ysp-purple: var(--primary-color);
+$light-gray: #f3f3f3;
+$dark-text: #1a1a1a;
+$hover-bg: var(--background-color_2);
+$border-color: #ddd;
+$shadow-color: rgba(0, 0, 0, 0.15);
+
+.header-design-one {
+    background-color: $ysp-purple
+}
+
+.heading-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #fff;
+    padding: 12px !important;
+    text-shadow: -4px 4px 4px #000;
+    font-style: italic;
+    text-transform: uppercase;
+}
+
+.ysp-order-protection {
+    h3 {
+        font-size: 1.1rem;
+        color: $ysp-purple;
+        font-weight: 700 !important;
+    }
+
+    .sub-heading {
+        font-size: 1.125rem;
+        color: $dark-text;
+    }
+}
+
+.additional-services {
+    font-size: 1.5rem;
+    font-weight: 600 !important;
+    color: $dark-text !important;
+}
+
+.ysp-benefit-icon-bg,
+.step-icon-bg,
+.addition-icon-bg {
+    background-color: $ysp-purple;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    min-width: 40px;
+    min-height: 40px;
+}
+
+.category-card {
+    background-color: #fff;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: 1px solid $border-color;
+    border-radius: 10px;
+
+    &:hover {
+        background-color: $hover-bg;
+        transform: translateY(-4px);
+        box-shadow: 0 8px 16px $shadow-color;
+    }
+
+    svg {
+        transition: transform 0.3s ease;
+    }
+
+    &:hover svg {
+        transform: scale(1.05);
+    }
+}
+
+.ysp-benefit-icon-bg,
+.step-icon-bg,
+.addition-icon-bg {
+    background-color: $ysp-purple;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    width: 40px;
+    height: 40px;
+
+    svg {
+        stroke: #fff;
+    }
+}
+
+.icon-box,
+.order-protection-icon {
+    width: 48px;
+    height: 48px;
+    flex-shrink: 0;
+    object-fit: contain;
+}
+
+.shop-now-btn {
+    min-width: 160px;
+    text-align: center;
+}
+
+@media (max-width: 576px) {
+
+    .icon-box,
+    .order-protection-icon {
+        width: 36px;
+        height: 36px;
+    }
+
+    .shop-now-btn {
+        min-width: 120px;
+        font-size: 14px;
+        padding: 6px 12px;
+    }
+}
+
+@media (min-width: 577px) and (max-width: 991px) {
+
+    .icon-box,
+    .order-protection-icon {
+        width: 42px;
+        height: 42px;
+    }
+
+    .shop-now-btn {
+        min-width: 140px;
+        font-size: 15px;
+    }
+}
+
+.heading-step-title {
+    color: $ysp-purple !important;
+}
+
+@media (max-width: 576px) {
+
+    .ysp-benefit-icon-bg,
+    .step-icon-bg,
+    .addition-icon-bg {
+        width: 32px;
+        height: 32px;
+
+    }
+
+    .benefits-step-title {
+        text-align: left !important;
+    }
+
+    .ysp-order-protection h5 {
+        font-size: 0.95rem;
+
+    }
+
+    .ysp-order-protection p {
+        font-size: 0.8rem !important;
+    }
+}
+
+
+@media (max-width: 576px) {
+    .ysp-order-protection {
+        h3 {
+            font-size: 1rem;
+        }
+
+        .additional-services {
+            font-size: 1.25rem;
+        }
+
+        .sub-heading {
+            font-size: 1rem;
+        }
+    }
+}
+
+.alert-light {
+    color: #818182;
+    background-color: #fefefe;
+}
+
+.disclaimer-info {
+    padding: .75rem 1.25rem;
+}

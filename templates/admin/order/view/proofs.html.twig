@@ -1,0 +1,60 @@
+{% if messages | length <= 0 %}
+    <div class="alert alert-warning text-center">
+        Currently there are no proofs are uploaded Please upload proof by clicking on "Upload Proof" button on top
+        right of this page.
+    </div>
+{% endif %}
+
+{# {{ include('/admin/order/view/_proof_counter.html.twig') }} #}
+
+{% for message in messages %}
+    {% set approvedProof = order.approvedProof %}
+    {% set sentBy = message.sentBy %}
+    {% set isChangesRequested = message.type == 'CHANGES_REQUESTED' %}
+    <div class="proof-message {% if isChangesRequested %}bg-gray-200{% else %}bg-light{% endif %} p-2">
+        <div class="row flex-row-reverse">
+            {% set proofImage = '' %}
+            <div class="col-12 {% if not isChangesRequested %}col-md-6{% endif %}">
+                {% if approvedProof is not null and approvedProof == message %}
+                    <div class="alert alert-success p-1 text-center">
+                        This proof is approved
+                    </div>
+                {% endif %}
+                <div class="actions mt-4 mb-3 d-flex justify-content-center {% if message.files | length <= 0 %}d-none{% endif %}">
+                    {% for file in message.files %}
+                        <a href="{{ vich_s3.asset(file, 'fileObject') }}" class="btn btn-sm btn-primary mx-2"
+                           target="_blank">
+                            {% if file.type == 'PROOF_IMAGE' %}
+                                {% set proofImage = vich_s3.asset(file, 'fileObject', '1000') %}
+                                View Image
+                            {% elseif file.type == 'PROOF_FILE' %}
+                                View File
+                            {% elseif file.type == 'CUT_FILE' %}
+                                Cut File
+                            {% else %}
+                                View File {{ loop.index }}
+                            {% endif %}
+                        </a>
+                    {% endfor %}
+                </div>
+                <div class="mb-2 text-gray-700">
+                    {{ message.content | raw }}
+                </div>
+                <div class="meta text-center small border-top pt-2 mt-3 {% if isChangesRequested %}border-gray-400{% endif %}">
+                    {% if message.type == 'PROOF_APPROVED' %}
+                        Proof Approved By
+                    {% else %}
+                        {{ message.type == 'PROOF' ? 'Uploaded By': 'Changes Requested By' }}
+                    {% endif %}
+                    <strong>{{ sentBy.name }} ({{ getUserType(sentBy) }})</strong>
+                    at <strong>{{ message.sentAt | date('D M d, Y H:i:s A') }}</strong>
+                </div>
+            </div>
+            {% if not isChangesRequested %}
+                <div class="col-12 col-md-6 m-auto">
+                    <img src="{{ proofImage }}" alt="proof image" class="img-fluid"/>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endfor %}

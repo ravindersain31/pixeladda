@@ -1,0 +1,16 @@
+.breadcrumb-area {
+  background: $light;
+  padding: 12px 25px;
+
+  .breadcrumb {
+    margin: 0;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 14px;
+    padding: 5px 5px;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+  }
+}

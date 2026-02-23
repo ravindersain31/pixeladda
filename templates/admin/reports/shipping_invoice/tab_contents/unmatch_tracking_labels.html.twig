@@ -1,0 +1,30 @@
+<div class="table-responsive">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Sr.</th>
+                <th>Tracking Number</th>
+                <th>Invoice Date</th>
+                <th>Shipping Charges</th>
+                <th>Shipping Adjustment</th>
+                <th>Shipping Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for unmatchTrackingLabel in unmatchTrackingLabels|default([]) %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ unmatchTrackingLabel.TrackingNumber }}</td>
+                    <td>{{ unmatchTrackingLabel.InvoiceDate|date('M d, Y') }}</td>
+                    <td>{{ unmatchTrackingLabel.shippingCharges }}</td>
+                    <td>{{ unmatchTrackingLabel.shippingAdjustment }}</td>
+                    <td>{{ unmatchTrackingLabel.shippingTotal }}</td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="6" class="text-center text-muted">No records found!</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

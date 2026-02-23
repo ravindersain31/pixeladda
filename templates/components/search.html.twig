@@ -1,0 +1,21 @@
+<div {{ attributes }}>
+    {{ form_start(form, {attr: {
+        'novalidate': true,
+        'data-action': 'live#action:prevent',
+        'data-live-action-param': 'searchAction',
+    }}) }}
+
+    {% if flashMessage %}
+        <div class="alert alert-{{flashError}}">{{ flashMessage }}</div>
+    {% endif %}
+    {{ form_errors(form) }}
+        <div class="input-group mobile-search">
+            {{ form_widget(form.search) }}
+            {{ form_errors(form.search) }}
+            <button class="btn btn-outline-secondary d-flex align-items-center" type="submit" id="navbar-search-desktop-{{ random(50, 100)}}" title="Search" aria-label="Search" aria-labelledby="search-desktop" role="button">
+                <img fetchpriority="high" width="20" height="20" src={{ asset('app-images/svg-images/search.svg') }} alt="search-icon" />
+            </button>
+        </div>
+    {% include 'components/_search_results.html.twig' %}
+    {{ form_end(form) }}
+</div>

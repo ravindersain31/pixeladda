@@ -1,0 +1,81 @@
+{% set has_ysp_logo = false %}
+{% for artwork_type, sides in item.metaData['customArtwork'] %}
+	{% if artwork_type == 'YSP-LOGO' %}
+		{% if (sides['front'] is defined and sides['front']|length > 0) or (sides['back'] is defined and sides['back']|length > 0) %}
+			{% set has_ysp_logo = true %}
+		{% endif %}
+	{% endif %}
+{% endfor %}
+
+{% if has_ysp_logo %}
+	<div class="text-center mb-2 d-flex flex-column align-items-center table-responsive">
+		<table class="table table-bordered text-center table-sm">
+			<thead>
+				<tr>
+					{% set show_front = false %}
+					{% set show_back = false %}
+					{% for artwork_type, sides in item.metaData['customArtwork'] %}
+						{% if sides['front'] is defined and sides['front']|length > 0 %}
+							{% set show_front = true %}
+						{% endif %}
+						{% if sides['back'] is defined and sides['back']|length > 0 %}
+							{% set show_back = true %}
+						{% endif %}
+					{% endfor %}
+					{% if show_front %}
+						<th class="small fw-800">Front</th>
+					{% endif %}
+					{% if show_back %}
+						<th class="small fw-800">Back</th>
+					{% endif %}
+				</tr>
+			</thead>
+			<tbody>
+				{% set front_counter = 1 %}
+				{% set back_counter = 1 %}
+				<tr>
+					<!-- Front Column -->
+					{% if show_front %}
+						<td class="small align-middle">
+							{% for artwork_type, sides in item.metaData['customArtwork'] %}
+								{% if sides['front'] is defined and sides['front']|length > 0 and artwork_type == 'YSP-LOGO' %}
+									{% for file in sides['front'] %}
+										{% if displayType == 'image' %}
+											<img src="{{ file.url }}" alt="Front File #{{ front_counter }}" width="30" height="30" class="img-fluid mx-1">
+										{% elseif displayType == 'anchor' %}
+											<a href="{{ file.url }}" target="_blank" class="badge bg-primary mx-1 text-white align-middle">
+												File #{{ front_counter }}
+											</a>
+										{% endif %}
+										{% set front_counter = front_counter + 1 %}
+									{% endfor %}
+								{% endif %}
+							{% endfor %}
+						</td>
+					{% endif %}
+					<!-- Back Column -->
+					{% if show_back %}
+						<td class="small align-middle">
+							{% for artwork_type, sides in item.metaData['customArtwork'] %}
+								{% if sides['back'] is defined and sides['back']|length > 0 and artwork_type == 'YSP-LOGO' %}
+									{% for file in sides['back'] %}
+										{% if displayType == 'image' %}
+											<img src="{{ file.url }}" alt="Back File #{{ back_counter }}" width="30" height="30" class="img-fluid mx-1">
+										{% elseif displayType == 'anchor' %}
+											<a href="{{ file.url }}" target="_blank" class="badge bg-primary mx-1 text-white align-middle">
+												File #{{ back_counter }}
+											</a>
+										{% endif %}
+										{% set back_counter = back_counter + 1 %}
+									{% endfor %}
+								{% endif %}
+							{% endfor %}
+						</td>
+					{% endif %}
+				</tr>
+			</tbody>
+		</table>
+	</div>
+{% else %}
+	No
+{% endif %}

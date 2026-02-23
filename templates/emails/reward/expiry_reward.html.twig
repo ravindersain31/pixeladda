@@ -1,0 +1,30 @@
+{% extends 'emails/base.html.twig' %}
+{% block title %}Your YSP Rewards Expire Soon, Use Now!{% endblock %}
+{% block body %}
+<tr style="background: {{ primaryColor }}; color: white; font-size: 12px; font-style: italic; text-transform: uppercase;">
+    <td colspan="3">
+        <div>
+            <h3 style="margin: 8px;">Your YSP Rewards Expire Soon, Use Now!</h3>
+        </div>
+    </td>
+</tr>
+<tr>
+    <td colspan="3">
+        <h3 style="color:{{ primaryColor }};margin: 10px 0;">APPLY YOUR FREE YSP REWARDS</h3>
+        <p style="font-size: 16px;color: #000000;line-height: 135%;margin: 10px;">
+            Your YSP Rewards expire soon. Apply your free <strong>YSP Rewards</strong>. Please click the button below to apply your <strong>YSP Rewards</strong> towards a new order. Your <strong>YSP Rewards</strong> will expire in 7 days. Order now while supplies last!
+        </p>
+    </td>
+</tr>
+<tr>
+    <td colspan="3">
+        <a href="{{ url('homepage') }}" target="_blank" class="btn-shop-now" style="background-color: #e8c94c; color: #000000 !important; font-size: 32px; text-transform: uppercase; text-decoration: none; padding: 10px 25px; display: inline-block; font-weight: normal; border-radius: 6px;">shop now</a>
+    </td>
+</tr>
+<tr>
+    <td colspan="3">
+        <h5 style="margin: 10px;font-weight: 400;font-size: 16px;">YSP REWARDS: ${{ reward.availablePoints|default(0)|number_format(2) }}</h5>
+        <a href="{{ url('login') }}" class="btn-shop-now" target="_blank" style="font-size: 14px !important;color: #753dbc !important; font-size: 18px; text-transform: uppercase; text-decoration: underline; display: inline-block; font-weight: 700; border-radius: 6px; font-style: italic;">My Account</a>
+    </td>
+</tr>
+{% endblock %}

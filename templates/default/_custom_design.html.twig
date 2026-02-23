@@ -1,0 +1,13 @@
+<div class="product-block">
+    <h3 class="product-block-title">{{ title }}</h3>
+    <div class="row product-list">
+        {% for product in customProducts %}
+            <div class="col-6 col-md-4 col-xl-3 product-item">
+                {{ include('default/_product_card.html.twig') }}
+            </div>
+        {% endfor %}
+        <div class="col-6 col-md-4 col-xl-3 product-item more-product-item">
+            {{ include('default/_more_product_card.html.twig') }}
+        </div>
+    </div>
+</div>

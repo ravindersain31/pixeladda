@@ -1,0 +1,19 @@
+<script type="text/javascript">
+    var sa_products = {{ shopperApprovedOrderItems | json_encode | raw }}
+
+    var sa_values = {
+        site: 36686,
+        token: "fff8kgDd",
+        orderid:'{{ order.orderId }}', 
+        name:'{{ order.user.name }} ', 
+        email:'{{ order.user.email }}' 
+    };
+    function saLoadScript(src) {
+        var js = document.createElement("script");
+        js.src = "https://" + src;
+        js.type = "text/javascript";
+        document.getElementsByTagName("head")[0].appendChild(js);
+    }
+    saLoadScript("www.shopperapproved.com/thankyou/rate/36686.js");
+</script>
+

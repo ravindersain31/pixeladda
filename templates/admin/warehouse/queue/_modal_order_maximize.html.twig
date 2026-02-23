@@ -1,0 +1,72 @@
+
+<!-- Modal -->
+<div class="modal fade" id="order-max-{{ order.orderId }}" tabindex="-1" role="dialog"
+     aria-labelledby="order-max-{{ order.orderId }}_label" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content fs-4">
+            <div class="modal-header py-1">
+                <h5 class="modal-title" id="order-max-{{ order.orderId }}_label">
+                    {{ order.orderId }}
+                </h5>
+                <div class="d-flex justify-content-center align-items-center">
+                    {% if is_granted('warehouse_update_order_print_count') %}
+                        {% if warehouseOrder.printStatus == constant('App\\Enum\\Admin\\WarehouseOrderStatusEnum::PRINTING') %}
+                            {{ component('AdminWarehouseUpdatePrintedComponent', {
+                                warehouseOrder,
+                                printed: warehouseOrder.printed,
+                            }) }}
+                        {% else %}
+                            {% if warehouseOrder.printStatus not in ['PRINTED', 'CUTTING', 'PACKING', 'DONE'] %}
+                                {% if warehouseOrder.printed | length > 0 %}
+                                    <span class="me-1"
+                                          id="printed_count_max_{{ warehouseOrder.id }}">{{ warehouseOrder.printed }}</span>
+                                {% endif %}
+                            {% endif %}
+                        {% endif %}
+                    {% else %}
+                        {% if warehouseOrder.printStatus not in ['PRINTED', 'CUTTING', 'PACKING', 'DONE'] %}
+                            {% if warehouseOrder.printed | length > 0 %}
+                                <span class="me-1" id="printed_count_max_{{ warehouseOrder.id }}">{{ warehouseOrder.printed }}</span>
+                            {% endif %}
+                        {% endif %}
+                    {% endif %}
+                    {% if is_granted('warehouse_update_order_print_status') %}
+                        <div class="dropdown">
+                            <button class="btn btn-link p-0 fs-4 dropdown-toggle text-decoration-none" type="button"
+                                    id="ddm_{{ order.orderId }}" data-bs-toggle="dropdown" aria-expanded="false">
+                                <span class="fw-500" id="print_status_max_{{ warehouseOrder.id }}">
+                                    {{ enum.warehouseOrderStatus(warehouseOrder.printStatus, true) | raw }}
+                                </span>
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="ddm_{{ order.orderId }}">
+                                {% for key, status  in constant('App\\Enum\\Admin\\WarehouseOrderStatusEnum::STATUS') %}
+                                    <li>
+                                        <button data-action="live#action" data-live-action-param="updateStatus"
+                                                data-live-status-param="{{ key }}" class="dropdown-item fw-500"
+                                                style="color: {{ status.color }}">
+                                            {{ status.label }}
+                                        </button>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% else %}
+                        <span class="fw-500"
+                              id="print_status_max_{{ warehouseOrder.id }}">{{ enum.warehouseOrderStatus(warehouseOrder.printStatus, true) | raw }}</span>
+                    {% endif %}
+                    <button type="button" class="btn-close ms-2" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+            </div>
+            <div class="modal-body p-2">
+                {% include 'admin/warehouse/_mini_order_info.html.twig' with { order } %}
+                {{ component('AdminWarehouseOrderCommentsComponent', {
+                    order,
+                    warehouseOrder,
+                    comments: warehouseOrder.comments,
+                    from: 'maximize',
+                }) }}
+                {{ component('AdminWarehouseOrderLog', { warehouseOrder }) }}
+            </div>
+        </div>
+    </div>
+</div>

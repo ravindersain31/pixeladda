@@ -1,0 +1,15 @@
+
+<div class="carousel slide" data-bs-ride="carousel">
+    <div class="carousel-inner">
+        <div class="carousel-item active">
+            <picture>
+                <source srcset="{{ mobileImg }}" media="(max-width: 767px)">
+                {% if desktopImg is defined %}
+                <img width="1905" height="329" class="d-block img-fluid w-100" src="{{ desktopImg }}" alt="YSP FAQs Banner">
+                {% else %}
+                <img class="d-block w-100" src="https://static.yardsignplus.com/shop-now_20221226-273571a0-84e3-11ed-b264-e3cb614aba45.jpg" alt="{{ desktopAlt }}">
+                {% endif %}
+            </picture>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,51 @@
+<!-- START Google Ads/Analytics -->
+<script>
+    const orderItems = {{ orderItems | json_encode | raw }};
+
+    dataLayer.push({
+        event: 'purchase',
+        ecommerce: {
+            transaction_id: '{{ order.orderId }}',
+            affiliation: 'GA4 Purchase - {{ ysp.storeName }}',
+            value: '{{ order.totalAmount }}',
+            tax: 0,
+            shipping: '{{ order.shippingCost }}',
+            currency: '{{ ysp.storeCurrency }}',
+            coupon: "{{ order.coupon.code ?? '' }}",
+            items: orderItems
+        },
+        user_data: {
+            email: '{{ order.billingAddress.email | default("-") }}',
+            phone_number: '{{ order.shippingAddress.phone | default("-") | formatToE164 }}',
+            address: {
+                first_name: '{{ order.billingAddress.firstName | default("-") }}',
+                last_name: '{{ order.billingAddress.lastName | default("-") }}',
+                street: '{{ order.billingAddress.addressLine1 | default("-") }}',
+                city: '{{ order.billingAddress.city | default("-") }}',
+                region: '{{ order.billingAddress.state | default("-") }}',
+                postal_code: '{{ order.billingAddress.zipcode | default("-") }}',
+                country: '{{ order.billingAddress.country | default("-") }}'
+            }
+        }
+    });
+</script>
+<!-- END Google Ads/Analytics -->
+<!-- START Bing Ads -->
+<script>
+    window.uetq = window.uetq || [];
+    window.uetq.push('event', 'purchase', {
+        "revenue_value": "{{ order.totalAmount }}",
+        "currency": "USD"
+    });
+</script>
+<!-- END Bing Ads -->
+<!-- START Facebook Pixel -->
+<script>
+    fbq('track', 'Purchase', {
+        value: '{{ order.totalAmount }}',
+        currency: '{{ ysp.storeCurrency }}',
+        num_items: orderItems.length,
+        content_ids: orderItems.map(item => item.item_name),
+    });
+</script>
+<!-- END Facebook Pixel -->

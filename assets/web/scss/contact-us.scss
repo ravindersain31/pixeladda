@@ -1,0 +1,190 @@
+.ysp-common-contact-us-title {
+	font-size: 18px;
+	font-weight: 800;
+	padding: 6px;
+	border-top-right-radius: 15px;
+	text-align: center;
+	background-color: var(--primary-color);
+	line-height: 1.5;
+	color: #ffffff;
+	text-transform: uppercase;
+	font-family: 'Montserrat', serif;
+	margin-bottom: 0;
+}
+.ysp-contact-us-wrapper {
+	.contact-us-text-wrapper {
+		text-align: center;
+		padding: 1.5rem;
+		background-color: #f9f9f9;
+		font-family: 'Montserrat', serif;
+		.call-us-text-wrapper {
+			.title {
+				color: #2BCA75;
+				font-size: 30px;
+				font-weight: 600;
+				margin-bottom: 5px;
+			}
+			.desc {
+				font-family: 'Montserrat', serif;
+				color: #000000;
+				letter-spacing: 0.20px;
+				font-size: 15px;
+				margin-bottom: 5px;
+				font-weight: 500;
+				&:last-child {
+					margin-bottom: 20px;
+				}
+			}
+		}
+		.ysp-common-contact-us-text-wrapper {
+			margin-bottom: 30px;
+			&:last-child {
+				margin-bottom: 0;
+			}
+			.label {
+				color: #000000;
+				font-size: 22px;
+				margin-bottom: 2px;
+				font-weight: 600;
+			}
+			.desc {
+				color: #000000;
+				font-size: 19px;
+			}
+		}
+		.ysp-common-contact-us-text-wrapper.ysp-common-contact-us-text-wrapper-details {
+			.label {
+				font-size: 15px;
+				font-weight: 700;
+			}
+			.desc {
+				font-size: 15px;
+				font-weight: 500;				
+			}
+			a {
+				&:hover {
+					color: var(--primary-color) !important;
+				}
+			}
+			padding-top: 25px;
+		}
+	}
+	.contact-us-form-wrapper {
+		background-color: #f9f9f9;
+		padding: 1.5rem 1.5rem 0 1.5rem;
+		.title {
+			color: var(--primary-color);
+			font-size: 30px;
+			font-weight: 600;
+			margin-bottom: 10px;
+			text-align: center;
+		}
+		#contact-form {
+			.form-group {
+				margin-bottom: 20px;
+				input {
+					color: #495057;
+					font-family: Montserrat, sans-serif;
+					border: 1px solid #000;
+					border-radius: 12px;
+					font-size: 14px;
+					font-weight: 500;
+					height: calc(1.5em + .75rem + 2px);
+					&:focus {
+						border: solid 1px #92C9AB;
+						box-shadow: none;
+					}
+					&::placeholder {
+						color: #808a95;
+						opacity: 1;
+						text-transform: uppercase;
+					}
+					&:-ms-input-placeholder {
+						color: #808a95;
+						text-transform: uppercase;
+					}
+					&::-ms-input-placeholder {
+						.ysp-contact-us-wrapper {
+							.contact-us-form-wrapper {
+								#contact-form {
+									.form-group {
+										textarea {
+											&::-ms-input-placeholder {
+												color: #808a95;
+												text-transform: uppercase;
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+				textarea {
+					color: #495057;
+					font-family: Montserrat, sans-serif;
+					border: 1px solid #000;
+					border-radius: 12px;
+					font-size: 14px;
+					font-weight: 500;
+					height: 70px;
+					&:focus {
+						border: solid 1px #92C9AB;
+						box-shadow: none;
+					}
+					&::placeholder {
+						color: #808a95;
+						opacity: 1;
+						text-transform: uppercase;
+					}
+					&:-ms-input-placeholder {
+						color: #808a95;
+						text-transform: uppercase;
+					}
+				}
+				label {
+					font-weight: 700;
+					font-size: 14px;
+					color: #000000;
+					text-transform: uppercase;
+					margin-bottom: 2px;
+					font-family: 'Montserrat', serif;
+				}
+				.submit-btn {
+					text-transform: uppercase;
+					font-family: 'Montserrat', serif;
+					padding: 10px 25px !important;
+					border-radius: 3px;
+					line-height: 100%;
+					box-shadow: 2px 2px 2px 0 #000;
+					background-color: #ffffff;
+					border: 1px solid var(--primary-color);
+					font-size: 20px;
+					font-weight: 500;
+					color: $dark;
+					text-transform: uppercase;
+					font-family: 'Montserrat', serif;
+					border-radius: 3px;
+					line-height: 100%;
+					box-shadow: 2px 2px 2px 0 #000;
+					background-color: #ffffff;
+					border: 1px solid var(--primary-color);
+					font-size: 20px;
+					font-weight: 500;
+					&:hover {
+						background-color: var(--primary-color);
+						color: #ffffff;
+					}
+					&:focus {
+						background-color: var(--primary-color);
+						color: #ffffff;
+					}
+					&:active {
+						background-color: var(--primary-color);
+						color: #ffffff;
+					}
+				}
+			}
+		}
+	}
+}

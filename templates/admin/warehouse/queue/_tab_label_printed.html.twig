@@ -1,0 +1,185 @@
+<div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2 bg-white border-0">
+    {% if app.request.get('shipByFrom') or app.request.get('shipByTo') %}
+        <div class="bg-light border rounded px-3 py-1 d-flex align-items-center gap-2 text-dark small">
+            <i class="fas fa-calendar-alt text-primary"></i>
+            <span>
+                {% if app.request.get('shipByFrom') %}
+                    From: <strong>{{ app.request.get('shipByFrom') }}</strong>
+                {% endif %}
+                {% if app.request.get('shipByFrom') and app.request.get('shipByTo') %} &mdash; {% endif %}
+                {% if app.request.get('shipByTo') %}
+                    To: <strong>{{ app.request.get('shipByTo') }}</strong>
+                {% endif %}
+            </span>
+            <a href="{{ path(app.request.attributes.get('_route')) }}" class="text-decoration-none ms-2 text-muted" title="Clear Filter">
+                <i class="fas fa-times-circle"></i>
+            </a>
+        </div>
+    {% else %}
+        <h5 class="mb-0">Warehouse Queue - Printed Orders</h5>
+    {% endif %}
+
+    <div class="d-flex align-items-center gap-2 flex-wrap">
+        <button class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1 px-2"
+                type="button"
+                data-bs-toggle="offcanvas"
+                data-bs-target="#shipByFilterCanvas"
+                aria-controls="shipByFilterCanvas">
+            <i class="fas fa-filter"></i>
+            Filter by Ship By Date
+        </button>
+    </div>
+</div>
+
+
+<div class="card-body p-0 table-responsive warehouse-table">
+    <table class="table table-bordered sortable">
+        <thead>
+        <tr>
+            <th class="fit-to-cell">#</th>
+            <th class="fit-to-cell">Order</th>
+            <th class="fit-to-cell indicator-right" id="ship-by" tabindex="0" aria-sort="ascending">Ship By</th>
+            <th class="fit-to-cell">Printer</th>
+            <th class="fit-to-cell">Signs</th>
+            <th class="fit-to-cell">Stakes</th>
+            <th class="fit-to-cell">Shipping Service</th>
+            <th class="fit-to-cell">Tracking</th>
+            <th class="fit-to-cell">Shipment Status</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% if orders | length <= 0 %}
+            <tr>
+                <td colspan="12" class="text-center">No orders found</td>
+            </tr>
+        {% endif %}
+        {% for date, warehouseOrder in orders %}
+            {% set order = warehouseOrder.order %}
+            {% set totalQuantities = order.totalQuantities %}
+            <tr>
+                <td>{{ orders.getPaginationData.firstItemNumber + loop.index - 1 }}</td>
+                <td>
+                    <a href="{{ url('admin_order_overview', {orderId: order.orderId}) }}" target="_blank">
+                        {{ order.orderId }}
+                    </a>
+                </td>
+                <td class="fit-to-cell">
+                    {% if warehouseOrder is not null and warehouseOrder.shipBy %}
+                        {{ warehouseOrder.shipBy | date('D m/d/y') }}
+                    {% else %}
+                        --
+                    {% endif %}
+                </td>
+                <td class="fit-to-cell">
+                    {% if order.printerName %}
+                        {{ enum.warehousePrinterName(order.printerName, true) | raw }}
+                    {% endif %}
+                </td>
+                <td>{{ totalQuantities['totalQuantity'] }}</td>
+                <td>{{ totalQuantities['frameQuantity'] }}</td>
+                <td class="fit-to-cell">
+                    {% if warehouseOrder and warehouseOrder.shippingService %}
+                        {{ enum.warehouseShippingService(warehouseOrder.shippingService) }}
+                    {% else %}
+                        --
+                    {% endif %}
+                </td>
+                {% set orderShipments = order.orderShipments %}
+                <td class="fit-to-cell">
+                    <button type="link" data-bs-toggle="collapse" data-bs-target="#tracking_{{ loop.index }}"
+                            aria-expanded="false" aria-controls="tracking_{{ loop.index }}"
+                            class="btn btn-link p-0 text-decoration-none">
+                        Tracking  <span class="badge bg-light text-dark" style="top: 0;margin-left: 4px;">{{ orderShipments | length }}</span>
+                    </button>
+                    <div class="table-responsive collapse" id="tracking_{{ loop.index }}">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr class="text-end p-1 bg-light">
+                                    <th class="text-end small p-1 text-dark" style="text-align: right;">#</th>
+                                    <th class="text-end small p-1 text-dark" style="text-align: right;">Tracking</th>
+                                    <th class="text-end small p-1 text-dark" style="text-align: right;">Status</th>
+                                    <th class="text-end small p-1 text-dark" style="text-align: right;">Printed At</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% for key, shipment in orderShipments %}
+                                <tr>
+                                    <td class="text-start small p-1 text-dark">{{ key + 1 }}</td>
+                                    {% if shipment.selectedRate %}
+                                        <td class="text-end small p-1 text-dark" style="text-align: right;">
+                                            <a target="_blank"
+                                            class="small"
+                                            href="{{ shippingTracking.generateTrackingLink(shipment.selectedRate.carrier, {trk: shipment.trackingId, oid: order.orderId }) }}">
+                                                {{ shipment.trackingId }}
+                                            </a>
+                                        </td>
+                                    {% else %}
+                                        --
+                                    {% endif %}
+                                    <td class="text-end small p-1 text-dark" style="text-align: right;">{{ shipment.status | replace({'_': ' '}) | capitalize }}</td>
+                                    <td class="text-end small p-1 text-dark" style="text-align: right;">{{ shipment.printedAt| date('M d, Y H:i A')  }}</td>
+                                </tr>
+                            {% else %}
+                                --
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </td>
+                <td class="fit-to-cell">
+                    {{ orderShipments | filter(shipment => shipment.status != 'pre_transit' and shipment.trackingId) | length > 0 ? 'Partially Shipped' : 'Not Scanned' }}
+                </td>
+                <td>
+                    <button type="button" class="btn badge bg-primary text-decoration-none text-white"
+                            data-bs-toggle="offcanvas" data-bs-target="#requeue_order_{{ order.orderId }}">
+                        Requeue
+                    </button>
+                    <a href="{{ url('admin_warehouse_queue_move_ready_to_print', {wid: warehouseOrder.id}) }}"
+                       class="btn badge bg-secondary text-decoration-none text-white" onclick="return confirm('Are you sure you want to move this order to Ready to Print?')">
+                        Move to Ready to Print
+                    </a>
+                    {% include 'admin/warehouse/_requeue_order.html.twig' %}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="mt-4 d-flex justify-content-around">
+        {{ knp_pagination_render(orders) }}
+    </div>
+</div>
+
+<div class="offcanvas offcanvas-end" tabindex="-1" id="shipByFilterCanvas" aria-labelledby="shipByFilterCanvasLabel">
+    <div class="offcanvas-header border-bottom">
+        <h5 class="offcanvas-title" id="shipByFilterCanvasLabel">
+            <i class="fas fa-calendar-alt me-2"></i> Filter by Ship By Date
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <form method="get" action="{{ path(app.request.attributes.get('_route')) }}">
+            <div class="mb-3">
+                <label for="shipByFrom" class="form-label">Ship By (From)</label>
+                <input type="date" class="form-control" id="shipByFrom" name="shipByFrom"
+                       value="{{ app.request.get('shipByFrom') }}">
+            </div>
+            <div class="mb-3">
+                <label for="shipByTo" class="form-label">Ship By (To)</label>
+                <input type="date" class="form-control" id="shipByTo" name="shipByTo"
+                       value="{{ app.request.get('shipByTo') }}">
+            </div>
+            <div class="d-flex justify-content-between align-items-center">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-check me-1"></i> Apply Filter
+                </button>
+                <a href="{{ path(app.request.attributes.get('_route')) }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-times me-1"></i> Reset
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/gh/tofsjonas/sortable@latest/sortable.min.js"></script>

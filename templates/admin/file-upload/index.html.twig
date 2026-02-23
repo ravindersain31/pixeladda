@@ -1,0 +1,33 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}
+    Manage File Upload
+{% endblock %}
+{% block pageTitle %}
+    <div class="page-header-icon">
+        <i class="fa-solid fa-cubes"></i>
+    </div>
+    Manage File Upload
+{% endblock %}
+
+{% block body %}
+    {% block stylesheets %}
+        {{ encore_entry_link_tags('admin') }}
+        {{ encore_entry_link_tags('admin-file-upload') }}
+    {% endblock %}
+
+    <div style="background: white" id="admin-file-upload" {{ react_component('AdminFileUpload', {
+            'upload_multiple_file': upload_multiple_file,
+            'storages' : storages,
+            'allowedFileTypes': allowedFileTypes,
+        }) }}>
+        <div class="loading-proof-template">
+            Initializing ...
+        </div>
+    </div>
+
+    {% block javascripts %}
+        {{ encore_entry_script_tags('admin') }}
+        {{ encore_entry_script_tags('admin-file-upload') }}
+    {% endblock %}
+{% endblock %}

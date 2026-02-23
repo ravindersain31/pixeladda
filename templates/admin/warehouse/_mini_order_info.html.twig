@@ -1,0 +1,21 @@
+{% set quantities = order.getTotalQuantities %}
+<div class="text-start text-wrap">
+    <a href="{{ url('order_proof', {oid: order.orderId}) }}" target="_blank">Proof</a>
+    {% if is_granted('warehouse_update_proof_printed_view') %}
+        {{ component('UpdateProofPrintedComponent', {
+            warehouseOrder,
+        })}}
+    {% endif %}
+    |
+    {% if warehouseOrder.driveLink %}
+        <a href="{{ warehouseOrder.driveLink }}" target="_blank">Drive</a> |
+    {% endif %}
+    {{ quantities['totalQuantity'] }} Signs |
+    {% if quantities['frameQuantity'] > 0 %}
+        {{ quantities['frameQuantity'] }} Stakes |
+    {% endif %}
+    {{ quantities['sizes'] | length > 1 ? 'Multiple' : quantities['sizes'][0] is defined ? quantities['sizes'][0] : '' }} |
+    {{ quantities['sides'] }} |
+    {{ quantities['grommets'] }}
+</div>
+{% include 'admin/warehouse/_mini_order_info_badge.html.twig' with { quantities, warehouseOrder, order } %}

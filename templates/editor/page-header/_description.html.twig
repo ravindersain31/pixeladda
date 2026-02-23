@@ -1,0 +1,7 @@
+<div class="product-description">
+    {% if category.productDescription is not empty and (category.productDescription | striptags | length) > 50 %}
+        {{ category.productDescription|raw }}
+    {% else %}
+        {% include ['common/product-description/' ~ category.slug ~ '/' ~ variant ~ '.html.twig','common/product-description/default.html.twig'] %}
+    {% endif %}
+</div>

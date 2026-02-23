@@ -1,0 +1,115 @@
+{% extends 'base.html.twig' %}
+
+{% set title = metaData.title ?: metaData.pageTitle ~ ' - ' ~ storeInfo.storeTitle %}
+
+{% block title %}{{ title }}{% endblock %}
+{% block metaData %}
+    {% set pageUrl = url('faqs') %}
+    {% set pageImageUrl = storeInfo.isPromoStore
+        ? 'https://static.yardsignplus.com/storage/promo-store/Frequently-Asked-Question-Banner-Mobile.webp' 
+        : 'https://static.yardsignplus.com/faqs_20230104-a7b2bb50-8c29-11ed-87e8-a9cc4794d026.png'
+    %}
+
+    {% include 'common/_page_meta.html.twig' with {
+        title: title,
+        metaData: metaData,
+        pageUrl: pageUrl,
+        pageImageUrl: pageImageUrl,
+        storeInfo: storeInfo
+    } %}
+{% endblock %}
+{% block body %}
+{{ include('common/common_mobile_bar.html.twig',{commonBarText: 'Order Online Or Call Now',commonBarTele: '+1-877-958-1499'}) }}
+    <div class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <picture>
+                    <source srcset="{{storeInfo.isPromoStore ? 'https://static.yardsignplus.com/storage/promo-store/Frequently-Asked-Question-Banner-Mobile.webp' : 'https://static.yardsignplus.com/faqs_20230104-a7b2bb50-8c29-11ed-87e8-a9cc4794d026.png'}}"
+                            media="(max-width: 767px)">
+                    <img fetchpriority="high" width="1905" height="338" class="d-block w-100 h-auto"
+                         src="{{storeInfo.isPromoStore ? 'https://static.yardsignplus.com/storage/promo-store/Frequently-Asked-Question-Banner-Destop.webp' : 'https://static.yardsignplus.com/faqs_20221226-36848d80-84e3-11ed-8e2d-0f7bc69636d2.jpg'}}"
+                         alt="YSP FAQs Banner">
+                </picture>
+            </div>
+        </div>
+    </div>
+    {{ include('common/highlights.html.twig') }}
+    {{ include('common/breadcrumb.html.twig', { breadcrumbs: [
+        { name: 'FAQs', active: true }
+    ]}) }}
+    <section class="ysp-faq-wrapper mb-4 mt-4">
+        <div class="container">
+            <h1 class="text-center">Frequently Asked Questions</h1>
+            <div class="row">
+                <div class="col-12 mb-1">
+                    <p class="faq-add-text">We offer a variety of yard signs that can be fully customized. You can place orders for many different designs. We have the resources to take care of your yard sign related requirements. For any explanation regarding our services, modes of payment, refunds, discounts, and more, you may go through our Frequently Asked Questions (FAQs).</p>
+                </div>
+
+                <div class="faq-search-section col-md-5 m-auto mb-2">
+                    <h3 class="mb-2 text-center"> How can we help you? </h3>
+                    <div class="input-group faq-search">
+                        <div class="d-flex input-group-prepend faq-search-icon-wrap">
+                            <span class="input-group-text bg-white border-right-0 faq-search-icon-box">
+                                <i class="fas fa-search text-muted"></i>
+                            </span>
+                        </div>
+                        <button id="clearSearch"
+                                type="button"
+                                class="btn btn-link text-muted position-absolute d-none"
+                                aria-label="Clear search"
+                        >
+                            <i class="fas fa-times"></i>
+                        </button>
+                        <input type="text" id="faqSearch" class="form-control border-left-0 pl-0" placeholder="Search for answers..." autocomplete="off">
+                            
+                    </div>
+                    <div id="noResult" class="w-100 text-center mt-3 mb-3 text-muted fs-6 fw-500" style="display:none;">No FAQs found for your search.</div>
+                </div>
+                
+                {% for title, faqsList in faqs %}
+                    {% set parentId = 'faq-' ~ loop.index %}
+
+                    <div class="faq-section col-md-12 mb-3">
+
+                        <div class="faq-title">
+                            <h3>{{ title }}</h3>
+                        </div>
+
+                        <div class="accordion ysp-accordion mt-3" id="{{ parentId }}">
+                            {% for faq in faqsList %}
+                                {% set itemId = parentId ~ '-item-' ~ loop.index %}
+
+                                <div class="accordion-item" 
+                                    data-keywords="{{ faq.keywords is iterable
+                                    ? faq.keywords|join(', ')|lower
+                                    : faq.keywords|default('')|lower }}"
+                                >
+                                    <h2 class="accordion-header" id="heading-{{ itemId }}">
+                                        <button class="accordion-button collapsed p-2"
+                                                type="button"
+                                                data-bs-toggle="collapse"
+                                                data-bs-target="#collapse-{{ itemId }}"
+                                                aria-expanded="false"
+                                                aria-controls="collapse-{{ itemId }}">
+                                            {{ faq.question|raw }}
+                                        </button>
+                                    </h2>
+
+                                    <div id="collapse-{{ itemId }}"
+                                        class="accordion-collapse collapse"
+                                        aria-labelledby="heading-{{ itemId }}"
+                                        data-bs-parent="#{{ parentId }}">
+                                        <div class="accordion-body">
+                                            {{ faq.answer|raw }}
+                                        </div>
+                                    </div>
+
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+{% endblock %}

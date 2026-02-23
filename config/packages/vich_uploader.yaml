@@ -1,0 +1,65 @@
+vich_uploader:
+    db_driver: orm
+    storage: flysystem
+
+    mappings:
+        assets:
+            uri_prefix: /assets
+            upload_destination: default.storage
+            namer: Vich\UploaderBundle\Naming\SmartUniqueNamer
+        category:
+            uri_prefix: /category
+            upload_destination: category.storage
+            namer: App\Naming\CustomNamer
+        product_image:
+            uri_prefix: /product/img
+            upload_destination: product.images.storage
+            namer: App\Naming\CustomNamer
+        product_template:
+            uri_prefix: /product/template
+            upload_destination: product.template.storage
+            namer: App\Naming\CustomNamer
+        clipart_image:
+            uri_prefix: /clipart
+            upload_destination: clipart.storage
+            namer: Vich\UploaderBundle\Naming\SmartUniqueNamer
+        storage_artwork:
+            uri_prefix: /storage/artwork
+            upload_destination: artwork.storage
+            namer: Vich\UploaderBundle\Naming\SmartUniqueNamer
+        storage_custom_design:
+            uri_prefix: /storage/custom-design
+            upload_destination: custom.design.storage
+            namer: Vich\UploaderBundle\Naming\SmartUniqueNamer
+        user_files:
+            uri_prefix: /uploads/user-files
+            upload_destination: user.files.storage
+            namer: Vich\UploaderBundle\Naming\SmartUniqueNamer
+        product_images:
+            uri_prefix: /storage/product-images
+            upload_destination: product.imageFiles.storage
+            namer: Vich\UploaderBundle\Naming\SmartUniqueNamer
+        customer_photos:
+            uri_prefix: /storage/customer-photos
+            upload_destination: customerphotos.files.storage
+            namer: Vich\UploaderBundle\Naming\SmartUniqueNamer
+        community_uploads:
+            uri_prefix: /storage/community-uploads
+            upload_destination: communityuploads.files.storage
+            namer: Vich\UploaderBundle\Naming\SmartUniqueNamer
+        product_canvas_template:
+            uri_prefix: /product/canvas-template
+            upload_destination: product.canvas-template.storage
+            namer: Vich\UploaderBundle\Naming\SmartUniqueNamer
+        order_files:
+            uri_prefix: /order/files
+            upload_destination: order.files.storage
+            namer: Vich\UploaderBundle\Naming\SmartUniqueNamer
+        blog_files:
+            uri_prefix: /blog
+            upload_destination: blog.files.storage
+            namer: Vich\UploaderBundle\Naming\SmartUniqueNamer
+        proof_template:
+            uri_prefix: /storage/proof-template
+            upload_destination: proof.template.storage
+            namer: Vich\UploaderBundle\Naming\SmartUniqueNamer

@@ -1,0 +1,56 @@
+<div {{ attributes }}>
+    <div class="pricing-row mb-3">
+        {{ form_start(form) }}
+            <div class="card shadow-none mb-3">
+                <div class="card-header h-100 text-dark">
+                    Primary Image:
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-12">
+                            {{ form_row(form.imageFile) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card shadow-none mb-3">
+                <div class="card-header h-100 text-dark">
+                    Secondary Images:
+                </div>
+                <div class="card-body">
+                    {{ form_errors(form) }}
+                    <div class="row">
+                        {% for key, file in form.productImages %}
+                            <div class="col-xs-6 col-sm-8 col-md-4">
+                                {{ form_row(file.imageFile) }}
+                            </div>
+                            <div class="col-xs-4 col-sm-2 col-md-1">
+                                {{ form_row(file.sortPosition) }}
+                            </div>
+                            <div class="col-xs-2 col-sm-2 col-md-1 align-self-center mb-2">
+                                {{ form_widget(file.vars.button_delete) }}
+                            </div>
+                        {% else %}
+                            <div class="small text-danger no-alias mb-2">
+                                No Product Images added. You can add by clicking "Add Image"
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    {% if this.getUploadingImagesCount < 15 %}
+                        {{ form_widget(form.productImages.vars.button_add) }}
+                    {% else %}
+                        <div class="alert alert-warning" role="alert">
+                            Please upload the current images before adding more.
+                        </div>
+                    {% endif %}
+
+                    <div id="product_images_productImages_help" class="form-text mb-0 help-text {% if this.getUploadingImagesCount >= 15 %}text-danger{% endif %}">
+                        Please upload a maximum of 15 images at a time. {{ this.getUploadingImagesCount }} of 15 remaing.
+                    </div>
+                </div>
+            </div>
+        {{ form_row(form.submit) }}
+        {{ form_end(form) }}
+    </div>
+</div>

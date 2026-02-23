@@ -1,0 +1,112 @@
+<form method="post" action="{{ url('upload_customer_photos') }}" enctype="multipart/form-data" id="upload_customer_photo">
+    <div class="ysp-cart-form-wrapper mt-0" id="save_photo_form">
+        <div id="upload_customer_photo-message-wrapper"></div>
+        <div class="d-flex flex-column w-100">
+            <fieldset class="mb-3">
+                <legend class="col-form-label">Upload Photo</legend>
+                <input type="file" name="file" class="form-control" accept="image/*,.pdf" />
+            </fieldset>
+        </div>
+        <div class="d-flex flex-column w-100">
+            <div class="mb-3">
+                <label for="c_photo_name" class="form-label">Enter Your Name</label>
+                <input id="c_photo_name" name="name" type="text" placeholder="Enter Your Name" class="form-control"/>
+            </div>
+        </div>
+        <div class="d-flex flex-column w-100">
+            <div class="mb-3">
+                <label for="c_photo_comment" class="form-label">Enter Your Comment</label>
+                <textarea id="c_photo_comment" name="comments" placeholder="Enter Your Comment"
+                          class="form-control"></textarea>
+            </div>
+        </div>
+        <div class="mb-3 text-center">
+            <button type="submit" class="btn btn-ysp-outline">
+                Submit
+            </button>
+        </div>
+    </div>
+</form>
+<script>
+    window.addEventListener('DOMContentLoaded', function () {
+        const $form = $('[id="upload_customer_photo"]');
+        $form.validate({
+            rules: {
+                'name': {
+                    required: true,
+                    normalizer: function(value) {
+                        return $.trim(value).replace(/\s+/g, ' ');
+                    }
+                },
+                'comments': {
+                    required: true,
+                    normalizer: function(value) {
+                        return $.trim(value).replace(/\s+/g, ' ');
+                    }
+                },
+                'file': {
+                    required: true,
+                    extension: 'jpg|jpeg|png|gif|svg|webp|pdf',
+                },
+            },
+            messages: {
+                'name': {
+                    required: 'Please enter your name',
+                },
+                'comments': {
+                    required: 'Please enter your comment',
+                },
+                'file': {
+                    required: 'Please select a photo',
+                    extension: 'Please select a valid photo file',
+                },
+            },
+            submitHandler: function (form) {
+                var $submitBtn = $(form).find('button[type="submit"]');
+                var $messageWrapper = $('#upload_customer_photo-message-wrapper');
+                $submitBtn.attr('disabled', true);
+                $submitBtn.text('Processing...');
+                $.ajax($(form).attr('action'), {
+                    method: $(form).attr('method'),
+                    data: new FormData(form),
+                    contentType: false,
+                    processData: false,
+                    success: function (response) {
+                        if (response.success) {
+                            $messageWrapper.html(`<div class="alert alert-success">${response.message}</div>`);
+                            $(form)[0].reset();
+                        } else {
+                            $messageWrapper.html(`<div class="alert alert-danger">${response.message}</div>`);
+                        }
+                        setTimeout(function () {
+                            $messageWrapper.html('');
+                        }, 5000);
+
+                        $submitBtn.attr('disabled', false).text('Submit');
+                    },
+                    error: function () {
+                        $submitBtn.attr('disabled', false).text('Submit');
+                    }
+                });
+                // form.submit();
+            }
+        });
+
+        document.getElementById('photoModal').addEventListener('hidden.bs.modal', function () {
+            const form = document.getElementById('upload_customer_photo');
+            if (form) {
+                form.reset();
+                const messageWrapper = document.getElementById('upload_customer_photo-message-wrapper');
+                if (messageWrapper) {
+                    messageWrapper.innerHTML = '';
+                }
+                
+                $form.validate().resetForm();
+                const inputs = form.querySelectorAll('.form-control');
+                inputs.forEach(input => {
+                    input.classList.remove('error');
+                });
+            }
+        });
+    });
+</script>

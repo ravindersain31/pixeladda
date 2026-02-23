@@ -1,0 +1,54 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Deleted Distributors{% endblock %}
+
+{% block pageTitle %}
+<div class="page-header-icon">
+    <i class="fa-solid fa-users"></i>
+</div>
+Deleted Distributors
+{% endblock %}
+
+{% block body %}
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Sr.</th>
+                    <th>Company Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Deleted On</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for distributor in distributors %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ distributor.companyName }}</td>
+                    <td>{{ distributor.email }}</td>
+                    <td>{{ distributor.phoneNumber }}</td>
+                    <td>{{ distributor.deletedAt ? distributor.deletedAt|date('Y-m-d H:i') : '' }}</td>
+                    <td>
+                        <a class="btn btn-success btn-xs"
+                           href="{{ path('admin_distributor_restore', {id: distributor.id}) }}">
+                            Restore
+                        </a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6">No deleted distributors</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="mt-4">
+    {{ knp_pagination_render(distributors) }}
+</div>
+{% endblock %}

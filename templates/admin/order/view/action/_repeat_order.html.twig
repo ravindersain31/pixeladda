@@ -1,0 +1,9 @@
+<button type="button" class="badge bg-primary text-white text-decoration-none mx-2 border-0" data-bs-toggle="modal" data-bs-target="#repeatOrder_{{ order.orderId }}">
+    <i class="fa fa-external-link-alt me-1"></i> Repeat Order
+</button>
+
+{% component BootstrapModal with { id: 'repeatOrder_' ~ order.orderId } %}
+    {% block modal_full_content %}
+        {{ component('AdminRepeatOrderForm', { order: order }) }}
+    {% endblock %}
+{% endcomponent %}

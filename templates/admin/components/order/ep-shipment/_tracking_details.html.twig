@@ -1,0 +1,31 @@
+<div class="mt-2 border-top">
+    {% for shipment in orderShipments %}
+        {% if shipment.status != 'unknown' %}
+            <ul class="list-group list-group-flush">
+                {% for history in shipment.tracking | reverse %}
+                    <li class="list-group-item">
+                        <div class="d-flex justify-content-between">
+                            <span class="fw-bold">Date:</span>
+                            <span>{{ history.datetime|date('M d, Y h:i A') }}</span>
+                        </div>
+                        {% if history.tracking_location.zip is not null %}
+                            <div class="d-flex justify-content-between">
+                                <span class="fw-bold">Location:</span>
+                                <span>
+                                    {{ history.tracking_location.city | default('') }},
+                                    {{ history.tracking_location.state | default('') }},
+                                    {{ history.tracking_location.country | default('') }}
+                                    {{ history.tracking_location.zip }}
+                                </span>
+                            </div>
+                        {% endif %}
+                        <div class="d-flex justify-content-between">
+                            <span class="fw-bold">Status:</span>
+                            <span class="text-capitalize">{{ history.message }}</span>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endfor %}
+</div>

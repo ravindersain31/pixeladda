@@ -1,0 +1,84 @@
+{% extends 'admin/base.html.twig' %}
+{% block title %}Warehouse Order Labels{% endblock %}
+{% block pageTitle %}
+    <div class="page-header-icon">
+        <i class="fas fa-list"></i>
+    </div>
+    Warehouse Order Labels
+{% endblock %}
+
+{% block body %}
+    <div class="card card-header-actions mx-auto shadow-none">
+        <div class="card-header">
+            <div>Labels</div>
+            <div class="actions me-sm-2 text-sm-left-else-center">
+                <button data-bs-toggle="modal" data-bs-target="#addNewLabel" class="btn btn-primary btn-sm">
+                    <i class="fa fa-plus me-1"></i>
+                    Add
+                </button>
+                <!-- Modal -->
+                <div class="modal fade" id="addNewLabel" data-bs-keyboard="false" tabindex="-1"
+                     aria-labelledby="addNewLabelLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="addNewLabelLabel">Add New Label</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                {{ form(form) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th class="fit-to-cell">#</th>
+                    <th class="fit-to-cell">Color</th>
+                    <th>Label Title</th>
+                    <th class="fit-to-cell">Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for label in labels %}
+                    <tr>
+                        <td class="fit-to-cell">{{ labels.getPaginationData.firstItemNumber + loop.index - 1 }}</td>
+                        <td class="fit-to-cell">
+                            <span class="badge bg-light px-5" style="background: {{ label.color }}!important">&nbsp;</span>
+                        </td>
+                        <td>{{ label.name }}</td>
+                        <td class="fit-to-cell">
+                            <button class="btn badge bg-primary btn-sm text-decoration-none text-white" data-bs-toggle="modal" data-bs-target="#edit_label_{{ label.id }}" >Edit</button>
+                            <!-- Modal -->
+                            <div class="modal fade" id="edit_label_{{ label.id }}" data-bs-keyboard="false" tabindex="-1"
+                                 aria-labelledby="edit_label_{{ label.id }}_label" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h1 class="modal-title fs-5" id="edit_label_{{ label.id }}_label">Edit Label</h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            {{ component('AdminWarehouseLabelForm', {warehouseLabel: label}) }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <a href="#" class="badge bg-danger btn-sm">Delete</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            <div class="mt-4">
+                {{ knp_pagination_render(labels) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}

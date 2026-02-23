@@ -1,0 +1,85 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Artworks{% endblock %}
+
+{% block pageTitle %}
+    <div class="page-header-icon">
+        <i class="fas fa-image"></i>
+    </div>
+    Artworks
+{% endblock %}
+
+{% block body %}
+    <div class="card card-header-actions mx-auto shadow-none">
+        <div class="card-header">
+            List of Artworks
+            <div>
+                {{ include('admin/customer/artwork/_filter_artwork.html.twig') }}
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="card-body table table-striped mb-0">
+                <thead>
+                    <tr>
+                        <th>Sr.</th>
+                        <th>Image Name</th>
+                        <th>Icon</th>
+                        <th>Tags</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% if artworks | length > 0 %}
+                    {% for artwork in artworks %}
+						{% set imageName = artwork.image ? artwork.image.name : null %}
+						{% if imageName %}
+							{% set ext = imageName|split('.')|last %}
+							{% if ext in ['gif'] %}
+								{% set imageUrl = 'https://static.yardsignplus.com/clipart/' ~ imageName %}
+							{% else %}
+								{% set imageUrl = 'https://static.yardsignplus.com/fit-in/200x200/clipart/' ~ imageName %}
+							{% endif %}
+						{% else %}
+							{% set imageUrl = '' %}
+						{% endif %}
+                        <tr>
+                            <td>{{ artworks.getPaginationData.firstItemNumber + loop.index - 1 }}</td>
+                            <td>{{ artwork.image ? artwork.image.name : '-' }}</td>
+							<td>
+                                {% if imageUrl %}
+                                    <img src="{{ imageUrl }}" alt="{{ imageName }}" style="width: 30px; height: 30px;" />
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td>{{ artwork.tags ?: '-' }}</td>
+                            <td>
+                                {% if artwork.status %}
+                                    <span class="badge bg-success">Active</span>
+                                {% else %}
+                                    <span class="badge bg-warning">Inactive</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{{ url('admin_users_update_artwork_image', {id: artwork.id}) }}" class="btn btn-info btn-sm">
+									<i class="fas fa-edit"></i>
+								</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center">No artworks found</td>
+                    </tr>
+                {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="mt-4 d-flex justify-content-center">
+        {{ knp_pagination_render(artworks) }}
+    </div>
+{% endblock %}

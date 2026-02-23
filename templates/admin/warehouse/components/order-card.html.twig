@@ -1,0 +1,120 @@
+<div {{ attributes }} class="w-100 order-card" data-id="{{ warehouseOrder.id }}">
+    {% set order = warehouseOrder.order %}
+    <div class="card bg-white shadow-none warehouse-order-card">
+        <div class="card-body p-1 pointer">
+            <div class="row justify-content-between">
+                <div class="col-9 row text-wrap">
+                    <h6 class="text-start text-primary">
+                        <span data-bs-toggle="offcanvas" data-bs-target="#order_action_{{ order.orderId }}"
+                            aria-controls="order_action_{{ order.orderId }}">
+                                {{ order.orderId }}
+                                {{ order.splitOrderTag|raw }}
+                        </span>
+                        <button type="button" class="btn btn-link p-0" data-bs-toggle="modal" data-bs-target="#order-max-{{ order.orderId }}">
+                            <i class="fa-regular fa-window-maximize text-gray-600 fs-13"></i>
+                        </button>
+                    </h6>
+                </div>
+                <div class="col-3 text-end d-flex justify-content-end">
+                    {# {% if is_granted('warehouse_update_order_print_count') %}
+                        {% if warehouseOrder.printStatus == constant('App\\Enum\\Admin\\WarehouseOrderStatusEnum::PRINTING') %}
+                            {{ component('AdminWarehouseUpdatePrintedComponent', {
+                                warehouseOrder,
+                                printed: warehouseOrder.printed,
+                            }) }}
+                        {% else %}
+                            {% if warehouseOrder.printStatus not in ['PRINTED', 'CUTTING', 'PACKING', 'DONE'] %}
+                                {% if warehouseOrder.printed | length > 0 %}
+                                    <span class="me-1"
+                                          id="printed_count_{{ warehouseOrder.id }}">{{ warehouseOrder.printed }}</span>
+                                {% endif %}
+                            {% endif %}
+                        {% endif %}
+                    {% else %}
+                        {% if warehouseOrder.printStatus not in ['PRINTED', 'CUTTING', 'PACKING', 'DONE'] %}
+                            {% if warehouseOrder.printed | length > 0 %}
+                                <span class="me-1"
+                                      id="printed_count_{{ warehouseOrder.id }}">{{ warehouseOrder.printed }}</span>
+                            {% endif %}
+                        {% endif %}
+                    {% endif %} #}
+                    {% if is_granted('warehouse_update_order_print_status') %}
+                        <div class="dropdown">
+                            <button class="btn btn-link p-0 dropdown-toggle text-decoration-none" type="button"
+                                    id="ddm_{{ order.orderId }}" data-bs-toggle="dropdown" aria-expanded="false">
+                                <span class="fw-500" id="print_status_{{ warehouseOrder.id }}">
+                                    {{ enum.warehouseOrderStatus(warehouseOrder.printStatus, true) | raw }}
+                                </span>
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="ddm_{{ order.orderId }}">
+                                {% for key, status  in constant('App\\Enum\\Admin\\WarehouseOrderStatusEnum::STATUS') %}
+                                    <li>
+                                        {% if key == 'DONE' %}
+                                            <button class="dropdown-item fw-500"
+                                                    style="color: {{ status.color }}"
+                                                    type="button" data-bs-toggle="modal" data-bs-target="#done_status_confirmation_{{ order.orderId }}">
+                                                {{ status.label }}
+                                            </button>
+                                        {% else %}
+                                        <button data-action="live#action" data-live-action-param="updateStatus"
+                                                data-live-status-param="{{ key }}" class="dropdown-item fw-500"
+                                                style="color: {{ status.color }}">
+                                            {{ status.label }}
+                                        </button>
+                                        {% endif %}
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% else %}
+                        <span class="fw-500"
+                              id="print_status_{{ warehouseOrder.id }}">{{ enum.warehouseOrderStatus(warehouseOrder.printStatus, true) | raw }}</span>
+                    {% endif %}
+                </div>
+            </div>
+            {% include 'admin/warehouse/_mini_order_info.html.twig' with { order } %}
+            {{ component('AdminWarehouseOrderCommentsComponent', {
+                order,
+                warehouseOrder,
+                comments: warehouseOrder.comments,
+                from: 'queue',
+            }) }}
+        </div>
+    </div>
+
+    <div class="offcanvas offcanvas-end" tabindex="-1"
+         id="order_action_{{ order.orderId }}"
+         aria-labelledby="order_action_{{ order.orderId }}_label">
+        <div class="offcanvas-header p-2">
+            <div class="offcanvas-title d-flex justify-content-center align-items-center" id="order_action_{{ order.orderId }}_label">
+                <h5 class="mb-0">{{ order.orderId }}</h5>
+                <a href="{{ url('admin_order_overview', {orderId: order.orderId }) }}"
+                   target="_blank"
+                   class="badge ms-1 bg-primary small text-decoration-none text-white">
+                    <i class="fa fa-external-link"></i> View
+                </a>
+                {% if warehouseOrder.driveLink %}
+                    <a href="{{ warehouseOrder.driveLink }}"
+                       target="_blank"
+                       class="badge bg-info small text-decoration-none text-white ms-1">
+                        <i class="fa fa-external-link"></i> Drive Link
+                    </a>
+                {% endif %}
+                {% if order.isRequestPickup() or order.isIsFreightRequired() %}
+                    <button type="button" class="btn badge bg-primary ms-1 text-decoration-none text-white"
+                            data-bs-toggle="modal" data-bs-target="#done_status_confirmation_{{ order.orderId }}">
+                        <i class="fa fa-check me-1"></i> Mark Done
+                    </button>
+                {% endif %}
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas"
+                    aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body p-2 pt-0">
+            {% include 'admin/warehouse/queue/_offcanvas_order_update.html.twig' with { warehouseOrder, order } %}
+        </div>
+    </div>
+
+    {% include 'admin/warehouse/components/_done_status_confirmation.html.twig' with { from: 'queue' } %}
+    {% include 'admin/warehouse/queue/_modal_order_maximize.html.twig' %}
+</div>

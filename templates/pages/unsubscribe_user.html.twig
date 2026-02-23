@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+{% block title %}Unsubscribe User - {{storeInfo.storeTitle}}{% endblock %}
+{% block metaData %}
+    <link rel="canonical" href="{{ url('unsubscribe_user') }}" />
+    {% include 'common/_default_schema.html.twig' %}
+{% endblock %}
+{% block body %}
+    {{ include('common/common_mobile_bar.html.twig',{commonBarText: 'Order Online Or Call Now',commonBarTele: '+1-877-958-1499'}) }}
+    {% set desktopImg = storeInfo.isPromoStore 
+        ? 'https://static.yardsignplus.com/storage/promo-store/Subscribe-Save-Today-Desktop-Banner.webp' 
+        : 'https://static.yardsignplus.com/subscribe-save_20230103-2319ba50-8b5e-11ed-af2c-2fc40d897de3.jpg' 
+    %}
+
+    {% set mobileImg = storeInfo.isPromoStore 
+        ? 'https://static.yardsignplus.com/storage/promo-store/Subscribe-Save-Today-Mobile-Banner.webp' 
+        : 'https://static.yardsignplus.com/subscribe-save_20230103-ef4c41e0-8b5d-11ed-8510-052236b07907.png' 
+    %}
+    {{ include('common/_banner.html.twig',{
+        desktopImg: desktopImg,
+        desktopAlt: 'YSP Desktop Subscribe and Save Banner',
+        mobileImg: mobileImg,
+        mobileAlt: 'YSP Mobile Subscribe and Save Banner'
+    }) }}
+    {{ include('common/highlights.html.twig') }}
+    {{ include('common/breadcrumb.html.twig', { breadcrumbs: [
+        { name: 'Unsubscribe User', active: true }
+    ]}) }}
+    {% set email = app.request.get('email') %}
+    <section class="ysp-unsubscribe-wrapper">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12 p-0 my-4">                        
+                    {{ component('UnsubscribeUserForm') }}
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

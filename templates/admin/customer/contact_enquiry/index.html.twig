@@ -1,0 +1,84 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Contact Us
+{% endblock %}
+{% block pageTitle %}
+	<div class="page-header-icon">
+		<i class="fas fa-list"></i>
+	</div>
+	Contact Us
+{% endblock %}
+
+{% block body %}
+	<div class="card card-header-actions mx-auto shadow-none">
+		<div class="card-header">
+			List of Contact Us
+		</div>
+		<div class="table-responsive">
+		<table class="card-body table table-striped mb-0">
+			<thead>
+				<tr>
+					<th>Sr.</th>
+					<th>Website</th>
+					<th>Name</th>
+					{# <th>Comment</th> #}
+					<th>Email</th>
+					<th>Phone</th>
+					<th>Status</th>
+					<th>Received On</th>
+					<th>Completed On</th>
+					<th class="text-center">Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for key,enquiry in enquiries %}
+					<tr>
+						<td>{{ enquiries.getPaginationData.firstItemNumber + loop.index - 1 }}</td>
+						<td>
+							{% if isPromoStore(enquiry.storeDomain) and enquiry.storeDomain.name is not empty %}
+								{{ enquiry.storeDomain.name }}
+							{% else %}
+								{{ enquiry.store.shortName | default('-') }}
+							{% endif %}
+						</td>
+						<td>{{ enquiry.name | default("-")}}</td>
+						{# <td>{{ enquiry.comment | default("-")}}</td> #}
+						<td>{{ enquiry.email }}</td>
+						<td>{{ enquiry.phone | default("-") }}</td>
+						<td>
+							<span class="badge {{ enquiry.isOpened ? 'bg-warning' : 'bg-success' }}">
+								{{ enquiry.isOpened ? 'OPEN' : 'CLOSED' }}
+							</span>
+						</td>
+						<td>{{ enquiry.createdAt|date }}</td>
+						<td>
+							{% if enquiry.updatedAt is not null %}
+								{{ enquiry.updatedAt|date('Y-m-d H:i:s') }}
+							{% else %}
+								-
+							{% endif %}
+						</td>
+						<td class="text-end">
+							{% set toggleStatus = not enquiry.isOpened %}
+							<a href="{{ path('admin_contact_us_status', { id: enquiry.id, status: toggleStatus ? 1 : 0 }) }}" class="btn btn-{{ enquiry.isOpened ? 'success' : 'warning' }} btn-xs"
+							onclick="return confirm('{{ toggleStatus ? 'Are you sure to reopen this contact request?' : 'Are you sure to complete this contact request?' }}')"
+							>{{ toggleStatus ? 'Reopen' : 'Completed' }}
+							</a>
+							<a href="{{ url('admin_contact_us_view',{id:enquiry.id}) }}" class="btn btn-blue btn-xs">View</a>
+						</td>
+					</tr>
+				{% else %}
+					<tr>
+						<td colspan="6">No records</td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+		</div>
+	</div>
+
+	<div class="mt-4">
+		{{ knp_pagination_render(enquiries) }}
+	</div>
+{% endblock %}
+

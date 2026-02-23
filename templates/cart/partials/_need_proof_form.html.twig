@@ -1,0 +1,62 @@
+<div class="card mb-3" id="need-proof-card">
+    <div class="card-header">
+        <strong>
+            Digital Proof (Order Preview)
+        </strong>
+    </div>
+    <div class="card-body need-proof-form-container">
+        {{ form_start(needProofForm, {
+            attr: {
+                'id': 'need-proof-form',
+                    'data-cart-id': cart.cartId,
+                    'data-update-url': path('cart_need_proof_update', {cartId: cart.cartId}),
+                    'data-approve-url': path('cart_need_proof_approve', {cartId: cart.cartId})
+                }
+        }) }}
+        {{ form_row(needProofForm.needProof) }}
+        {{ form_row(needProofForm.designApproved) }}
+        {{ form_end(needProofForm, {render_rest: false}) }}
+
+        <div id="need-proof-status">
+            {% if cart.needProof is same as(false) and cart.designApproved is same as(true) %}
+                <div class="alert alert-success mb-0 mt-1">
+                    <i class="fas fa-check-circle me-2"></i>
+                    <strong>
+                        Design Approved!
+                    </strong>
+                    Your order will proceed without a proof review.
+                </div>
+            {% elseif cart.needProof is same as(false) and cart.designApproved is same as(false) %}
+                <div class="alert alert-warning mb-0 mt-1">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>
+                        Approval Required:
+                    </strong>
+                    Please review and approve your design before checkout.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+<style>
+    .need-proof-form-container {
+        padding: 10px 15px;
+    }
+    #need-proof-form {
+        font-size: 0.85rem;
+    }
+
+    #need-proof-status {
+        font-size: 0.85rem;
+    }
+
+    #need-proof-status .alert {
+        padding: 10px;
+    }
+
+    @media screen and (max-width: 480px) {
+        #need-proof-form {
+            font-size: 0.75rem;
+        }
+    }
+</style>

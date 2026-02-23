@@ -1,0 +1,89 @@
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="transactionModal" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="transactionModal">Add / Deduct Customer Reward</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+				{{ component('RewardTransactionForm',{
+						form:form,
+						rewardTransaction: rewardTransaction
+				}) }}
+      </div>
+    </div>
+  </div>
+</div>
+
+
+{% set rewardsData = [
+    {
+        'label': 'Total Earned',
+        'value': user.reward.totalPoints|default(0),
+        'class': 'border-left-5 text-blue',
+        'icon': 'fas fa-dollar'
+    },
+    {
+        'label': 'Total Spend',
+        'value': user.reward.usedPoints|default(0),
+        'class': 'border-red text-red',
+        'icon': 'fas fa-dollar'
+    },
+    {
+        'label': 'Total Available',
+        'value': user.reward.availablePoints|default(0),
+        'class': 'border-green text-green',
+        'icon': 'fas fa-dollar'
+    },
+    {
+        'label': 'Pending Rewards',
+        'value': user.reward.pendingPoints|default(0),
+        'class': 'border-yellow text-yellow',
+        'icon': 'fas fa-dollar'
+    }
+] %}
+
+<div class="row">
+    {% for reward in rewardsData %}
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card shadow h-100 py-2 border-left-5 {{ reward.class }}">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="small fw-bold text-capitalized mb-1">
+                                {{ reward.label }}
+                            </div>
+                            <div class="h5 mb-0 fw-bold text-gray-800">
+                                <span class="d-flex">
+                                    <span></span>
+                                    <span class="widget-value">${{ reward.value|number_format(2) }}</span>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="{{ reward.icon }} fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
+<div class="card card-header-actions mx-auto shadow-none">
+	<div class="table-responsive">
+		<div class="card-header">
+			{{user.email}}
+			<div class="card-header-actions">
+				<button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+					<i class="fas fa-plus me-2"></i>
+					Add Reward
+				</button>
+			</div>
+		</div>
+		{% include 'admin/customer/users/reward/_reward_history_table.html.twig' with {transactions: transactions} %}
+	</div>
+</div>
+<div class="mt-4">
+	{{ knp_pagination_render(transactions) }}
+</div>

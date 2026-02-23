@@ -1,0 +1,82 @@
+{% extends 'base.html.twig' %}
+
+{% set title = metaData.title ?: metaData.pageTitle ~ ' - ' ~ storeInfo.storeTitle %}
+
+{% block title %}{{ title }}{% endblock %}
+{% block metaData %}
+    {% set pageUrl = url('military_veterans') %}
+    {% set pageImageUrl = storeInfo.isPromoStore
+        ? 'https://static.yardsignplus.com/storage/promo-store/Desktop_Military.webp' 
+        : 'https://static.yardsignplus.com/storage/banners/Military-and-Veterans-Discount-Banner-Desktop.webp'
+    %}
+
+    {% include 'common/_page_meta.html.twig' with {
+        title: title,
+        metaData: metaData,
+        pageUrl: pageUrl,
+        pageImageUrl: pageImageUrl,
+        storeInfo: storeInfo
+    } %}
+{% endblock %}
+{% block body %}
+    {{ include('common/common_mobile_bar.html.twig',{commonBarText: 'Order Online Or Call Now',commonBarTele: '+1-877-958-1499'}) }}
+    {{ include('common/_banner.html.twig',{
+        desktopImg: storeInfo.isPromoStore ? 'https://static.yardsignplus.com/storage/promo-store/Desktop_Military.webp' : 'https://static.yardsignplus.com/storage/banners/Military-and-Veterans-Discount-Banner-Desktop.webp',
+        desktopAlt: 'Military-and-Veterans-Discount-Banner',
+        mobileImg: storeInfo.isPromoStore ? 'https://static.yardsignplus.com/storage/promo-store/Mobile_Military.webp' : 'https://static.yardsignplus.com/storage/banners/Military-and-Veterans-Discount-Banner-Mobile.webp',
+        mobileAlt: 'Military-and-Veterans-Discount-Banner'
+    }) }}
+    {{ include('common/highlights.html.twig') }}
+    {{ include('common/breadcrumb.html.twig', { breadcrumbs: [
+        { name: 'Military and Veterans', active: true }
+    ]}) }}
+    <div class="page-content container">
+        <div>
+            <p class="d-flex flex-column align-items-center text-center">
+                <span>We salute your service. To show our appreciation, we’re offering an exclusive </span>
+                <span class="heading-purple"> Extra 15% OFF </span>
+                <span>for all military personnel and veterans. Enjoy special savings on all our products as our way of 
+                    saying thank you for your dedication and sacrifice. Your bravery deserves more than words.</span>
+            </p>
+        </div>
+        <section class="eligibility mt-4">
+            <h4 class="text-dark fs-19">We are offering this discount to veterans and active duty military:</h4>
+            <ul class="text-dark">
+                <li>Active Duty Service Members, spouses, and dependents</li>
+                <li>Reservist</li>
+                <li>Retirees of U.S. Air Force, Army, Coast Guard, Marine Corps, Navy, and National Guard</li>
+                <li>Military Veterans</li>
+            </ul>
+            <p>If you do not see your position above, reach out to us by emailing <a href="mailto:{{storeInfo.storeEmail}}">{{storeInfo.storeEmail}}</a> so we can assist you.</p>
+        </section>
+        <section class="ysp-faq-wrapper faq text-dark">
+        {% for title,faqsList in faqs %}
+            <div class="col-md-12 my-4">
+                <div class="faq-title">
+                    <h4 class="fs-19">{{ title }}</h4>
+                </div>
+                <div class="accordion ysp-accordion mt-3" id="accordionFaq{{ loop.index }}">
+                    {% set parentIndex = loop.index %}
+                    {% for question, answer in faqsList %}
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="yspAccordion{{ loop.index }}">
+                                <button class="accordion-button p-2" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#yspAccord{{ loop.index }}" aria-expanded="true"
+                                        aria-controls="yspAccord{{ loop.index }}">
+                                    {{ question | raw }}
+                                </button>
+                            </h2>
+                            <div id="yspAccord{{ loop.index }}" class="accordion-collapse collapse" aria-labelledby="yspAccordion{{ loop.index }}"
+                                    data-bs-parent="#accordionFaq{{ parentIndex }}">
+                                <div class="accordion-body">
+                                    <p>{{ answer | raw }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endfor %}
+        </section>
+    </div>
+{% endblock %}

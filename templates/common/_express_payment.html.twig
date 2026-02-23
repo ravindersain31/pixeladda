@@ -1,0 +1,38 @@
+<div class="ysp-express-checkout-wrapper my-2">
+    {% include 'checkout/_google_pay.html.twig' %}
+    <input type="text" id="paypal-client-id" data-currency="USD" data-amount="{{ cart.totalAmount | number_format(2)|replace({',':''}) }}" value="{{ ysp.getEnv('PAYPAL_CLIENT_ID')}}" hidden>
+    <p class="ysp-checkout-fixed-top-text text-nowrap ysp-purple">Express Checkout</p>
+    <div class="ysp-express-payment-methods-wrapper">
+        <div class="common-express-checkout">
+            <div id="paypal-button-container"></div>
+        </div>
+        {# <a href="#" data-bs-toggle="modal" data-bs-target="#checkoutModel"
+            class="checkoutModel common-express-checkout-btn"> Buy with &nbsp;<img src={{ asset('app-images/images/google-pay.png') }} class="" /> Pay
+        </a> #}
+    </div>
+    <div class="d-flex justify-content-center d-none">
+        <div id="google-pay-express-checkout" style="width: 330px; height: 45px;"></div>
+    </div>
+    <div class="d-flex justify-content-center mt-2">
+        <div id="apple-pay-express-checkout" class="d-none" style="width: 330px; height: 45px;"></div>
+    </div>
+    {% if amazonPay.signature %}
+        <div class="d-flex justify-content-center ysp-express-payment-methods-wrapper">
+            <div class="amazon-pay-checkout">
+                <div id="AmazonPayButton" style="display:none; margin-top: 10px; box-shadow: 3px 4px 2px #000000;"></div>
+                <input
+                type="hidden"
+                id="amazon-pay-config"
+                data-payload="{{ amazonPay.payload | e('html_attr') }}"
+                data-signature="{{ amazonPay.signature | e('html_attr') }}"
+                data-merchant-id="{{ ysp.env('AMAZON_PAY_MERCHANT_ID') }}"
+                data-public-key-id="{{ ysp.env('AMAZON_PAY_PUBLIC_ID') }}"
+                data-algorithm="{{ ysp.env('AMAZON_ALGO_KEY') }}"
+                data-amount="{{ cart.totalAmount | number_format(2, '.', '') }}"
+                data-currency="USD"
+                >
+            </div>
+        </div>
+    {% endif %}
+     <p class="ysp-checkout-fixed-bottom-text text-nowrap">Or</p>
+</div>

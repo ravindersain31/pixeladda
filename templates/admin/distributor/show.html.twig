@@ -1,0 +1,94 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Bulk Order{% endblock %}
+
+{% block stylesheets %}
+    {{ encore_entry_link_tags('admin-editor') }}
+    {{ encore_entry_link_tags('admin') }}
+{% endblock %}
+
+{% block pageTitle %}
+    <div class="page-header-icon">
+        <i class="fas fa-dashboard"></i>
+    </div>
+    ENQUIRY ID: #{{ distributor.id }}
+{% endblock %}
+
+{% block body %}
+
+<div class="card shadow-sm p-4 distributorShow" >
+    <table class="table table-bordered table-striped enquiry-details-table">
+        <tr>
+            <th>Company Name</th>
+            <td>{{ distributor.companyName ?: '-' }}</td>
+        </tr>
+        <tr>
+            <th>Business Type</th>
+            <td>{{ distributor.businessType ?: '-' }}</td>
+        </tr>
+        
+        <tr>
+            <th>Email</th>
+            <td>{{ distributor.email }}</td>
+        </tr>
+        <tr>
+            <th>Phone</th>
+            <td>{{ distributor.phoneNumber }}</td>
+        </tr>
+        <tr>
+            <th>City</th>
+            <td>{{ distributor.City ?: '-' }}</td>
+        </tr>    
+
+        <tr>
+            <th>State</th>
+            <td>{{ distributor.state is not null ? distributor.state.name : '-' }}</td>
+        </tr>
+        <tr>
+            <th>Country</th>
+            <td>{{ distributor.Country ?: '-' }}</td>
+        </tr>
+        <tr>
+            <th>ZIP CODE</th>
+            <td>{{ distributor.ZipCode ?: '-' }}</td>
+        </tr>
+         <tr>
+            <th>Business Website</th>
+            <td>{{ distributor.businessWebsite ?: '-' }}</td>
+        </tr>
+         <tr>
+            <th>Expected Order Volume</th>
+            <td>{{ distributor.expectedMonthlyOrderVolume ?: '-' }}</td>
+        </tr>
+         <tr>
+            <th>Sales Experience</th>
+            <td>{{ distributor.salesExperience ?: '-' }}</td>
+        </tr>
+         <tr>
+            <th>Additional Comments or Questions</th>
+            <td>{{ distributor.additionalComments ?: '-' }}</td>
+        </tr>
+        <tr>
+            <th>Status</th>
+           <td>
+                {% if distributor.status == 0 %}
+                    <span class="badge bg-success text-dark">OPEN</span>
+                {% elseif distributor.status == 1 %}
+                    <span class="badge bg-warning text-white">CLOSED</span>
+            
+                {% endif %}
+            </td>
+
+        </tr>
+        <tr>
+            <th>Received On</th>
+            <td>{{ distributor.createdAt ? distributor.createdAt|date('F j, Y H:i') : '-' }}</td>
+        </tr>
+       
+        <tr>
+            <th>Completed On</th>
+            <td>{{ distributor.updatedAt ? distributor.updatedAt|date('F j, Y H:i') : '-' }}</td>
+        </tr>
+    </table>
+</div>
+{% endblock %}

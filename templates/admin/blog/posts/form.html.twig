@@ -1,0 +1,70 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}
+    {% if post is defined %}
+        Edit Post - {{ post.title }}
+    {% else %}
+        Add new Post
+    {% endif %}
+{% endblock %}
+{% block pageTitle %}
+    <div class="page-header-icon">
+        <i class="fas fa-dashboard"></i>
+    </div>
+    {% if post is defined %}
+        Edit Post - {{ post.title }}
+    {% else %}
+        Add new Post
+    {% endif %}
+{% endblock %}
+
+{% block body %}
+    {{ form_start(form) }}
+    <div class="card card-header-actions mx-auto shadow-none">
+        <div class="card-header">
+            {% if post is defined %}
+                Edit Post - {{ post.title }}
+            {% else %}
+                Add new Post
+            {% endif %}
+            {% if post is defined %}
+                <div class="open-link">
+                    <a href="{{ path('blog_post', {slug: post.slug}) }}" class="btn btn-light btn-sm" target="_blank">
+                        <i class="fa fa-external-link-alt me-2"></i>
+                        Open Blog Page
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-12 col-md-8">
+                    <div class="row">
+                        <div class="col-12 col-md-6">
+                            {{ form_row(form.store) }}
+                        </div>
+                        <div class="col-12 col-md-6">
+                            {{ form_row(form.author) }}
+                        </div>
+                    </div>
+                    {{ form_row(form.title) }}
+                    {{ form_row(form.slug) }}
+                    {{ form_row(form.excerpt) }}
+                    {{ form_row(form.content) }}
+                </div>
+                <div class="col-12 col-md-4 bg-light p-3 rounded ">
+                    {{ form_row(form.enabled) }}
+                    {{ form_row(form.publishedAt) }}
+                    {{ form_row(form.imageFile) }}
+                    {{ form_row(form.categories) }}
+                    <div class="mb-3">
+                        <h6>SEO Meta Data</h6>
+                        {{ form_row(form.seoMeta) }}
+                    </div>
+                </div>
+            </div>
+            {{ form_row(form.submit) }}
+        </div>
+    </div>
+    {{ form_end(form) }}
+{% endblock %}

@@ -1,0 +1,87 @@
+<div {{ attributes }}>
+	{{ form_start(form) }}
+	{{ form_errors(form) }}
+
+     <div class="row">
+        <div class="col-sm-6">
+            <div class="form-group">
+                {{ form_row(form.couponName) }}
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="form-group">
+               {{ form_row(form.code) }}
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="form-group">
+                {{ form_row(form.startDate) }}
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="form-group">
+                {{ form_row(form.endDate) }}
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="form-group">
+                {{ form_row(form.type) }}
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="form-group row">
+                <div class="col-sm-6">
+                    {{ form_row(form.usesTotal) }}
+                </div>
+                <div class="col-sm-6">
+                    {{ form_row(form.minCartValue) }}
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                {{ form_row(form.discount) }}
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                {% set isDisabled = form.type.vars.value is defined and form.type.vars.value == 'F' %}
+                {{ form_label(form.maximumDiscount) }}
+                {{ form_widget(form.maximumDiscount, { 'attr': isDisabled ? {'disabled': 'disabled', 'readonly': 'readonly', 'class': 'not-allowed'} : {} }) }}
+                {{ form_errors(form.maximumDiscount) }}
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="form-group">
+                {{ form_row(form.store) }}
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="form-group">
+                {{ form_row(form.minimumQuantity) }}
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="form-group">
+                {{ form_row(form.maximumQuantity) }}
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="form-group">
+                {{ form_row(form.isEnabled) }}
+                {{ form_row(form.isPromotional) }}
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="form-group">
+            </div>
+        </div>
+
+        <div class="col-sm-2 mx-auto">
+            <div class="form-group">
+                 {{ form_row(form.submit) }}
+            </div>
+        </div>
+    </div>
+    {{ form_end(form) }}
+</div>

@@ -1,0 +1,72 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Products{% endblock %}
+{% block pageTitle %}
+    <div class="page-header-icon">
+        <i class="fa-solid fa-cubes"></i>
+    </div>
+    Products
+{% endblock %}
+
+{% block body %}
+    <div class="card card-header-actions mx-auto shadow-none">
+        <div class="card-header">
+            List of Products
+            <div>
+                {{ include('admin/product/_filter_product.html.twig') }}
+                <a href="{{ url('admin_product_add') }}" class="btn btn-primary btn-sm">
+                    <i class="fas fa-plus me-2"></i>
+                    Add
+                </a>
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="card-body table table-striped mb-0">
+                <thead>
+                <tr>
+                    <th>Sr.</th>
+                    <th>Website</th>
+                    <th>Name</th>
+                    <th>Status</th>
+                    <th>Category</th>
+                    <th>SKU</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% if products | length > 0 %}
+                    {% for product in products %}
+                        <tr>
+                            <td>{{ products.getPaginationData.firstItemNumber + loop.index - 1 }}</td>
+                            <td>{{ product.store.shortName }}</td>
+                            <td>{{ product.name }}</td>
+                            <td>
+                                {% if product.isEnabled %}
+                                    <span class="badge bg-success">Selling</span>
+                                {% else %}
+                                    <span class="badge bg-warning">Not Selling</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ product.primaryCategory }}</td>
+                            <td>{{ product.sku }}</td>
+                            <td>
+                                <a href="{{ url('admin_product_edit', {id: product.id}) }}" class="btn btn-info btn-sm">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="6">No records</td>
+                    </tr>
+                {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="mt-4 d-flex justify-content-center">
+        {{ knp_pagination_render(products) }}
+    </div>
+{% endblock %}

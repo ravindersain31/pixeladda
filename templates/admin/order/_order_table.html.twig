@@ -1,0 +1,180 @@
+<div class="table-responsive">
+    <table class="card-body table table-striped mb-0">
+    <thead>
+    <tr>
+        {% if 'ROLE_WAREHOUSE' not in app.user.roles %}
+            <th>Sr.</th>
+        {% endif %}
+        <th>Order No</th>
+        <th>Website</th>
+        <th>Customer</th>
+        {% if 'ROLE_WAREHOUSE' not in app.user.roles %}
+            <th>Amount</th>
+        {% endif %}
+        <th>Order Date</th>
+        <th class="text-center fit-to-cell">Payment Status</th>
+        {% if status in ['ready-for-shipment', 'shipped'] %}
+            <th>Provider</th>
+            <th>Ship Status</th>
+        {% else %}
+            <th class="text-center">Order Status</th>
+        {% endif %}
+        {% if 'ROLE_SUPER_ADMIN' in app.user.roles %}
+            <th>Shipping Costs</th>
+            <th>P/L</th>
+        {% endif %} 
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% if orders | length > 0 %}
+        {% for order in orders %}
+            <tr>
+                {% if 'ROLE_WAREHOUSE' not in app.user.roles %}
+                    <td>{{ orders.getPaginationData.firstItemNumber + loop.index - 1 }}</td>
+                {% endif %}
+                <td class="custom-badges-info">
+                    <a href="{{ url('admin_order_overview', {orderId: order.orderId}) }}">{{ order.orderId }}</a>
+                    {{ order.splitOrderTag|raw }}
+                    {% if isFraud is defined and isFraud is not null %}
+                        {% if isFraud is defined and isFraud|filter((fraud) => fraud == order.orderId) %}
+                            <span class="badge bg-danger">Fraud</span>
+                        {% endif %}
+                    {% endif %}
+                    {% if order.orderChannel and order.isManual %}
+                        <span class="badge bg-warning">{{ order.orderChannel.label }}</span>
+                    {% endif %}
+
+                    {% if order.printerName %}
+                        <span class="badge bg-secondary">{{ order.printerName }}</span>
+                    {% elseif order.subOrders %}
+                        {% for subOrder in order.subOrders %}
+                            <span class="badge bg-secondary">{{ subOrder.printerName }}</span>
+                        {% endfor %}
+                    {% endif %}
+                    {% if order.isSuperRush and order.metaData['isSaturdayDelivery'] is defined and not order.metaData['isSaturdayDelivery'] %}
+                        <span class="badge bg-primary badge-blue-soft">Super Rush</span>
+                    {% endif %}
+                    {% if order.shippingMetaData['customerShipping'] is defined and order.shippingMetaData['customerShipping'] is not empty and 'day' in order.shippingMetaData['customerShipping'] and order.shippingMetaData['customerShipping']['day'] == 3 %}
+                        <span class="badge bg-primary badge-blue-soft">Rush</span>
+                    {% endif %}
+                    {% if order.metaData['isSaturdayDelivery'] is defined and order.metaData['isSaturdayDelivery'] %}
+                        <span class="badge bg-primary badge-blue-soft">Super Rush: Saturday Delivery</span>
+                    {% endif %}
+                    {% if order.orderProtectionAmount != 0 %}
+                        <span class="badge bg-danger ">Order Protection</span>
+                    {% endif %}
+                    {% if order.isFreightRequired %}
+                        <span class="badge bg-primary">Freight</span>
+                    {% endif %}
+                    {% if (status == 'ready-for-shipment' or status == 'sent-for-production') and order.warehouseOrder %}
+                        {{ enum.warehouseOrderStatus(order.warehouseOrder.printStatus, true, true) | raw }}
+                    {% endif %}
+                    {% if isPromoStore(order.storeDomain) %}
+                        <span class="badge bg-gradient-primary-to-secondary">{{order.storeDomain.name}}</span>
+                    {% endif %}
+                    <div class="d-flex mt-1">
+                        {% set isSample = order.orderItems|filter(item => item.product.parent.sku == 'SAMPLE')|first %}
+                        {% set isCustomSizeSample = order.orderItems|filter(item => item.metaData.customSize is defined and item.metaData.customSize is not null and item.metaData.customSize.isSample is defined and item.metaData.customSize.isSample)|first %}
+                        {% if isSample and not isCustomSizeSample %}
+                            <span class="badge bg-danger mx-1">{{ isSample.product.parent.sku }}</span>
+                        {% endif %}
+                        {% if isCustomSizeSample %}
+                            <span class="badge bg-danger mx-1">{{ isCustomSizeSample.product.parent.sku }}</span>
+                            <span class="badge bg-danger mx-1">{{ isCustomSizeSample.metaData.customSize.parentSku }}</span>
+                        {% endif %}
+                        {% set isWireStake = order.orderItems|filter(item => item.product.parent.sku == 'WIRE-STAKE')|first %}
+                        {% if isWireStake %}
+                            <span class="badge bg-danger mx-1">{{ isWireStake.product.parent.sku }}</span>
+                        {% endif %}
+                        {% set isBlankSign = order.orderItems|filter(item => item.product.parent.sku == ProductEnum.BLANK_SIGN.value)|first %}
+                        {% if isBlankSign %}
+                            <span class="badge bg-danger mx-1">{{ isBlankSign.product.parent.sku }}</span>
+                        {% endif %}
+                    </div>
+                </td>
+                <td>
+                    {% if isPromoStore(order.storeDomain) and order.storeDomain.name is not empty %}
+                        {{ order.storeDomain.name }}
+                    {% else %}
+                        {{ order.store.shortName }}
+                    {% endif %}
+                </td>
+                <td>
+                    {{ order.billingAddress.firstName | default('-') }}
+                    {{ order.billingAddress.lastName | default('-') }}
+                </td>
+                {% if 'ROLE_WAREHOUSE' not in app.user.roles %}
+                    <td>${{ order.totalAmount | number_format(2) }}</td>
+                {% endif %}
+                <td class="fit-to-cell">{{ order.orderAt | date('M d, Y h:i A') }}</td>
+                <td class="text-center badges-status">{{ order.paymentStatus | badgePaymentStatus | raw }}</td>
+                {% if status in ['ready-for-shipment', 'shipped'] %}
+                    <td>{{ order.shippingMethod | replace({'_': ''}) | capitalize }}</td>
+                    <td>{{ order.shippingStatus | replace({'_': ' '}) | capitalize }}</td>
+                {% else %}
+                    <td class="text-center badges-status">
+                        {{ order.status | badgeOrderStatus | raw }}
+
+                        {% if order.proofDesigner %}
+                            <span class="badge badge-danger-soft mt-1">
+                                <i class="fa fa-user"></i>
+                                {{ order.proofDesigner.username }}
+                            </span>
+                        {% endif %}
+                    </td>
+                {% endif %}
+                {% if 'ROLE_SUPER_ADMIN' in app.user.roles %}
+                    <td>
+                        {% set shippingCosts = order.shippingCosts %}
+                        <span class="badge" style="background-color: rgba(0, 123, 255, 0.6); color: black;">
+                            {% if shippingCosts.shippingCharges %}
+                                <span class="fw-bold">{{ shippingCosts.carrier }} Charges:</span> ${{ shippingCosts.shippingCharges | number_format(2) }}
+                            {% else %}
+                                <span class="fw-bold">EP Charges:</span> ${{ order.shippingCost | number_format(2) }}
+                            {% endif %}
+                        </span><br/>
+                        <span class="badge" style="background-color: rgba(255, 193, 7, 0.6); color: black;">Adjustments: <strong>${{ shippingCosts.shippingAdjustment | default(0) | number_format(2) }}<strong/></span><br/>
+                        <span class="badge" style="background-color: rgba(40, 167, 69, 0.6); color: black;">Total: <strong>${{ shippingCosts.shippingTotal | default(0) | number_format(2) }}<strong/></span>
+                    </td>
+                    {% macro getMarginBadge(value, label) %}
+                        {% set backgroundColor =
+                            value > 55 ? 'rgba(0, 172, 105, 1)' :
+                            (value > 30 and value <= 55 ? 'rgba(0, 172, 106, 0.5)' :
+                            (value > 20 and value <= 30 ? 'rgba(255, 193, 7, 0.8)' :
+                            (value > 0 and value <= 20 ? 'rgba(232, 20, 0, 0.5)' : 
+                            (value <= -50 ? 'rgb(255, 143, 28)' :
+                            'rgba(232, 21, 0, 1)'))))
+                        %}
+                        <span class="badge" style="background-color: {{ backgroundColor }};">
+                            {{ label }}: {{ value | default(0) | number_format(2) }}%
+                        </span>
+                    {% endmacro %}
+
+                    <td>
+                        {% import _self as macros %}
+                        {{ macros.getMarginBadge(order.grossMarginPercentage | default(0), 'G') }}<br/>
+                        {{ macros.getMarginBadge(order.netMarginPercentage | default(0), 'N') }}
+                    </td>
+                {% endif %}
+                <td class="text-end d-flex flex-column">
+                    <a href="{{ url('admin_order_overview', {orderId: order.orderId}) }}"
+                       class="btn btn-info badge my-1">
+                        <i class="fas fa-eye me-1"></i>View
+                    </a>
+                    <a href="{{ url('admin_order_proofs', {orderId: order.orderId}) }}"
+                       class="btn btn-primary badge">
+                        <i class="fas fa-edit me-1"></i>Proofs
+                    </a>
+                    <span>&nbsp;</span>
+                </td>
+            </tr>
+        {% endfor %}
+    {% else %}
+        <tr>
+            <td colspan="9">No records</td>
+        </tr>
+    {% endif %}
+    </tbody>
+    </table>
+</div>

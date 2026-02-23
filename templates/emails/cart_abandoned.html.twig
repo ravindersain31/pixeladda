@@ -1,0 +1,72 @@
+{% extends 'emails/base.html.twig' %}
+{% block title %}DID YOU FORGET SOMETHING?{% endblock %}
+{% block subject %}DID YOU FORGET SOMETHING?{% endblock %}
+{% block body %}
+    <tr>
+        <td colspan="3">
+            <p class="off-desc ys-mob-ryt-lft-pad15"
+               style="font-size: 20px; color: #000000; padding: 0 50px; line-height: 135%; margin: 15px 0 20px;">
+                We have saved your most recent shopping cart history. Click "Continue Shopping" below to complete your
+                order and apply our special discount.
+            </p>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="3">
+            <table style="margin: 0 auto">
+                <tr>
+                    <td>
+                        <a href="{{ url('cart', {id: cart.cartId, refCoupon: 'SAVE15NOW'}) }}" target="_blank" style="text-decoration: none; display: block;">
+                            <table width="284" cellspacing="0" cellpadding="0" border="0" style="background-image: url('https://static.yardsignplus.com/off_bg.png'); background-repeat: no-repeat; background-size: contain; background-position: center center; width: 284px; height: 118px; min-width: 1px; text-align: center;">
+                                <tr>
+                                    <td style="vertical-align: middle; padding: 0;">
+                                        <p style="font-size: 18px; color: #ffffff; font-weight: bold; margin: 0 auto 3px;">
+                                            SAVE15NOW FOR 15% OFF
+                                        </p>
+                                        <p style="font-size: 18px; color: #ffffff; font-weight: bold; margin: 0 auto 3px;">
+                                            YOUR ENTIRE ORDER
+                                        </p>
+                                        <p style="font-size: 20px; color: #ffffff; font-weight: 300; margin: 0 auto;">
+                                            LIMITED TIME ONLY
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </a>
+
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="3">
+            <a href="{{ url('cart', {id: cart.cartId, refCoupon: 'SAVE15NOW'}) }}" target="_blank" class="ysp-common-btn-sm"
+               style="background-color: #efc825;color: #000000;font-size: 30px;text-transform: uppercase;text-decoration: none;padding: 15px 30px;display: inline-block;font-weight: normal;border-radius: 10px;margin: 15px 0 20px;line-height: 1.5;">CONTINUE
+                SHOPPING</a>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="3">
+            {{ include('emails/common/_cart_info_table.html.twig', { hideFooter: true }) }}
+        </td>
+    </tr>
+    <tr>
+        <td colspan="3">
+            <p class="ys-mob-desc-paragraph"
+               style="margin: 25px 0 0;color: #6c757d;font-size: 11px;font-weight: normal;margin-bottom: 4px;line-height: 135%; padding-bottom: 15px;font-style: italic;">
+                We have saved your most recent Shopping Cart history.<br/>
+                Click "Continue Shopping" to ﬁnish ordering.<br/>
+                This special discount will automatically be applied by clicking the link in this email.<br/>
+                Promotional discounts cannot be combined.<br/>
+                For questions, please call
+                <a style="color: #1156cd;font-size: 11px;font-weight: normal;line-height: 135%;font-style: italic;"
+                   href="tel:+1-877-958-1499">+1-877-958-1499</a>
+                or email
+                <a style="color: #1156cd;font-size: 11px;font-weight: normal;line-height: 135%;font-style: italic;"
+                   href="mailto:{{storeInfo.storeEmail}}">{{storeInfo.storeEmail}}</a>.
+            </p>
+        </td>
+    </tr>
+
+{% endblock %}

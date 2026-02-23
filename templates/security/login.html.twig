@@ -1,0 +1,107 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+	User Login
+{% endblock %}
+
+{% block body %}
+	{{ include('common/common_mobile_bar.html.twig',{commonBarText: 'Order Online Or Call Now',commonBarTele: '+1-877-958-1499'}) }}
+	<section class="checkout-banner-text-wrapper shopping-cart-title-space">
+		<p>{{ loginTitle }}</p>
+	</section>
+
+	<div
+		class="container">
+		<!-- Begin page content -->
+
+		<section class="pages-contents customer-login common-account-pages-wrapper {{storeInfo.isPromoStore ? "mb-4" : "mb-5 "}} mt-5">
+			<div class="container">
+				<div class="row justify-content-center">
+					<div
+						class="col-lg-5">
+						{{ include ('common/flash.html.twig') }}
+						<!-- /.login-logo -->
+						<div class="card shadow-sm rounded-lg">
+							<div class="card-body login-form-body">
+								{% if error %}
+									<div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security')|replace({'Invalid credentials.': 'Incorrect email address or password, please try again.'}) }}</div>
+								{% endif %}
+								<form method="post">
+									<input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+									<div class="form-group">
+										<label class="ysp-label-mrt" for="inputEmailAddress">Email</label>
+										<div class="input-group mb-3">
+											<div class="input-group-prepend">
+												<span class="input-group-text">
+													<i class="fa fa-envelope" aria-hidden="true" data-acsb-hidden="true" data-acsb-force-hidden="true"></i>
+												</span>
+											</div>
+											<input type="email" name="username" class="form-control" placeholder="Enter your email address" value="{{ last_username }}" required>
+										</div>
+
+									</div>
+									<div class="form-group">
+										<label class="ysp-label-mrt" for="inputPassword">Password</label>
+										<div class="input-group mb-3 password-container">
+											<div class="input-group-prepend">
+												<span class="input-group-text">
+													<i class="fa fa-key" aria-hidden="true" data-acsb-hidden="true" data-acsb-force-hidden="true"></i>
+												</span>
+											</div>
+											<input type="password" id="password" name="password" class="form-control" placeholder="Enter your password" style="padding-right: 30px">
+											<span class="toggle-password" id="toggle-password" data-bs-toggle="popover" data-bs-trigger="hover" data-bs-container="#toggle-password" data-bs-placement="top" data-bs-content="Show Password">
+												<i class="fa fa-eye" id="eye-icon"></i>
+											</span>
+										</div>
+
+									</div>
+										<div class="text-center mt-3">
+											<a href="{{ path('login_via_otp') }}" class="text-decoration-none">
+												Sign in via One Time Password
+											</a>
+										</div>
+									<div class="form-group d-flex align-items-center justify-content-between mt-3 mb-0">
+										<button type="submit" class="btn btn-primary btn-block ysp-account-submit-btn">Sign In</button>
+									</div>
+								</form>
+
+								<div class="d-flex justify-content-between mt-4">
+									<div class="sign-in-trouble">
+										<a href="{{ path('reset_password') }}">Forgot Password?</a>
+									</div>
+									<div class="dont-have-account text-center">
+										<a href="{{ path(signupRoute) }}">
+											{% if not storeInfo.isPromoStore  %}
+												<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-user-plus text-sgs-purple" aria-hidden="true" data-acsb-hidden="true" data-acsb-force-hidden="true">
+													<path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+													<circle cx="8.5" cy="7" r="4"></circle>
+													<line x1="20" y1="8" x2="20" y2="14"></line>
+													<line x1="23" y1="11" x2="17" y2="11"></line>
+												</svg>
+											{% endif %}
+											<span class="{{ storeInfo.isPromoStore ? 'whole-seler-create-account' : 'create-account' }}">{{createAccount}}</span>
+										</a>
+									</div>
+								</div>
+							</div>
+							<!-- /.login-card-body -->
+						</div>
+						<!-- /.login-box -->					
+					</div>
+				</div>
+			</div>
+		</section>
+		<!--// End checkout content -->
+	</div>
+	{% if storeInfo.isPromoStore %}
+		<section class="checkout-banner-text-wrapper-promo shopping-cart-title-space-promo">
+			<p class="text-white mb-4">Create your account to access discounted wholesale pricing, fast next-day delivery on all eligible products, and round-the-clock customer support whenever you need it.</p>
+				<div class="dont-have-account text-center mt-4">
+					<a href="{{ path('whole_seller_login') }}" class="btn btn-light rounded text-bold px-md-4 py-2 rounded-5">
+						<span>Wholesaler Login Here</span>
+					</a>
+				</div>
+		</section>
+	{% endif %}
+
+{% endblock %}

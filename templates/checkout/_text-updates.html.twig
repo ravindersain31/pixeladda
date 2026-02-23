@@ -1,0 +1,15 @@
+<div class="row flex-column">
+    <div class="col-12">
+        {{ form_row(form.textUpdates) }}
+    </div>
+    <div class="col-12 col-md-6 {% if not order.isTextUpdates %}d-none{% endif %}">
+        {{ form_row(form.textUpdatesNumber) }}
+    </div>
+    <div class="col-12">
+        <p class="address-descriptions">
+            By checking this box, you agree to receive automated reminders (e.g. proof link) from Yard Sign Plus at the
+            number provided. Consent is not a condition of any purchase. Msg frequency varies. Msg & data rates may apply.
+            View <a href="{{ url('terms_and_conditions') }}">Terms</a> & <a href="{{ url('privacy_policy') }}">Privacy</a>.
+        </p>
+    </div>
+</div>

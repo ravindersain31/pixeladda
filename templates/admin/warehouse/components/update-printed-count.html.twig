@@ -1,0 +1,19 @@
+<div {{ attributes }} class="me-1">
+    <label style="position:relative;">
+        <span data-loading="action(save)|show" style="position: absolute;left: -20px;top:2px ">
+            <i class="fa-solid fa-circle-notch fa-spin text-success"></i>
+        </span>
+        <input
+            id="printed_count_{{ warehouseOrder.id }}"
+            type="text"
+            class="form-control text-center"
+            name="printed"
+            data-model="printed"
+            placeholder="Printed"
+            data-live-action-param="debounce(300)|save"
+            data-action="live#action"
+            value="{{ printed }}"
+            style="max-width: 70px;padding: 3px;text-align: center;"
+        />
+    </label>
+</div>

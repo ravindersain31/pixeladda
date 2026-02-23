@@ -1,0 +1,87 @@
+{% extends 'base.html.twig' %}
+
+{% set title = metaData.title ?: metaData.pageTitle ~ ' - ' ~ storeInfo.storeTitle %}
+
+{% block title %}{{ title }}{% endblock %}
+{% block metaData %}
+    {% set pageUrl = url('organization_members') %}
+    {% set pageImageUrl = storeInfo.isPromoStore
+        ? 'https://static.yardsignplus.com/storage/promo-store/Membership-Discount-Desktop-Banner.webp' 
+        : 'https://static.yardsignplus.com/storage/banners/Membership-desktop.webp'
+    %}
+
+    {% include 'common/_page_meta.html.twig' with {
+        title: title,
+        metaData: metaData,
+        pageUrl: pageUrl,
+        pageImageUrl: pageImageUrl,
+        storeInfo: storeInfo
+    } %}
+{% endblock %}
+{% block body %}
+    {{ include('common/common_mobile_bar.html.twig',{commonBarText: 'Order Online Or Call Now',commonBarTele: '+1-877-958-1499'}) }}
+    {{ include('common/_banner.html.twig',{
+        desktopImg: storeInfo.isPromoStore ? 'https://static.yardsignplus.com/storage/promo-store/Membership-Discount-Desktop-Banner.webp' : 'https://static.yardsignplus.com/storage/banners/Membership-desktop.webp',
+        desktopAlt: 'YSP Desktop Membership Banner',
+        mobileImg: storeInfo.isPromoStore ? 'https://static.yardsignplus.com/storage/promo-store/Membership-Discount-Mobile-Banner.webp' : 'https://static.yardsignplus.com/storage/banners/Membership-Mobile.webp',
+        mobileAlt: 'YSP Mobile Membership Banner'
+    }) }}
+    {{ include('common/highlights.html.twig') }}
+    {{ include('common/breadcrumb.html.twig', { breadcrumbs: [
+        { name: 'Membership Discount', active: true }
+    ]}) }}
+    <div class="page-content container">
+        <div class="text-center">
+            <h1 class="fs-19 mb-0">We’re thrilled to offer</h1>
+            <p class="d-flex flex-column align-items-center">
+                <span class="heading-purple"> Extra 15% OFF </span>
+                <span class="text-center">on all sitewide purchases for you and your valued members.</span>
+            </p>
+        </div>
+        <section class="eligibility mt-4">
+            <h2 class="fs-19 text-dark">Who is eligible?</h2>
+            <p>Our member discount is available to different clubs, organizations, and communities. Examples include, but are not limited to:</p>
+            <ul class="text-dark">
+                <li>Small Businesses</li>
+                <li>Real Estate Agents</li>
+                <li>Non-Profit Organizations</li>
+                <li>Community and Political Groups</li>
+                <li>Church and Religious Organizations</li>
+                <li>Sports Teams and Clubs</li>
+                <li>Event Planners</li>
+                <li>Farmers and Market Vendors</li>
+                <li>Homeowners Associations</li>
+            </ul>
+            <p>If you’re unsure if your organization qualifies, just contact us by emailing <a href="mailto:{{storeInfo.storeEmail}}">{{storeInfo.storeEmail}}</a> and we’ll let you know!</p>
+        </section>
+        <section class="ysp-faq-wrapper faq mt-3">
+        {% for title,faqsList in faqs %}
+            <div class="col-md-12 mb-3">
+                <div class="faq-title">
+                    <h4 class="fs-19 text-dark">{{ title }}</h4>
+                </div>
+                <div class="accordion ysp-accordion mt-3" id="accordionFaq{{ loop.index }}">
+                    {% set parentIndex = loop.index %}
+                    {% for question, answer in faqsList %}
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="yspAccordion{{ loop.index }}">
+                                <button class="accordion-button p-2" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#yspAccord{{ loop.index }}" aria-expanded="true"
+                                        aria-controls="yspAccord{{ loop.index }}">
+                                    {{ question | raw }}
+                                </button>
+                            </h2>
+                            <div id="yspAccord{{ loop.index }}" class="accordion-collapse collapse" aria-labelledby="yspAccordion{{ loop.index }}"
+                                    data-bs-parent="#accordionFaq{{ parentIndex }}">
+                                <div class="accordion-body">
+                                    <p>{{ answer | raw }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endfor %}
+        </section>
+    </div>
+{% endblock %}

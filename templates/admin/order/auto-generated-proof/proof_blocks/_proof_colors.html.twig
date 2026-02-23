@@ -1,0 +1,16 @@
+<div class="product-colors">
+    <div class="color-box">
+        {% if item.addOns.imprintColor is defined and item.addOns.imprintColor.key == 'UNLIMITED' %} 
+            <div class="text-arial-regular unlimited-imprint-color">
+                <span class="fst-italic">Unlimited</span>
+                <img src="https://static.yardsignplus.com/storage/images/proof-unlimited-color.png" alt="proof-unlimited-color">
+            </div>
+        {% endif %}
+        <div class="colors-box-divider"></div>
+    </div>
+    {% for i in 1..3 %}
+    <div class="color-box">
+        <div class="colors-box-divider"></div>
+    </div>
+    {% endfor %}
+</div>

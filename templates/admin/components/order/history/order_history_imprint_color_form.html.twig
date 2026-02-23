@@ -1,0 +1,110 @@
+
+<div {{ attributes }}>
+    {{ form_start(form, { attr: {
+        'novalidate': true,
+        'data-action': 'live#action:prevent',
+        'data-live-action-param': 'search'
+    } }) }}
+    <div class="row">
+        {% set currentDate = "now"|date("Y-m-d") %}
+        {% set past60Days = "now"|date_modify("-31 days")|date("Y-m-d") %}
+        {% set startOfYear = "now"|date("Y") ~ "-01-01" %}
+        <div class="col-12 col-md-9 tab-pane fade show active" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab" tabindex="0">
+            <!-- Imprint Colors Report Section -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card shadow-none">
+                        <div class="card-body p-0 table-responsive">
+                            <table class="table table-bordered mb-0 sortable">
+                                <thead>
+                                    <tr>
+                                        <th class="bg-light text-primary indicator-right" tabindex="0" aria-sort="ascending">
+                                            Imprint Colors Report [<small class="text-primary">Date: {{ this.getStartDate()|date('M d, Y') }} - {{ this.getEndDate()|date('M d, Y') }}</small>]
+                                        </th>
+                                        <th class="text-end bg-light indicator-right" tabindex="0" aria-sort="ascending">Total Colors</th>
+                                        <th class="text-end bg-light indicator-right" tabindex="0" aria-sort="ascending">Total Orders</th>
+                                        <th class="text-end bg-light no-sort" tabindex="0" aria-sort="ascending">Colors Percentage</th>
+                                        <th class="text-end bg-light no-sort" tabindex="0" aria-sort="ascending">Order Percentage</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% set ordersByImprintColor = this.getOrdersByImprintColor() %}
+                                    {% set totalQuantity = 0 %}
+                                    {% for key, imprintColor in ordersByImprintColor['ordersByImprintColor'] %}
+                                        {% set totalQuantity = totalQuantity + imprintColor['totalQuantity'] %}
+                                        <tr>
+                                            <td class="fw-600">{{ key }}</td>
+                                            <td class="text-end">{{ imprintColor['totalQuantity']|number_format(0, '.', ',') }}</td>
+                                            <td class="text-end">{{ imprintColor['orderIds']|length|number_format(0, '.', ',') }}</td>
+                                            <td class="text-end">
+                                                {{ (( imprintColor['totalQuantity'] / imprintColor['orderIds']|length) * 100) | number_format(2, '.', ',') }}%
+                                            </td>
+                                            <td class="text-end">
+                                                {{ ((imprintColor['orderIds']|length / ordersByImprintColor['totalOrders']) * 100) | number_format(2, '.', ',') }}%
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td class="fw-700 small p-1 text-success">Total</td>
+                                        <td class="fw-700 text-end small p-1 text-success">{{ totalQuantity|number_format(0, '.', ',') }}</td>
+                                        <td class="fw-700 text-end small p-1 text-success"></td>
+                                    </tr>
+                                </tfoot>
+                                <table class="table table-bordered mb-0">
+                                    <tfoot>
+                                        <!-- Past 60 Days -->
+                                        <tr>
+                                            {% set startDate = past60Days %}
+                                            {% set endDate = currentDate %}
+                                            {% set ordersByImprintColor = this.getOrdersByImprintColor(startDate, endDate) %}
+                                            <td class="fw-700 text-primary" colspan="3">
+                                                Past 31 Days [<small class="text-primary">Date: {{ startDate|date('M d, Y') }} - {{ endDate|date('M d, Y') }}</small>]
+                                                <table class="table table-bordered">
+                                                    <thead>
+                                                        <tr>
+                                                            <td class="fw-600 small p-1">Total Orders</td>
+                                                            <td class="text-end small p-1">{{ ordersByImprintColor['totalOrders']|number_format(0, '.', ',') }}</td>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td class="fw-600 small p-1">Total Imprint Colors</td>
+                                                            <td class="text-end small p-1">
+                                                                {% set totatlQuantity = 0 %}
+                                                                {% for key,imprintColor in ordersByImprintColor['ordersByImprintColor'] %}
+                                                                    {% set totatlQuantity = totatlQuantity + imprintColor['totalQuantity'] %}
+                                                                    <small class="text-success">{{ key }}</small> : {{ imprintColor['totalQuantity']|number_format(0, '.', ',') }} |
+                                                                {% endfor %}
+                                                                Total = {{ totatlQuantity|number_format(0, '.', ',') }}
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Filter Form Section -->
+        <div class="col-12 col-md-3 bg-light p-3 rounded">
+            {{ form_row(form.startDate) }}
+            {{ form_row(form.endDate) }}
+            {{ form_row(form.orderStatus) }}
+            {{ form_row(form.paymentStatus) }}
+            <div class="col-12">
+                <button type="submit" data-loading="action(search)|addAttribute(disabled)" class="btn btn-sm btn-primary">
+                    <span data-loading="action(search)|show" style="display: none">Searching...</span>
+                    <span data-loading="action(search)|hide" style="display: block">Search</span>
+                </button>
+            </div>
+        </div>
+        <!-- Submit Button -->
+    </div>
+</div>

@@ -1,0 +1,67 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Blog Comments{% endblock %}
+{% block pageTitle %}
+    <div class="page-header-icon">
+        <i class="fas fa-list"></i>
+    </div>
+    Blog Comments
+{% endblock %}
+
+{% block body %}
+    <div class="card card-header-actions mx-auto shadow-none">
+        <div class="card-header">
+            Blog Comments
+        </div>
+        <div class="table-responsive">
+            <table class="card-body table table-striped mb-0">
+                <thead>
+                <tr>
+                    <th>Sr.</th>
+                    <th>Blog Post</th>
+                    <th>Name</th>
+                    <th>Comment</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% if comments | length > 0 %}
+                    {% for comment in comments %}
+                        <tr>
+                            <td>{{ comments.getPaginationData.firstItemNumber + loop.index - 1 }}</td>
+                            <td>
+                                <a href="{{ url('blog_post', {slug: comment.post.slug}) }}" target="_blank">
+                                    {{ comment.post.title }}
+                                </a>
+                            </td>
+                            <td>{{ comment.name }}</td>
+                            <td>{{ comment.content }}</td>
+                            <td>
+                                {% if comment.approvedAt is null %}
+                                    <a href="{{ url('admin_blog_comment_approve', {id: comment.id}) }}"
+                                       class="badge bg-success text-white text-decoration-none">
+                                        <i class="fas fa-check"></i> Approve
+                                    </a>
+                                {% endif %}
+                                <a href="{{ url('admin_blog_comment_delete', {id: comment.id}) }}"
+                                   class="badge bg-danger text-white text-decoration-none" onclick="return confirm('Are you sure?')">
+                                    <i class="fas fa-times"></i> Delete
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="6">No records</td>
+                    </tr>
+                {% endif %}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <div class="mt-4">
+        {{ knp_pagination_render(comments) }}
+    </div>
+{% endblock %}

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <title>Login</title>
+    {% block stylesheets %}
+        {{ encore_entry_link_tags('admin') }}
+    {% endblock %}
+</head>
+<body class="bg-primary">
+<div id="layoutAuthentication">
+    <div id="layoutAuthentication_content">
+        <main>
+            <div class="container-xl px-4">
+                <div class="row justify-content-center">
+                    <div class="col-lg-5">
+                        <!-- Basic login form-->
+                        <div class="card shadow-lg border-0 rounded-lg mt-5">
+                            <div class="card-header justify-content-center text-center">
+                                <h3 class="fw-light my-4">Login</h3>
+                            </div>
+                            <div class="card-body">
+                                {{ include('flash.html.twig') }}
+                                {% if error %}
+                                    <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+                                {% endif %}
+                                <!-- Login form-->
+                                <form method="post">
+                                    <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+                                    <!-- Form Group (email address)-->
+                                    <div class="mb-3">
+                                        <label class="small mb-1" for="inputEmailAddress">Username</label>
+                                        <input name="username" class="form-control" id="inputEmailAddress" type="text"
+                                               autocomplete="username" placeholder="Enter username"
+                                               value="{{ last_username }}"/>
+                                    </div>
+                                    <!-- Form Group (password)-->
+                                    <div class="mb-3">
+                                        <label class="small mb-1" for="inputPassword">Password</label>
+                                        <input name="password" class="form-control" id="inputPassword" type="password"
+                                               autocomplete="current-password" placeholder="Enter password"/>
+                                    </div>
+                                    <!-- Form Group (remember password checkbox)-->
+                                    <div class="mb-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input" id="rememberPasswordCheck" type="checkbox"
+                                                   name="_remember_me"/>
+                                            <label class="form-check-label" for="rememberPasswordCheck">Remember
+                                                me</label>
+                                        </div>
+                                    </div>
+                                    <!-- Form Group (login box)-->
+                                    <div class="d-flex align-items-center justify-content-between mt-4 mb-0">
+                                        <a class="small" href="{{ url('admin_forgot_password') }}">Forgot Password?</a>
+                                        <button type="submit" class="btn btn-primary">Login</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <div id="layoutAuthentication_footer">
+        <footer class="footer-admin mt-auto footer-dark">
+            <div class="container-xl px-4">
+                <div class="row">
+                    <div class="col-md-6 small">Copyright &copy; Vertical Brands {{ "now" | date('Y') }}</div>
+                    <div class="col-md-6 text-md-end small">
+                        <a href="#!">Privacy Policy</a>
+                        &middot;
+                        <a href="#!">Terms &amp; Conditions</a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+</div>
+{% block javascripts %}{{ encore_entry_script_tags('admin') }}{% endblock %}
+</body>
+</html>

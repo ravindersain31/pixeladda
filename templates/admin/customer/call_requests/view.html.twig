@@ -1,0 +1,68 @@
+{% extends 'admin/base.html.twig' %}
+{% block title %}view #{{ callRequests.id }} {% endblock %}
+{% block pageTitle %}
+	<div class="page-header-icon">
+		<i class="fas fa-dashboard"></i>
+	</div>
+	Enquiry view #{{ callRequests.id }}
+{% endblock %}
+
+{% block body %}
+	<div class="card card-header-actions mx-auto shadow-none">
+		<div class="card-header">
+			Enquiry ID: #{{ callRequests.id }}
+			<div>
+				<a href="{{ url('admin_contact_us') }}" class="btn btn-dark btn-sm">
+					<i class="fas fa-arrow-left me-2"></i>
+					List
+				</a>
+			</div>
+		</div>
+		<div class="card-body">
+			<table class="table table-hover">
+                <tbody>
+                    <tr>
+                        <th scope="row">Name</th>
+                        <td>{{ callRequests.name }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Phone</th>
+                        <td>{{ callRequests.phone }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Comment</th>
+                        <td>{{ callRequests.comment }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Received On</th>
+                        <td>{{ callRequests.createdAt|date }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Status</th>
+                        <td>
+                            <span class="badge {{ callRequests.isOpened ? 'bg-warning' : 'bg-success' }}">
+								{{ callRequests.isOpened ? 'OPEN' : 'CLOSED' }}
+							</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Website</th>
+                        <td>{{ callRequests.store.shortName | default('-') }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Completed On</th>
+                        <td>
+                            {% if callRequests.updatedAt is not null %}
+								{{ callRequests.updatedAt|date('Y-m-d H:i:s') }}
+							{% else %}
+								-
+							{% endif %}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+		</div>
+	</div>
+
+{% endblock %}
+

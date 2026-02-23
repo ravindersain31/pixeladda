@@ -1,0 +1,384 @@
+<div {{ attributes }}>
+    <div class="card-header p-2 text-dark fw-600 fs-6">Order Summary for {{ this.dailyCogsReport.date | date('M d, Y') }}</div>
+    <div class="fixed-table-responsive table-responsive">
+        <table class="card-body table table-bordered mb-0 fw-500">
+            <thead>
+                <tr>
+                        <th class="fit-to-cell" style="z-index: 4">Sr</th>
+                        <th class="fit-to-cell" style="z-index: 4">Order ID</th>
+                        <th class="fit-to-cell">Status</th>
+                        <th class="fit-to-cell">Pay Status</th>
+                        <th class="fit-to-cell text-end">Order Total</th>
+                        <th class="fit-to-cell text-end">Received Amount</th>
+                        <th class="fit-to-cell text-end">Received PL Amount</th>
+                        <th class="fit-to-cell">Sheets Breakdown</th>
+                        <th class="fit-to-cell">Sheets</th>
+                        <th class="fit-to-cell">Stakes Breakdown</th>
+                        <th class="fit-to-cell">Wire Stake</th>
+                        <th class="text-end">Material Cost Breakdown</th>
+                        <th class="fit-to-cell text-end" data-toggle="tooltip" title="This column is editable.">
+                           <i class="fa fa-edit"></i>
+                           Material Cost
+                        </th>
+                        <th class="fit-to-cell text-end">
+                            Warehouse Labor
+                        </th>
+                        <th class="fit-to-cell text-end">Ads Cost</th>
+                        <th class="fit-to-cell text-end">Shipping Cost</th>
+                        <th class="fit-to-cell text-end">Shipping Adjustments</th>
+                        <th class="fit-to-cell text-end">Shipping Total</th>
+                        <th class="fit-to-cell text-end" data-toggle="tooltip" title="This column is editable.">
+                            <i class="fa fa-edit"></i>
+                            Refunded
+                        </th>
+                        <th class="fit-to-cell text-end">Profit/Loss</th>
+                        <th class="fit-to-cell text-end">Gross Margin</th>
+                        <th class="fit-to-cell text-end">Net Margin</th>
+                        <th class="fit-to-cell">Action</th>
+                    </tr>
+            </thead>
+            <tbody>
+                {% for order in this.orders %}
+                    {% set materialCost = order.materialCost %}
+                    {% set shippingCosts = order.shippingCosts %}
+                    {% set grossMarginPercentage = order.grossMarginPercentage %}
+                    {% set netMarginPercentage = order.netMarginPercentage %} 
+
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td class="fit-to-cell">
+                            {{ order.orderId }}
+                            {% if order.isEdit %}
+                                <span class="text-warning" data-toggle="tooltip" title="This record has been edited.">
+                                    <i class="fa fa-edit"></i>
+                                <span>
+                            {% endif %}
+                         </td>
+                        <td class="fit-to-cell">{{ order.status | badgeOrderStatus(true) | raw }}</td>
+                        <td class="fit-to-cell">{{ order.paymentStatus | badgePaymentStatus | raw }}</td>
+                        <td class="text-end">${{ order.totalAmount | number_format(2) }}</td>
+                        <td class="text-end">${{ order.totalReceivedAmount | number_format(2) }} </td>
+                        <td class="text-end">${{ order.paymentLinkAmountReceived | number_format(2) }}</td>
+                        <td class="text-end fit-to-cell">
+                            {% for name,sheet in materialCost.sheets %}
+                                {% if sheet > 0 %}
+                                    <b>
+                                        {{name|replace({'fullSheetsUsed': 'Full Sheet'})}}
+                                    </b>: {{ sheet|number_format(2) }}<br>
+                                {% endif %}
+                            {% endfor %}
+                        </td>
+                        <td class="text-end fit-to-cell">
+                            {{ materialCost.totalSheetsUsed | number_format(2) }}
+                        </td>
+                        {% set wireStakeDetails = [] %}
+                        {% if materialCost.wireStakes %}
+                            {% for stakeType, stakeQuantity in materialCost.wireStakes %}
+                                {% if stakeQuantity > 0 %}
+                                    {% set wireStakeDetails = wireStakeDetails | merge(['<b>' ~ stakeType | getAddonsFrameDisplayText ~ '</b>: ' ~ stakeQuantity]) %}
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+
+                        <td class="text-end fit-to-cell">
+                            {{ wireStakeDetails|default(["-"]) | join('<br>') | raw  }}
+                        </td>
+
+                        <td class="text-end fit-to-cell">
+                            {{ materialCost.wireStakeUsed }}
+                        </td>
+
+                        {% set table_content %}
+                            <a class="badge bg-primary text-white" style="cursor:pointer" data-bs-toggle="collapse" data-bs-target="#breakdownTable{{order.id}}" aria-expanded="false" aria-controls="breakdownTable">
+                                View Breakdown
+                            </a>
+                            {% if materialCost.materialCostBreakdown is defined and materialCost.materialCostBreakdown | length > 0 %}
+                                <div id="breakdownTable{{order.id}}" class="collapse">
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th style="text-align: right;">Item</th>
+                                                    <th style="text-align: right;">Qty</th>
+                                                    <th style="text-align: right;">Unit Cost</th>
+                                                    <th style="text-align: right;">Total Cost</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for row in materialCost.materialCostBreakdown %}
+                                                    <tr>
+                                                        <td>{{ row.item }}</td>
+                                                        <td style="text-align: right;">{{ row.quantity }}</td>
+                                                        <td style="text-align: right;">
+                                                            {% if row.item != 'Total' %}${% endif %}{{ row.unitCost }}
+                                                        </td>
+                                                        <td style="text-align: right;">${{ row.totalCost | number_format(2) }}</td>
+                                                    </tr>
+                                                {% endfor %}
+                                                {% if materialCost.updateTotalMaterialCost is defined and materialCost.updateTotalMaterialCost is not empty %}
+                                                    <tr>
+                                                        <td>Updated Material Cost</td>
+                                                        <td></td>
+                                                        <td></td>
+                                                        <td>${{ materialCost.updateTotalMaterialCost| number_format(2) }}</td>
+                                                    </tr>
+                                                {% endif %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            {% else %}
+                                -
+                            {% endif %}
+                        {% endset %}
+
+                        <td class="text-end" style="font-size: 0.8rem;">
+                            <span>{{ table_content }}</span>
+                        </td>
+
+                        <td class="text-end">
+                            {{ _self.amountCell(
+                                order.id,
+                                'totalMaterialCost',
+                                order.totalMaterialCost,
+                                loop.index0,
+                                'totalMaterialCost',
+                                true
+                            ) }}
+                        </td>
+
+                        <td class="text-end fit-to-cell">  
+                            ${{ order.laborCost | number_format(2) }}                          
+                        </td>
+                        <td class="text-end fit-to-cell">
+                            ${{ order.weightedAdsCost | number_format(2) }}
+                        </td>
+
+                        <td class="text-end fit-to-cell" style="{{ order.totalAmount < order.TotalShippingCost ? 'background-color: rgba(255, 0, 0, 0.6)' : '' }}">
+                            {% if order.shippingCost %}
+                                {% if shippingCosts.shippingCharges %}
+                                    <s><span class="badge bg-primary">EP</span> ${{ order.shippingCost | number_format(2) }}</s>
+                                    <br><span class="badge bg-warning">CSV</span> ${{ shippingCosts.shippingCharges | number_format(2) }}
+                                    {% if shippingCosts.shippingInvoiceFile and shippingCosts.shippingInvoiceFile.generatedAt %}
+                                        <br><small><i class="fa fa-calendar"></i> {{ shippingCosts.shippingInvoiceFile.generatedAt|date("m/d/Y") }}</small>
+                                    {% endif %}
+                                {% else %}
+                                    <span class="badge bg-primary">
+                                        EP
+                                    </span> ${{ order.shippingCost | number_format(2) }}
+                                {% endif %}
+                            {% else %}
+                                <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+
+                        <td class="text-end">
+                            ${{ shippingCosts.shippingAdjustment | number_format(2) }}
+                        </td>
+                        <td class="text-end">
+                            {% set shippingTotalRow = (order.shippingCost and shippingCosts.shippingCharges > 0) ? shippingCosts.shippingCharges : order.shippingCost|default(0) %}
+                            ${{ (shippingTotalRow + shippingCosts.shippingAdjustment) | number_format(2) }}
+                        </td>
+
+                        <td class="text-end">
+                            {{ _self.amountCell(
+                                order.id,
+                                'refundedAmount',
+                                order.refundedAmount,
+                                loop.index0,
+                                'refundedAmount',
+                                true
+                            ) }}
+                        </td>
+                        <td class="text-end"  data-toggle="tooltip" title="P/L = Paid Sale - (Refunds + Shipping + Material + Weighted Ads + Labor)">${{ order.profitAndLoss | number_format(2) }}</td>
+
+                        <td class="text-end" style="
+                            {% if grossMarginPercentage > 55 %}
+                                background-color:rgba(0, 255, 0, 0.45);
+                            {% elseif grossMarginPercentage > 30 and grossMarginPercentage < 55 %}
+                                background-color:rgba(0, 255, 0, 0.3);
+                            {% elseif grossMarginPercentage > 20 and grossMarginPercentage < 30 %}
+                                background-color:rgba(255, 255, 0, 0.3);
+                            {% elseif grossMarginPercentage < 20 and grossMarginPercentage > 0 %}
+                                background-color:rgba(255, 0, 0, 0.2);
+                            {% elseif grossMarginPercentage <= '-50' %}
+                                background-color:rgb(255, 143, 28);
+                            {% else %}
+                                background-color:rgba(255, 0, 0, 0.6);
+                            {% endif %}
+                        ">
+                            ${{ order.grossMargin | number_format(2) }}<br/>
+                            ({{ order.grossMarginPercentage | number_format(2) }}%)
+                        </td>
+                        <td class="text-end" style="
+                            {% if netMarginPercentage > 55 %}
+                                background-color:rgba(0, 255, 0, 0.45);
+                            {% elseif netMarginPercentage > 30 and netMarginPercentage < 55 %}
+                                background-color:rgba(0, 255, 0, 0.3);
+                            {% elseif netMarginPercentage > 20 and netMarginPercentage < 30 %}
+                                background-color:rgba(255, 255, 0, 0.3);
+                            {% elseif netMarginPercentage < 20 and netMarginPercentage > 0 %}
+                                background-color:rgba(255, 0, 0, 0.2);
+                            {% elseif netMarginPercentage <= '-50' %}
+                                background-color:rgb(255, 143, 28);
+                            {% else %}
+                                background-color:rgba(255, 0, 0, 0.6);
+                            {% endif %}
+                        ">
+                            ${{ (order.netMargin) | number_format(2) }}<br/>
+                            ({{ order.netMarginPercentage | number_format(2) }}%)
+                        </td>
+                        <td>
+                            <a href="{{ path('admin_order_overview', {orderId: order.orderId}) }}"
+                                class="badge bg-primary text-decoration-none text-white" target="_blank">
+                                View
+                            </a>
+                            <button
+                                data-toggle="tooltip" 
+                                title="Reset this order row to its original data."
+                                class="badge bg-warning border-0 text-white"
+                                data-action="live#action"
+                                data-live-action-param="resetOrderRow"
+                                data-live-index-param="{{ loop.index0 }}"
+                            >
+                                <i class="fa fa-refresh"></i>
+                                Reset
+                            </button>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="4" class="text-end">Total</td>
+                    <td class="text-end">
+                        <span class="badge bg-success">SUM</span>
+                        ${{ this.totalSales | number_format(2) }}
+                    </td>
+                    <td class="text-end">
+                        <span class="badge bg-success">SUM</span>
+                        ${{ this.totalPaidSales | number_format(2) }}
+                    </td>
+                    <td class="text-end">
+                        <span class="badge bg-success">SUM</span>
+                        ${{ this.totalPaymentLinkAmountReceived | number_format(2) }}
+                    </td>
+                    <td class="text-end">-</td>
+                    <td class="text-end">
+                        <span class="badge bg-success">SUM</span>
+                        {{ this.totalSheetsUsed | number_format(2) }}
+                    </td>
+                    <td class="text-end">-</td>
+                    <td class="text-end">
+                        <span class="badge bg-success">SUM</span>
+                        {{ this.totalWireStakeUsed }}
+                    </td>
+                    <td class="text-end">-</td>
+                    <td class="text-end">
+                        <span class="badge bg-success">SUM</span>
+                        ${{ this.totalMaterialCost | number_format(2) }}
+                    </td>
+                    <td class="text-end">
+                        <span class="badge bg-success">SUM</span>
+                        ${{ this.totalLaborCost | number_format(2) }}
+                    </td>
+                    <td class="text-end">
+                        <span class="badge bg-success">SUM</span>
+                        ${{ this.totalAdsCost | number_format(2) }}
+                    </td>
+                    <td class="text-end small">
+                        <span class="badge bg-success">SUM</span>
+                        ${{ this.totalShippingCost | number_format(2) }}
+                    </td>
+                    <td class="text-end">
+                        <span class="badge bg-success">SUM</span>
+                        ${{ this.totalShippingAdjustments | number_format(2) }}
+                    </td>
+                    <td class="text-end">
+                        <span class="badge bg-success">SUM</span>
+                        ${{ this.totalShippingAmount | number_format(2) }}
+                    </td>
+                    <td class="text-end">
+                        <span class="badge bg-success">SUM</span>
+                        ${{ this.totalRefunded | number_format(2) }}
+                    </td>
+                    <td class="text-end" data-toggle="tooltip" title="P/L =  Paid Sale - (Refunds + Shipping + Material + Weighted Ads + Labor)">
+                        <span class="badge bg-success">SUM</span>
+                        ${{ this.totalProfitAndLoss | number_format(2) }}
+                    </td>
+                    {% set gross = (this.totalPaidSales) - (this.totalShippingAmount + this.totalRefunded + this.totalMaterialCost + this.totalLaborCost) %}
+                    <td class="text-end" data-toggle="tooltip" title="Gross = (Paid Sales - (Shipping + Refunds + Material + Labor))" style="
+                        {% if gross > 55 %}
+                            background-color:rgba(0, 255, 0, 0.45);
+                        {% elseif gross > 30 and gross < 55 %}
+                            background-color:rgba(0, 255, 0, 0.3);
+                        {% elseif gross > 20 and gross < 30 %}
+                            background-color:rgba(255, 255, 0, 0.3);
+                        {% elseif gross < 20 and gross > 0 %}
+                            background-color:rgba(255, 0, 0, 0.2);
+                        {% else %}
+                            background-color:rgba(255, 0, 0, 0.6);
+                        {% endif %}
+                    ">
+                        <span class="badge bg-secondary">GM</span>
+                        {{ gross|number_format(2) }}<br/>
+                        {% if (this.totalPaidSales) != 0 %}
+                            ({{ ((gross / (this.totalPaidSales)) * 100) | number_format(2) }}%)
+                        {% else %}
+                            (0%)
+                        {% endif %}
+                    </td>
+                    {% set margin = (this.totalPaidSales) - (this.totalShippingAmount + this.totalRefunded + this.totalMaterialCost + this.totalLaborCost + this.totalAdsCost) %}
+                    <td class="text-end" data-toggle="tooltip" title="Net = (Paid Sales - (Shipping + Refunds + Material + Labor + Weighted Ads))" style="
+                        {% if margin > 55 %}
+                            background-color:rgba(0, 255, 0, 0.45);
+                        {% elseif margin > 30 and margin < 55 %}
+                            background-color:rgba(0, 255, 0, 0.3);
+                        {% elseif margin > 20 and margin < 30 %}
+                            background-color:rgba(255, 255, 0, 0.3);
+                        {% elseif margin < 20 and margin > 0 %}
+                            background-color:rgba(255, 0, 0, 0.2);
+                        {% else %}
+                            background-color:rgba(255, 0, 0, 0.6);
+                        {% endif %}
+                    ">
+                        <span class="badge bg-secondary">NM</span>
+                        {{ margin|number_format(2) }}<br/>
+                        {% if (this.totalPaidSales) != 0 %}
+                            ({{ ((margin / (this.totalPaidSales)) * 100) | number_format(2) }}%)
+                        {% else %}
+                            (0%)
+                        {% endif %}
+                    </td>
+                    <td></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+
+{% macro amountCell(orderId, name, value, index, field, isEditable) %}
+    <div class="d-flex align-items-center">
+        <span class="me-1 position-relative">$</span>
+        
+        {% if isEditable %}
+            <div>
+                <input
+                    id="order_{{ orderId }}_{{ name }}"
+                    class="form-control shadow-none ps-1 pe-4 border-0"
+                    name="{{ name }}"
+                    value="{{ value|number_format(2) }}"
+                    data-model="orders[{{ index }}].{{ name }}"
+                    data-action="live#action"
+                    data-live-action-param="debounce(300)|updateOrder"
+                    data-live-index-param="{{ index }}"
+                    data-live-field-param="{{ field }}"
+                    type="number"
+                    step="0.01"
+                />
+            </div>
+        {% else %}
+            <span class="form-control-plaintext ps-1">{{ value|number_format(2) }}</span>
+        {% endif %}
+    </div>
+{% endmacro %}

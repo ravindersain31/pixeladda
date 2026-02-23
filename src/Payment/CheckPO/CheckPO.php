@@ -1,0 +1,30 @@
+<?php
+
+namespace App\Payment\CheckPO;
+
+use App\Entity\Order;
+use App\Payment\AbstractPayment;
+use App\Payment\PaymentInterface;
+use Braintree\Gateway;
+use Braintree\Result\Error;
+use Braintree\Result\Successful;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+
+class CheckPO extends AbstractPayment implements PaymentInterface
+{
+    private ?string $actionOnSuccess = null;
+
+    public function charge(Order $order): array
+    {
+        return [
+            'success' => true,
+            'action' => 'pending',
+            'message' => 'Check/PO',
+        ];
+    }
+
+    public function setActionOnSuccess(?string $actionOnSuccess): void
+    {
+        $this->actionOnSuccess = $actionOnSuccess;
+    }
+}

@@ -1,0 +1,86 @@
+{% extends 'emails/base.html.twig' %}
+{% block title %}Leave a Google Review, Receive 5% Off Your Order!{% endblock %}
+{% block subject %}{% endblock %}
+{% block body %}
+    <tr>
+        <td colspan="3">
+            <table style="border-spacing: 0; width: 100%; text-align: center;">
+                <tbody>
+                <tr>
+                    <td style="background-color: #35537d">
+                        <h2 style="font-size: 25px; color: #fff; margin: 5px;">PLEASE LEAVE US A GOOGLE REVIEW!</h2>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <table style="border-spacing: 0; width: 100%; text-align: center; margin-top: 20px;">
+                <tbody>
+                <tr>
+                    <td>
+                        <div style="width: 350px; margin: auto; text-align: center;">
+                            <a href="https://g.page/r/CY6SGx7fN8gCEBM/review" target="_blank"
+                               style="text-decoration: none;">
+                                <div style="background: #01ab00;font-size: 18px; font-weight: 600; color: #ffffff; position: relative; border: 5px solid #fff; padding: 10px; border-radius: 20px;">
+                                    <div style="border: 3px solid white; border-radius: 5px; padding: 5px;">
+                                        CREATE A GOOGLE REVIEW
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <table style="border-spacing: 0; width: 100%; text-align: center;">
+                <tbody>
+                <tr>
+                    <td>
+                        <p>If your experience wasn’t great, we want to make it right</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div style="width: 350px; margin: auto; text-align: center;">
+                            <a href="{{ url('order_view', {oid: order.orderId,  'review': order.emailReviewToken}) }}" target="_blank"
+                               style="text-decoration: none;">
+                                <div style="background: #e1251a;font-size: 18px; font-weight: 600; color: #ffffff; position: relative; border: 5px solid #fff; padding: 10px; border-radius: 20px;">
+                                    <div style="border: 3px solid white; border-radius: 5px; padding: 5px;">
+                                        CONTACT US DIRECTLY
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <div style="text-align: center;">
+                <div style="background-color: #35537d; padding: 1%; margin: 20px auto 0; text-align: left; width: 780px; ">
+                    <div style="border: 5px solid #fff; padding: 3%; color:#fff;">
+                        <b>Hello {{ order.billingAddress.firstName }}, </b>
+                        <p>This is YardSignPlus. Thank you for placing an order with us! </p>
+                        <p style="line-height: 1.40;">
+                            We would greatly appreciate your feedback. You can leave us a Google Review by visiting
+                            this link: <a href="https://g.page/r/CY6SGx7fN8gCEBE/review" target="_blank" style="text-decoration: none"><span style="color: #fff202">Leave a Google Review</span></a>. Once done, please
+                            respond with a screenshot and your
+                            order number. We will immediately apply 5% off, up to $50 in YSP Rewards to your account, it's that simple! For questions, please do not hesitate to contact us by calling
+                            <a href="tel: +1-877-958-1499" style="text-decoration: none"><span style="color: #fff202">+1-877-958-1499</span></a> or
+                            emailing <a href="mailto: {{storeInfo.storeEmail}}" style="text-decoration: none"><span style="color: #fff202">{{storeInfo.storeEmail}}</span></a>.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <p class="text-center" style="text-align: center !important;">
+                <a href="{{ url('order_view', {oid: order.orderId}) }}" class="approve-btn mb-3 text-uppercase"
+                   style="background-color: #efc825; color: #000000; text-decoration: none; display: inline-flex; border-radius: 10px;
+                                    text-shadow: 0 0 0 #6b6b6b; line-height: 1.5; text-transform: uppercase !important; padding: 10px 35px;
+                                    font-size: 18px; margin: 30px 0; margin-bottom: 0rem !important;">View Order
+                    Details</a>
+            </p>
+
+        </td>
+    </tr>
+{% endblock %}
+
+
+

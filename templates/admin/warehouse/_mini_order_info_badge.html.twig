@@ -1,0 +1,54 @@
+{% set isBigger = size is defined and size == 'bigger' %}
+<div class="text-start text-wrap order-tags-list {% if isBigger %}fs-4{% endif %}">
+    {% if quantities['frameType'] %}
+        <badge class="badge bg-gradient-primary-to-secondary fw-600 rounded-1  {% if isBigger %}fw-500{% endif %}"
+               style=" padding: 5px; ">{{ quantities['frameType'] }} Stakes</badge>
+    {% endif %}
+    {% if warehouseOrder is defined and warehouseOrder is not null and warehouseOrder.shippingService %}
+        <span class="badge bg-dark {% if isBigger %}fw-500{% endif %}">
+            {{ enum.getWarehouseShippingService(warehouseOrder.shippingService) }}
+        </span>
+    {% endif %}
+    {% if order.isSuperRush and order.metaData['isSaturdayDelivery'] is defined and not order.metaData['isSaturdayDelivery'] %}
+        <span class="badge bg-primary {% if isBigger %}fw-500{% endif %}">Super Rush</span>
+    {% endif %}
+    {% if order.hasTag('RUSH') %}
+        <span class="badge bg-primary {% if isBigger %}fw-500{% endif %}">Rush</span>
+    {% endif %}
+    {% if order.shippingMetaData['customerShipping'] is defined and order.shippingMetaData['customerShipping'] is not empty and 'day' in order.shippingMetaData['customerShipping'] and order.shippingMetaData['customerShipping']['day'] == 3 %}
+        <span class="badge bg-primary {% if isBigger %}fw-500{% endif %}">Rush</span>
+    {% endif %}
+    {% if order.hasSample %}
+        <span class="badge bg-primary {% if isBigger %}fw-500{% endif %}">Sample</span>
+    {% elseif order.hasTag('SAMPLE') %}
+        <span class="badge bg-primary {% if isBigger %}fw-500{% endif %}">Sample</span>
+    {% endif %}
+    {% if order.hasTag('REPEAT_ORDER') %}
+        <span class="badge bg-primary {% if isBigger %}fw-500{% endif %}">Repeat Order</span>
+    {% endif %}
+    {% if order.metaData['deliveryMethod']['key'] is defined and order.metaData['deliveryMethod']['key'] == 'REQUEST_PICKUP' %}
+        <span class="badge bg-danger {% if isBigger %}fw-500{% endif %}">{{ order.metaData['deliveryMethod']['label'] }}</span>
+    {% elseif order.hasTag('REQUEST_PICKUP') %}
+        <span class="badge bg-danger {% if isBigger %}fw-500{% endif %}">Request Pickup</span>
+    {% endif %}
+    {% if order.metaData['isBlindShipping'] is defined and order.metaData['isBlindShipping'] %}
+        <span class="badge bg-warning {% if isBigger %}fw-500{% endif %}">Blind Shipping</span>
+    {% elseif order.hasTag('BLIND_SHIPPING') %}
+        <span class="badge bg-warning {% if isBigger %}fw-500{% endif %}">Blind Shipping</span>
+    {% endif %}
+    {% if order.hasTag('DIE_CUT') %}
+        <span class="badge bg-warning {% if isBigger %}fw-500{% endif %}">Die Cut</span>
+    {% endif %}
+    {% if order.hasTag('FREIGHT') %}
+        <span class="badge bg-warning {% if isBigger %}fw-500{% endif %}">Freight</span>
+    {% endif %}
+    {% if order.hasTag('DELAYED') %}
+        <span class="badge bg-danger {% if isBigger %}fw-500{% endif %}">Delayed</span>
+    {% endif %}
+    {% if order.hasTag('SCORING') %}
+        <span class="badge bg-warning {% if isBigger %}fw-500{% endif %}">Scoring</span>
+    {% endif %}
+    {% if order.metaData['isSaturdayDelivery'] is defined and order.metaData['isSaturdayDelivery'] %}
+        <span class="badge bg-danger {% if isBigger %}fw-500{% endif %}">Super Rush: Saturday Delivery</span>
+    {% endif %}
+</div>

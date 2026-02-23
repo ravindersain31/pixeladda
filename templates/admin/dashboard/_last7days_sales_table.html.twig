@@ -1,0 +1,67 @@
+<table class="table table-bordered table-responsive text-center align-middle">
+	<thead class="table-primary">
+		<tr>
+			<th scope="col">Date</th>
+			<th scope="col">Sales</th>
+			<th scope="col">Paid Sales</th>
+			<th scope="col">Total Orders</th>
+			<th scope="col">Avg. Order Price</th>
+			<th scope="col">Google Ads Cost</th>
+			<th scope="col">Facebook Ads Cost</th>
+			<th scope="col">Bing Ads Cost</th>
+			<th scope="col">Total Ads Cost</th>
+			<th scope="col">ROAS</th>
+		</tr>
+	</thead>
+	<tbody class="text-nowrap">
+		{% set totalSales = 0 %}
+		{% set totalPaidSales = 0 %}
+		{% set totalOrders = 0 %}
+		{% set totalAvgOrderPrice = 0 %}
+		{% set totalGoogleAdsCost = 0 %}
+		{% set totalFacebookAdsCost = 0 %}
+		{% set totalBingAdsCost = 0 %}
+		{% set totalAdsCost = 0 %}
+		{% set totalRoas = 0 %}
+		{% set daysCount = last7DaysData|length %}
+		{% for day in last7DaysData %}
+			{% set totalSales = totalSales + day.sales %}
+			{% set totalPaidSales = totalPaidSales + day.paid_sales %}
+			{% set totalOrders = totalOrders + day.total_orders %}
+			{% set totalAvgOrderPrice = totalAvgOrderPrice + day.avg_order_price %}
+			{% set totalGoogleAdsCost = totalGoogleAdsCost + day.google_ads_cost %}
+			{% set totalFacebookAdsCost = totalFacebookAdsCost + day.facebook_ads_cost %}
+			{% set totalBingAdsCost = totalBingAdsCost + day.bing_ads_cost %}
+			{% set totalAdsCost = totalAdsCost + day.total_ads_cost %}
+			{% set totalRoas = totalRoas + day.roas %}
+			<tr>
+				<td>{{ day.date }}</td>
+				<td>${{ day.sales | number_format(2, '.', ',') }}</td>
+				<td>${{ day.paid_sales | number_format(2, '.', ',') }}</td>
+				<td>{{ day.total_orders }}</td>
+				<td>${{ day.avg_order_price | number_format(2, '.', ',') }}</td>
+				<td>${{ day.google_ads_cost | number_format(2, '.', ',') }}</td>
+				<td>${{ day.facebook_ads_cost | number_format(2, '.', ',') }}</td>
+				<td>${{ day.bing_ads_cost | number_format(2, '.', ',') }}</td>
+				<td>${{ day.total_ads_cost | number_format(2, '.', ',') }}</td>
+				<td>{{ day.roas | number_format(2, '.', ',') }}</td>
+			</tr>
+		{% else %}
+			<tr>
+				<td colspan="7" class="text-muted">No data available for the last 7 days</td>
+			</tr>
+		{% endfor %}
+		<tr class="table-success fw-bold">
+			<td>Total</td>
+			<td>${{ (totalSales / daysCount) | number_format(2, '.', ',') }} <span class="badge text-bg-primary align-text-bottom fs-10">Avg</span></td>
+			<td>${{ (totalPaidSales / daysCount) | number_format(2, '.', ',') }} <span class="badge text-bg-primary align-text-bottom fs-10">Avg</span></td>
+			<td>{{ (totalOrders / daysCount) | number_format(2, '.', ',') }} <span class="badge text-bg-primary align-text-bottom fs-10">Avg</span></td>
+			<td>${{ (totalAvgOrderPrice / daysCount) | number_format(2, '.', ',') }} <span class="badge text-bg-primary align-text-bottom fs-10">Avg</span></td>
+			<td>${{ (totalGoogleAdsCost / daysCount) | number_format(2, '.', ',') }} <span class="badge text-bg-primary align-text-bottom fs-10">Avg</span></td>
+			<td>${{ (totalFacebookAdsCost / daysCount) | number_format(2, '.', ',') }} <span class="badge text-bg-primary align-text-bottom fs-10">Avg</span></td>
+			<td>${{ (totalBingAdsCost / daysCount) | number_format(2, '.', ',') }} <span class="badge text-bg-primary align-text-bottom fs-10">Avg</span></td>
+			<td>${{ (totalAdsCost / daysCount) | number_format(2, '.', ',') }} <span class="badge text-bg-primary align-text-bottom fs-10">Avg</span></td>
+			<td>{{ (totalRoas / daysCount) | number_format(2, '.', ',') }} <span class="badge text-bg-primary align-text-bottom fs-10">Avg</span></td>
+		</tr>
+	</tbody>
+</table>

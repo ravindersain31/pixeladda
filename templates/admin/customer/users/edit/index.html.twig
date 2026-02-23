@@ -1,0 +1,45 @@
+
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Manage User{% endblock %}
+{% block pageTitle %}
+    <div class="page-header-icon">
+        <i class="fas fa-edit"></i>
+    </div>
+    Manage User
+{% endblock %}
+
+{% block body %}
+    <div class="card card-header-actions mx-auto shadow-none">
+        <div class="card-header p-0 h-100 border-0">
+            <nav class="w-100">
+                <div class="nav nav-tabs ps-2 pe-2 pt-2" role="tablist">
+                    {% if is_granted('admin_users_customer_edit') %}
+                    <a href="{{ url('admin_users_customer_edit', { id: user.id }) }}"
+                        class="nav-link {% if app.request.get('_route') in ['admin_users_customer_edit'] %}active{% endif %}"
+                        type="button">
+                            Manage User
+                    </a>
+                    {% endif %}
+                    {% if is_granted('admin_users_customer_update_password') %}
+                    <a href="{{ url('admin_users_customer_update_password', { id: user.id }) }}"
+                        class="nav-link {% if app.request.get('_route') in ['admin_users_customer_update_password'] %}active{% endif %}"
+                        type="button">
+                            Manage Password
+                    </a>
+                    {% endif %}
+                    {% if is_granted('admin_users_customer_reward_points') %}
+                    <a href="{{ url('admin_users_customer_reward_points', { id: user.id }) }}"
+                        class="nav-link {% if app.request.get('_route') in ['admin_users_customer_reward_points'] %}active{% endif %}"
+                        type="button">
+                            Rewards
+                    </a>
+                    {% endif %}                    
+                </div>
+            </nav>
+        </div>
+        <div class="card-body">
+            {% include 'admin/customer/users/edit/'~ app.request.get('_route') | replace({'admin_users_customer_': '', }) ~ '.html.twig' %}
+        </div>
+    </div>
+{% endblock %}

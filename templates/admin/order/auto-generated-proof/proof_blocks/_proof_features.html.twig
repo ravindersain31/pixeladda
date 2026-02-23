@@ -1,0 +1,80 @@
+<table class="table-product-features">
+    <tr>
+        <th>Size:</th>
+        <td>{{ templateSize }} {{ defaultUnit|lower }}</td>
+    </tr> 
+    {% if item.addOns.sides is defined %}   
+    <tr>
+        <th>Sides:</th>
+        <td>{{item.addOns.sides.displayText}}</td>
+    </tr>
+    {% endif %}
+
+    {% if item.addOns.grommets is defined and item.addOns.grommets.key == 'NONE' %}
+        <tr>
+            <th>Grommets:</th>
+            <td>None</td>
+        </tr>
+        <tr>
+            <th>Grommets Color:</th>
+            <td>N/A</td>
+        </tr>
+    {% else %}
+        {% if item.addOns.grommets is defined %} 
+        <tr>
+            <th>Grommets:</th>
+            <td>{{item.addOns.grommets.displayText}}</td>
+        </tr>
+        <tr>
+            <th>Grommet Color:</th>
+            <td>{{item.addOns.grommetColor.displayText}}</td>
+        </tr>
+        {% endif %}
+    {% endif %}
+
+    {% if item.addOns.imprintColor is defined %} 
+    <tr>
+        <th>Imprint Color:</th>
+        <td>{{item.addOns.imprintColor.displayText}}</td>
+    </tr>
+    {% endif %}
+
+    {% if item.addOns.frame is defined and item.addOns.frame.key == 'NONE' %}
+        <tr>
+            <th>Frame:</th>
+            <td>None</td>
+        </tr>
+    {% else %}
+        {% if item.addOns.frame is defined %} 
+        <tr>
+            <th>Frame:</th>
+            <td>{{item.addOns.frame.displayText}}</td>
+        </tr>
+        {% endif %}
+    {% endif %}
+    {% if item.addOns.flute is defined %} 
+    <tr>
+        <th>Flutes:</th>
+        <td>{{item.addOns.flute.displayText}}</td>
+    </tr>
+    {% endif %}
+
+    {% if item.addOns.shape is defined %} 
+    <tr>
+        <th>Shape:</th>
+        <td>{{item.addOns.shape.displayText}}</td>
+    </tr>
+    {% endif %}
+    {% if item.metaData['YSPLogoDiscount']['hasLogo'] is defined and item.metaData['YSPLogoDiscount']['hasLogo'] %}
+        <tr>
+            <th>YSP Logo:</th>
+            <td>
+                {% include 'admin/order/auto-generated-proof/proof_blocks/_proof_ysp_logo.html.twig' %}
+            </td>
+        </tr>
+    {% endif %}
+</table>
+
+<p class="mb-1 item-total-qty "><label class="text-purple text-arial-black">{{ templateSize ends with 'Wire Stake' ? 'Total Wire Stake:' : 'Total Sign:' }}</label>
+    &nbsp;<span class="total-qty-count">{{ totalQuantity }}<span></p>
+<p class="content-message text-purple text-avenir-next-condensed-boldi-talic">PROPORTIONAL TO PREVIEW</p>

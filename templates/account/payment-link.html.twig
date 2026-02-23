@@ -1,0 +1,183 @@
+{% extends 'base.html.twig' %}
+{% block title %}Payment Link - {{storeInfo.storeTitle}}{% endblock %}
+{% block javascripts %}
+    <script src="https://js.braintreegateway.com/web/dropin/1.39.1/js/dropin.min.js"></script>
+    <script src="https://js.braintreegateway.com/web/3.97.3/js/client.min.js"></script>
+    <script src="https://js.braintreegateway.com/web/3.97.3/js/google-payment.min.js"></script>
+    <script src="https://pay.google.com/gp/p/js/pay.js"></script>
+    <script src="https://js.stripe.com/v3/"></script>
+    <script src="https://js.braintreegateway.com/web/3.97.3/js/apple-pay.min.js"></script>
+{% endblock %}
+{% block body %}
+    {{ include('common/common_mobile_bar.html.twig',{commonBarText: 'Order Online Or Call Now',commonBarTele: '+1-877-958-1499'}) }}
+    <div class="page-header">
+        <div class="page-header-content">
+            Payment Link
+        </div>
+    </div>
+    {{ include('common/breadcrumb.html.twig', { breadcrumbs: [
+        { name: 'Account' },
+        { name: 'Payment Link', active: true }
+    ]}) }}
+
+    <div class="container checkout-page my-3" data-controller="saved-braintree-cards-checkout">
+        <div class="row">
+            <div class="col-12 col-sm-8 col-md-8 m-auto">
+                {{ include('common/flash.html.twig') }}
+                <div class="card mb-3">
+                    <div class="card-header py-3 fw-bold fs-5 bg-white text-center">
+                        Payment Request for Order ID
+                        #<a href="{{ url('order_view', {oid: order.orderId}) }}" target="_blank">{{ order.orderId }}</a>
+                    </div>
+                    <div class="card-body">
+                        {% if paymentRequest.status == 'COMPLETED' %}
+                            <div class="alert alert-success text-center">
+                                <i class="fa fa-check-circle"></i> This Payment request has been completed successfully.
+                            </div>
+                        {% endif %}
+                        <div class="table-responsive">
+                            <table class="table table-bordered mb-0">
+                                <tbody>
+                                <tr>
+                                    <th>Transaction ID</th>
+                                    <td>{{ paymentRequest.transactionId }}</td>
+                                    <th>Amount</th>
+                                    <td>${{ paymentRequest.amount | number_format(2) }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Date</th>
+                                    <td>{{ paymentRequest.updatedAt | date('M d, Y') }}</td>
+                                    <th>Time</th>
+                                    <td>{{ paymentRequest.updatedAt | date('h:i a') }}</td>
+                                </tr>
+                                {% if paymentRequest.status == 'COMPLETED' %}
+                                    <tr>
+                                        <th>Gateway Id</th>
+                                        <td>{{ paymentRequest.gatewayId | upper }}</td>
+                                        <th>Payment Method</th>
+                                        <td>{{ paymentRequest.paymentMethod | replace({'_': ' ', '-': ' '}) }}</td>
+                                    </tr>
+                                {% endif %}
+                                {% if paymentRequest.status != 'INITIATED' %}
+                                    <tr>
+                                        <th>Status</th>
+                                        <td>{{ paymentRequest.status }}</td>
+                                        <th>Comments</th>
+                                        <td>{{ paymentRequest.comment }}</td>
+                                    </tr>
+                                {% endif %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% if paymentRequest.metaDataKey('customerNote') %}
+                            <div class="mt-3">{{ paymentRequest.metaDataKey('customerNote') | raw }}</div>
+                        {% endif %}
+
+                        {% if paymentRequest.status == 'REDIRECTED_TO_GATEWAY' and paymentRequest.paymentMethod == 'PAYPAL' %}
+                            <div class="text-center mt-3">
+                                <p>You have started with payment with <strong>PayPal</strong> which is in-progress.</p>
+                                {% if app.environment == 'prod' %}
+                                    <a href="https://www.paypal.com/checkoutnow?token={{ paymentRequest.gatewayId }}"
+                                       class="btn btn-ysp-outline">Resume PayPal Payment</a>
+                                {% else %}
+                                    <a href="https://sandbox.paypal.com/checkoutnow?token={{ paymentRequest.gatewayId }}"
+                                       class="btn btn-ysp-outline">Resume PayPal Payment</a>
+                                {% endif %}
+
+                                <p class="my-2">
+                                    <a href="{{ url('payment_link_restart_payment', {requestId: paymentRequest.transactionId}) }}">
+                                        Change Payment Method
+                                    </a>
+                                </p>
+                            </div>
+                        {% endif %}
+
+                        {% if paymentRequest.status == 'REDIRECTED_TO_GATEWAY' and paymentRequest.paymentMethod == 'STRIPE' %}
+                            <div class="text-center mt-3">
+                                <p>You have started with payment with <strong>Stripe</strong> which is in-progress.</p>
+                                <a href="{{ paymentRequest.metaData.redirectUrl }}" class="btn btn-ysp-outline">Resume Stripe Payment</a>
+                                <p class="my-2">
+                                    <a href="{{ url('payment_link_restart_payment', {requestId: paymentRequest.transactionId}) }}">
+                                        Change Payment Method
+                                    </a>
+                                </p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% if paymentRequest.status == 'INITIATED' or paymentRequest.status == 'FAILED' %}
+                    {{ form_start(form, {attr: { requirePayment: 'yes', 'data-order-id': order.orderId, 'data-payment-link': paymentRequest.transactionId }}) }}
+                    {% include 'checkout/_payment_method.html.twig' with {amount: paymentRequest.amount} %}
+                    {{ form_end(form) }}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% include 'components/_amazon_pay_modal.html.twig' with { 
+        checkoutSession: amazonPay.checkoutSession,
+        payment_cancel: 'payment_link',
+        requestId: paymentRequest.transactionId,
+    } %}
+<script>
+ document.addEventListener("DOMContentLoaded", function () {
+        const blocker = document.getElementById("amazon-pay-blocker");
+        const agreeCheckbox = document.getElementById("payment_link_agreeTerms");
+        blocker.style.display = "block";
+
+        if (agreeCheckbox) {
+            agreeCheckbox.addEventListener("change", function () {
+                console.log(agreeCheckbox);
+                if (agreeCheckbox.checked) {
+                    blocker.style.display = "none";
+                } else {
+                    blocker.style.display = "block";
+                }
+            });
+        }
+    
+        function validateAdrress(){
+            let hasEmptyValue = false;
+            if ($('#payment_link_agreeTerms').prop('checked') == false){
+                hasEmptyValue = true;
+            }
+            return hasEmptyValue;
+        }
+
+        blocker.addEventListener("click", function (e) {
+            const hasAddressEmpty = validateAdrress();
+            if(hasAddressEmpty){
+                alert("Please enter all fields first");
+                blocker.style.display = "block";
+                return false;
+            }else {
+                blocker.style.display = "none";
+            }
+        });
+
+    });
+</script>
+<script>
+     document.addEventListener("DOMContentLoaded", function () {
+        const amazonTabPane = document.getElementById("payment-method-amazon_pay");
+        const amazonButtonWrapper = document.getElementById("amazon-pay-button-wrapper");
+        const submitButton = document.getElementById("payment_link_submit");
+
+        function toggleAmazonButton() {
+            const isActive = amazonTabPane.classList.contains("active") && amazonTabPane.classList.contains("show");
+            amazonButtonWrapper.style.display = isActive ? "block" : "none";
+            if (submitButton) {
+                if (isActive) {
+                    submitButton.style.display = "none";
+                } else {
+                    submitButton.style.removeProperty("display");
+                }
+            }
+        }
+        toggleAmazonButton();
+        const tabTriggers = document.querySelectorAll('[data-bs-toggle="tab"]');
+        tabTriggers.forEach(trigger => {
+            trigger.addEventListener("shown.bs.tab", toggleAmazonButton);
+        });
+    }); 
+</script>
+{% endblock %}

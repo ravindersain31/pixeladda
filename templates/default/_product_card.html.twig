@@ -1,0 +1,64 @@
+{% set isCustom = isCustom is defined and isCustom %}
+{% if isCustom %}
+    {% set productUrl = url('custom_yard_sign_editor', {
+        variant: product.slug
+    }) %}
+{% else %}
+    {% set productUrl = url('editor', {
+        category: product.categorySlug,
+        productType: product.productTypeSlug,
+        sku: product.sku
+    }) %}
+{% endif %}
+<a href="{{ productUrl }}" class="card home-page-card {% if product.name in ribbon|keys %}border-blue border-2{% endif %}">
+    {% set productImage = product.displayImageName %}
+    {% if product.displayImageName is null %}
+        {% set productImage = product.imageName %}
+    {% endif %}
+    {% if productImage is null %}
+        <img class="card-img-top home-page-product-image" src="https://static.yardsignplus.com/assets/grommets-none.png"
+             alt="...">
+    {% else %}
+        <img width="425" height="310" loading="lazy" class="lazy card-img-top home-page-product-image" src="{{ ("https://static.yardsignplus.com/product/fit-in/800x800/img/"~ productImage) | lazyDefaultImage }}" data-src="{{ ("https://static.yardsignplus.com/product/fit-in/800x800/img/"~ productImage) }}" alt="{{ product.name }}">
+    {% endif %}
+    <div class="card-body p-1 p-sm-2">
+        <h4 class="card-text {% if product.name in ribbon|keys %}fw-semibold{% endif %}">
+            {% if isCustom %}
+                Custom {{ product.name | addInchQuotes }} Outdoor Yard Signs
+            {% else %}
+                {{ product.name }}
+            {% endif %}
+        </h4>
+        <li class="list-group-item border-0">
+            <span class="badge d-inline-flex align-items-center px-1 py-0 rounded-pill custom-badge-super-rush">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-lightning-fill me-1" viewBox="0 0 16 16">
+                    <path d="M11.3 1L4 9h4l-1 6 7-8H9l2.3-6z"/>
+                </svg>
+                Overnight Delivery
+            </span>
+        </li>
+        {{ include('common/_product_pricing_chart.html.twig') }}
+        <div class="product-meta-data">
+            <div class="product-price">
+                {% if isCustom %}
+                    ${{ product.lowestPrice | number_format(2) }}
+                {% else %}
+                    ${{ lowestPrice(product) | number_format(2) }} 
+                {% endif %}
+            </div>
+            <div class="product-min-qty">Min 1</div>
+            <div class="product-rating-star">
+                {% for item in 0..4 %}
+                    <span class="star" data-rating="1"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-star"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></span>
+                {% endfor %}
+            </div>
+            <div class="product-rating-count">({{ reviewCount() }})</div>
+        </div>
+
+        {% if buttonText is defined %}
+            <button class="btn btn-primary btn-block">
+                {{ buttonText }}
+            </button>
+        {% endif %}
+    </div>
+</a>

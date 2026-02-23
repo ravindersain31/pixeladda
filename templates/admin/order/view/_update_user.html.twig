@@ -1,0 +1,13 @@
+{% if is_granted('order_update_email') %}
+<button type="button" class="btn btn-primary btn-xs text-nowrap" data-bs-toggle="modal" data-bs-target="#updateUser{{ order.orderId }}">
+    Edit
+</button>
+
+{% component BootstrapModal with { id: 'updateUser' ~ order.orderId } %}
+    {% block modal_full_content %}
+        {{ component('UpdateUserEmailForm',{
+            order: order,
+        }) }}
+    {% endblock %}
+{% endcomponent %}
+{% endif %}

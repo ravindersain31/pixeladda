@@ -1,0 +1,106 @@
+{% set exclusiveOfferForm = createFormView('App\\Form\\ExclusiveOfferType') %}
+{{ form_start(exclusiveOfferForm, { attr: {'validation' : 'jquery-exclusive-offer'}}) }}
+  
+<div class="row">
+    <div class="col-md-12">
+        <div class="d-flex column-gap-1 exclusive-email">
+            <div class="form-group">
+                {{ form_widget(exclusiveOfferForm.email) }}
+            
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-dark">Submit</button>
+             </div>
+        </div>
+        
+        <div class="exclusive-offer-message-wrapper w-75 mt-1"></div>
+    </div>
+</div>
+
+<div class="modal fade" id="recaptchaModalExclusiveOffer" tabindex="-1" role="dialog" aria-labelledby="recaptchaModalExclusiveOfferLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-body ">
+                <div class="exclusive-offer-message-recaptcha-wrapper text-center mb-2"></div>
+                <div class="recaptcha-button-inner d-flex flex-wrap justify-content-center">
+                    <div id="recaptcha-container">
+                        {{ form_row(exclusiveOfferForm.recaptcha) }}                   
+                    </div>
+                    <div class="recaptcha-btn-box w-100 text-center">
+                        <button type="button" class="btn btn-primary mt-1" id="verify-recaptcha">Submit</button>
+                    </div>
+                </div>                
+            </div>
+        </div>
+    </div>
+</div>
+{{ form_end(exclusiveOfferForm) }}
+
+<script>
+    window.addEventListener('DOMContentLoaded', function () {
+        const selectorExclusiveOffer = '[validation="jquery-exclusive-offer"]';        
+        const recaptchaExclusiveOffer = $(`${selectorExclusiveOffer} [id^="recaptcha_render_box_"]`);
+        const recaptchaIdExclusiveOffer = recaptchaExclusiveOffer.attr('id') || null;        
+        const recaptchaModalExclusiveOffer = $('#recaptchaModalExclusiveOffer');
+        const verifyRecaptchaBtnExclusiveOffer = $('#verify-recaptcha');
+
+        $(selectorExclusiveOffer).validate({
+            rules: {
+                'exclusive_offer[email]': {
+                    required: true,
+                    email: true
+                }
+            },
+            messages: {
+                'exclusive_offer[email]': {
+                    required: 'Please enter your email',
+                    email: 'Please enter a valid email address'
+                }
+            },
+            submitHandler: function (form) {
+                resetSpecificRecaptcha(recaptchaIdExclusiveOffer);
+                $(verifyRecaptchaBtnExclusiveOffer).attr('disabled', false).text('Submit');
+                recaptchaModalExclusiveOffer.modal('show');               
+            }
+        });
+
+        $(verifyRecaptchaBtnExclusiveOffer).on('click', function () {
+            $('.exclusive-offer-message-recaptcha-wrapper').html('');
+            $(this).attr('disabled', true).text('Sending...');
+
+            $.ajax('{{ url('form_exclusive_offer') }}', {
+                method: 'POST',
+                data: $(selectorExclusiveOffer).serialize(),
+                success: function (response) {
+                    if (response.success) {
+                        $('.exclusive-offer-message-wrapper').html(`<div class="text-success">${response.message}</div>`);
+                        $(selectorExclusiveOffer)[0].reset();
+                        resetSpecificRecaptcha(recaptchaIdExclusiveOffer);
+                        recaptchaModalExclusiveOffer.modal('hide');
+                    } else {
+                        let messages = '';
+                        if (response.errors && response.errors.length > 0) {
+                            response.errors.forEach(function (message) {
+                                messages += `<div class="text-danger">${message}</div>`;
+                            });
+                            $('.exclusive-offer-message-recaptcha-wrapper').html(messages);
+                        } else {
+                            messages = `<div class="text-danger">${response.message}</div>`;
+                            $('.exclusive-offer-message-recaptcha-wrapper').html(messages);
+                        }
+                    }
+
+                    setTimeout(function () {
+                        $('.exclusive-offer-message-wrapper').html('');
+                        $('.exclusive-offer-message-recaptcha-wrapper').html('');
+                    }, 5000);
+
+                    $(verifyRecaptchaBtnExclusiveOffer).attr('disabled', false).text('Submit');
+                },
+                error: function () {
+                    $(verifyRecaptchaBtnExclusiveOffer).attr('disabled', false).text('Submit');
+                }
+            });
+        });
+    });
+</script>

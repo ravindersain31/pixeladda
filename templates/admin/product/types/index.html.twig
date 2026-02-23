@@ -1,0 +1,61 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Product Types{% endblock %}
+{% block pageTitle %}
+    <div class="page-header-icon">
+        <i class="fa-solid fa-cubes"></i>
+    </div>
+    Product Types
+{% endblock %}
+
+{% block body %}
+    <div class="card card-header-actions mx-auto shadow-none">
+        <div class="card-header">
+            List of Product Types
+            <div>
+                <a href="{{ url('admin_product_type_add') }}" class="btn btn-primary btn-sm">
+                    <i class="fas fa-plus me-2"></i>
+                    Add
+                </a>
+            </div>
+        </div>
+        <table class="card-body table table-striped">
+            <thead>
+            <tr>
+                <th>Sr.</th>
+                <th>Name</th>
+                <th>Slug</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% if productTypes | length > 0 %}
+                {% for type in productTypes %}
+                    <tr>
+                        <td>{{ productTypes.getPaginationData.firstItemNumber + loop.index - 1 }}</td>
+                        <td>
+                            {{ type.name }}
+                            <span class="badge bg-dark">
+                                {{ type.store.shortName }}
+                            </span>
+                        </td>
+                        <td>{{ type.slug }}</td>
+                        <td>
+                            <a href="{{ url('admin_product_type_edit', {id: type.id}) }}" class="btn btn-info btn-sm">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="6">No records</td>
+                </tr>
+            {% endif %}
+            </tbody>
+        </table>
+        <div class="mt-4">
+            {{ knp_pagination_render(productTypes) }}
+        </div>
+    </div>
+{% endblock %}

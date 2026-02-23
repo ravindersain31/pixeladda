@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+{% block title %}Subscribe and Save - {{storeInfo.storeTitle}}{% endblock %}
+{% block metaData %}
+    <link rel="canonical" href="{{ url('subscribe_and_Save') }}" />
+    {% include 'common/_default_schema.html.twig' %}
+{% endblock %}
+{% block body %}
+    {{ include('common/common_mobile_bar.html.twig',{commonBarText: 'Order Online Or Call Now',commonBarTele: '+1-877-958-1499'}) }}
+    {% set desktopImg = storeInfo.isPromoStore 
+        ? 'https://static.yardsignplus.com/storage/promo-store/Subscribe-Save-Today-Desktop-Banner.webp' 
+        : 'https://static.yardsignplus.com/subscribe-save_20230103-2319ba50-8b5e-11ed-af2c-2fc40d897de3.jpg' 
+    %}
+
+    {% set mobileImg = storeInfo.isPromoStore 
+        ? 'https://static.yardsignplus.com/storage/promo-store/Subscribe-Save-Today-Mobile-Banner.webp' 
+        : 'https://static.yardsignplus.com/subscribe-save_20230103-ef4c41e0-8b5d-11ed-8510-052236b07907.png' 
+    %}
+    {{ include('common/_banner.html.twig',{
+        desktopImg: desktopImg,
+        desktopAlt: 'YSP Desktop Subscribe and Save Banner',
+        mobileImg: mobileImg,
+        mobileAlt: 'YSP Mobile Subscribe and Save Banner'
+    }) }}
+    {{ include('common/highlights.html.twig') }}
+    {{ include('common/breadcrumb.html.twig', { breadcrumbs: [
+        { name: 'Subscribe and Save', active: true }
+    ]}) }}
+    <section class="ysp-subscribe-and-save-today-wrapper ysp-subscribe-and-save-today-wrapper-main">
+            {{ component('SaveAndSubscribeForm') }}
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12 p-0 mb-3">
+                    <div class="text-center repeat-info repeat-info-help">
+                        <h5>For help placing an order or selecting products that will fit your needs, please call us toll
+                            free 24 hours a day, 7 days a week at <a href="tel: +1-877-958-1499">+1-877-958-1499</a>, ping
+                            us on our <a href="javascript:void(Tawk_API.toggle())">Live Chat</a>, or email us at <a
+                                href="mailto:{{storeInfo.storeEmail}}">{{storeInfo.storeEmail}}</a>.
+                                Please note our Digital Catalogs are very large PDF files. For optimal viewing, please download and view on a desktop rather than a mobile device.
+                        </h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

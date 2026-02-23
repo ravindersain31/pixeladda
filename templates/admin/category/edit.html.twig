@@ -1,0 +1,49 @@
+{% extends 'admin/base.html.twig' %}
+{% block title %}Edit Category{% endblock %}
+{% block pageTitle %}
+    <div class="page-header-icon">
+        <i class="fas fa-dashboard"></i>
+    </div>
+    Edit Category - {{ category.name }}
+    {% if category.parent is null %}
+        <a href="{{ url('category', {slug: category.slug}) }}" target="_blank">
+            <span class="badge bg-info ms-2"><i class="fa fa-external-link-alt"></i> Open</span>
+        </a>
+    {% else %}
+        <a href="{{ url('category', {slug: category.parent.slug, subSlug: category.slug}) }}" target="_blank">
+            <span class="badge bg-info ms-2"><i class="fa fa-external-link-alt"></i> Open</span>
+        </a>
+    {% endif %}
+{% endblock %}
+
+{% block body %}
+    <div class="card card-header-actions mx-auto shadow-none">
+        <div class="card-header p-0 h-100 border-0">
+            <nav class="w-100">
+                <div class="nav nav-tabs ps-2 pe-2 pt-2" role="tablist">
+                    <a href="{{ url('admin_category_edit', {id: category.id}) }}"
+                       class="nav-link {% if app.request.get('_route') in ['admin_category_edit'] %}active{% endif %}"
+                       type="button">
+                        Overview
+                        {% if category.enabled %}
+                            <span class="badge bg-success ms-2">Active</span>
+                        {% else %}
+                            <span class="badge bg-warning ms-2">Inactive</span>
+                        {% endif %}
+                    </a>
+                    {% if category.parent is null %}
+                        <a href="{{ url('admin_sub_categories', {id: category.id}) }}"
+                            class="nav-link {% if app.request.get('_route') in ['admin_sub_categories'] %}active{% endif %}"
+                            type="button">
+                            Sub Categories ({{ category.subCategories|length }})
+                        </a>
+                    {% endif %}
+                </div>
+            </nav>
+        </div>
+        <div class="card-body">
+            {% include 'admin/category/edit/'~ app.request.get('_route') | replace({'admin_category_': '', }) ~ '.html.twig' %}
+        </div>
+    </div>
+
+{% endblock %}

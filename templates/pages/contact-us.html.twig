@@ -1,0 +1,191 @@
+{% extends 'base.html.twig' %}
+
+{% set title = metaData.title ?: metaData.pageTitle ~ ' - ' ~ storeInfo.storeTitle %}
+
+{% block title %}{{ title }}{% endblock %}{% block metaData %}
+    {% set pageUrl = url('contact_us') %}
+    {% set pageImageUrl = storeInfo.isPromoStore
+        ? 'https://static.yardsignplus.com/storage/promo-store/Contact-us-Banner-Mobile.webp'
+        : 'https://static.yardsignplus.com/storage/banners/Contact-us-Mobile.webp'
+    %}
+
+    {% include 'common/_page_meta.html.twig' with {
+        title: title,
+        metaData: metaData,
+        pageUrl: pageUrl,
+        pageImageUrl: pageImageUrl,
+        storeInfo: storeInfo
+    } %}
+{% endblock %}
+{% block body %}
+    {{ include('common/common_mobile_bar.html.twig',{commonBarText: 'Order Online Or Call Now',commonBarTele: '+1-877-958-1499'}) }}
+    <div class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <picture>
+                    <source srcset="{{ storeInfo.isPromoStore ?'https://static.yardsignplus.com/storage/promo-store/Contact-us-Banner-Mobile.webp' : 'https://static.yardsignplus.com/storage/banners/Contact-us-Mobile.webp' }}"
+                            media="(max-width: 767px)">
+                    <img fetchpriority="high" width="1905" height="338" class="d-block w-100 h-auto"  src="{{ storeInfo.isPromoStore ? 'https://static.yardsignplus.com/storage/promo-store/Contact-us-Banner-Desktop.webp' : 'https://static.yardsignplus.com/storage/banners/Contact-us-Desktop.webp' }}"
+                         alt="YSP Contact Banner">
+                </picture>
+            </div>
+        </div>
+    </div>
+    {{ include('common/highlights.html.twig') }}
+    {{ include('common/breadcrumb.html.twig', { breadcrumbs: [
+        { name: 'Contact Us', active: true }
+    ]}) }}
+    <section class="common-sec-horizontal-pad ysp-contact-us-wrapper">
+        <div class="container-md">
+            <div class="row">
+                <div class="col-lg-6 mt-md-3 mt-lg-4 mb-lg-4 mb-md-3 mb-2 mt-2">
+                    <p class="ysp-common-contact-us-title">CALL US NOW </p>
+                    <div class="contact-us-text-wrapper">
+                        <div class="ysp-common-contact-us-text-wrapper">
+                            <p class="label"><strong>24/7 SUPPORT</strong></p>
+                            <p class="label">Available 24 hours a Day</p>
+                            <p class="label">7 Days a Week</p>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="ysp-common-contact-us-text-wrapper ysp-common-contact-us-text-wrapper-details">
+                                    <p class="label text-uppercase"><strong>Telephone</strong></p>
+                                    <a class="desc"
+                                       href="tel:+18779581499">+1-877-958-1499</a><br/>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="ysp-common-contact-us-text-wrapper ysp-common-contact-us-text-wrapper-details">
+                                    <p class="label text-uppercase"><strong>Email</strong></p>
+                                    <a class="desc" href="mailto:{{storeInfo.storeEmail}}">{{storeInfo.storeEmail}}</a>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="ysp-common-contact-us-text-wrapper ysp-common-contact-us-text-wrapper-details">
+                                    <p class="label text-uppercase"><strong>Address</strong></p>
+                                    <p class="desc">10511 Kipp Way <br> St #430 <br> Houston, TX 77099</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 mt-md-3 mt-lg-4 mb-lg-4 mb-md-3 mb-2 mt-2">
+                    <p class="ysp-common-contact-us-title">LEAVE A MESSAGE</p>
+                    <div class="contact-us-form-wrapper">
+                        {{ include('common/flash.html.twig') }}
+                        <div {{ stimulus_controller('form-validation') }}>
+                            {{ form_start(form, { attr: {'validation' : 'jquery'}}) }}
+                            {{ form_errors(form) }}
+                            <div id="contact-form">
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <div class="form-group">
+                                            {{ form_row(form.name) }}
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12">
+                                        <div class="form-group">
+                                            {{ form_row(form.email) }}
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12">
+                                        <div class="form-group">
+                                            {{ form_row(form.telephone) }}
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12">
+                                        <div class="form-group">
+                                            {{ form_row(form.comment) }}
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6 col-lg-12 col-xl-6">
+                                        <div class="form-group text-md-left text-center mb-0">
+                                            {% if form.recaptcha is defined %}
+                                                {{ form_row(form.recaptcha) }}
+                                            {% endif %}
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-12 button-col mt-3">
+                                        <div class="form-group text-md-left text-center mb-0">
+                                            <button type="submit" class="btn btn-dark submit-btn">
+                                                Submit
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <br>
+                                <div class="col-lg-12 d-flex align-items-center justify-content-start ">
+                                    <div class="error-response text-danger text-capitalize">
+                                    </div>
+                                </div>
+                            </div>
+                            {{ form_end(form) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+{% block footerJavascripts %}
+    <script>
+        window.addEventListener('DOMContentLoaded', function () {
+
+            $.validator.addMethod(
+                "noEmoji",
+                function (value) {
+                    return window.hasNoEmoji(value);
+                },
+                "Emojis are not allowed."
+            );
+
+            $('[validation="jquery"]').validate({
+                rules: {
+                    'contact_us[name]': {
+                        required: true,
+                        noEmoji: true
+                    },
+                    'contact_us[email]': {
+                        required: true,
+                        email: true,
+                        noEmoji: true
+                    },
+                    'contact_us[comment]': {
+                        required: true,
+                        noEmoji: true
+                    },
+                    'contact_us[telephone]': {
+                        required: true,
+                        pattern: /^\s*(?:\+?(\d{1,3}))?[-. (]*(\d{3})[-. )]*(\d{3})[-. ]*(\d{4})(?: *x(\d+))?\s*$/
+                    }
+                },
+                messages: {
+                    'contact_us[name]': {
+                        required: 'Please enter your name',
+                        noEmoji: 'Emojis are not allowed in name'
+                    },
+                    'contact_us[email]': {
+                        required: 'Please enter your email',
+                        email: 'Please enter a valid email address',
+                        noEmoji: 'Emojis are not allowed in email'
+                    },
+                    'contact_us[comment]': {
+                        required: 'Please enter your comment',
+                        noEmoji: 'Emojis are not allowed in comment'
+                    },
+                    'contact_us[telephone]': {
+                        required: 'Please enter your phone number',
+                        pattern: 'Please enter a valid phone number'
+                    }
+                },
+                submitHandler: function (form) {
+                    $(form).find('button[type="submit"]').attr('disabled', true);
+                    $(form).find('button[type="submit"]').text('Processing...');
+                    form.submit();
+                }
+            });
+        });
+    </script>
+{% endblock %}

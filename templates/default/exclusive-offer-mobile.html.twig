@@ -1,0 +1,106 @@
+{% set exclusiveOfferMobileForm = createFormView('App\\Form\\ExclusiveOfferMobileType') %}
+{{ form_start(exclusiveOfferMobileForm, { attr: {'validation' : 'jquery-exclusive-offer-mobile'}}) }}
+  
+<div class="row">
+    <div class="col-md-12">
+        <div class="d-flex column-gap-1 exclusive-email-mobile">
+            <div class="form-group">
+                {{ form_widget(exclusiveOfferMobileForm.email) }}
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-dark">Submit</button>
+            </div>
+        </div>
+        
+        <div class="exclusive-offer-message-wrapper-mobile ms-3 mt-1"></div>
+    </div>
+</div>
+
+<div class="modal fade" id="recaptchaModalExclusiveOfferMobile" tabindex="-1" role="dialog" aria-labelledby="recaptchaModalExclusiveOfferMobileLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="exclusive-offer-message-recaptcha-wrapper-mobile"></div>
+                <div class="recaptcha-button-inner-mobile d-flex flex-wrap justify-content-center">
+                    <div id="recaptcha-container-mobile" class="w-100 d-flex justify-content-center">
+                        {{ form_row(exclusiveOfferMobileForm.recaptcha) }}                   
+                    </div>
+                    <div class="recaptcha-btn-box-mobile w-100 text-center">
+                        <button type="button" class="btn btn-primary mt-1" id="verify-recaptcha-mobile">Submit</button>
+                    </div>
+                </div>                
+            </div>
+        </div>
+    </div>
+</div>
+{{ form_end(exclusiveOfferMobileForm) }}
+
+<script>
+    window.addEventListener('DOMContentLoaded', function () {
+        const selectorExclusiveOfferMobile = '[validation="jquery-exclusive-offer-mobile"]';        
+        const recaptchaExclusiveOfferMobile = $(`${selectorExclusiveOfferMobile} [id^="recaptcha_render_box_"]`);
+        const recaptchaIdExclusiveOfferMobile = recaptchaExclusiveOfferMobile.attr('id') || null;        
+        const recaptchaModalExclusiveOfferMobile = $('#recaptchaModalExclusiveOfferMobile');
+        const verifyRecaptchaBtnExclusiveOfferMobile = $('#verify-recaptcha-mobile');
+
+        $(selectorExclusiveOfferMobile).validate({
+            rules: {
+                'exclusive_offer_mobile[email]': {
+                    required: true,
+                    email: true
+                }
+            },
+            messages: {
+                'exclusive_offer_mobile[email]': {
+                    required: 'Please enter your email',
+                    email: 'Please enter a valid email address'
+                }
+            },
+            submitHandler: function (form) {
+                resetSpecificRecaptcha(recaptchaIdExclusiveOfferMobile);
+                $(verifyRecaptchaBtnExclusiveOfferMobile).attr('disabled', false).text('Submit');
+                recaptchaModalExclusiveOfferMobile.modal('show');               
+            }
+        });
+
+        $(verifyRecaptchaBtnExclusiveOfferMobile).on('click', function () {
+            $('.exclusive-offer-message-recaptcha-wrapper-mobile').html('');
+            $(this).attr('disabled', true).text('Sending...');
+
+            $.ajax('{{ url('form_exclusive_offer_mobile') }}', {
+                method: 'POST',
+                data: $(selectorExclusiveOfferMobile).serialize(),
+                success: function (response) {
+                    if (response.success) {
+                        $('.exclusive-offer-message-wrapper-mobile').html(`<div class="text-success">${response.message}</div>`);
+                        $(selectorExclusiveOfferMobile)[0].reset();
+                        resetSpecificRecaptcha(recaptchaIdExclusiveOfferMobile);
+                        recaptchaModalExclusiveOfferMobile.modal('hide');
+                    } else {
+                        let messages = '';
+                        if (response.errors && response.errors.length > 0) {
+                            response.errors.forEach(function (message) {
+                                messages += `<div class="text-danger">${message}</div>`;
+                            });
+                            $('.exclusive-offer-message-recaptcha-wrapper-mobile').html(messages);
+                        } else {
+                            messages = `<div class="text-danger">${response.message}</div>`;
+                            $('.exclusive-offer-message-recaptcha-wrapper-mobile').html(messages);
+                        }
+                        $(this).attr('disabled', false).text('Submit');
+                    }
+
+                    setTimeout(function () {
+                        $('.exclusive-offer-message-wrapper-mobile').html('');
+                        $('.exclusive-offer-message-recaptcha-wrapper-mobile').html('');
+                    }, 5000);
+
+                    $(verifyRecaptchaBtnExclusiveOfferMobile).attr('disabled', false).text('Submit');
+                },
+                error: function () {
+                    $(verifyRecaptchaBtnExclusiveOfferMobile).attr('disabled', false).text('Submit');
+                }
+            });
+        });
+    });
+</script>

@@ -1,0 +1,55 @@
+{% extends 'emails/base.html.twig' %}
+{% block title %}Leave a Google Review, Receive 5% Off Your Order!{% endblock %}
+{% block subject %}{% endblock %}
+{% block body %}
+    <tr>
+        <td colspan="3">
+            <table style="border-spacing: 0; width: 100%; text-align: center; margin-top: 20px;">
+                <tbody>
+                <tr>
+                    <td>
+                        <div style="width: 350px; margin: auto; text-align: center;">
+                            <a href="{{ url('customer_photos',{}) }}#photoModal" target="_blank"
+                                style="text-decoration: none;">
+                                <div style="background: #01ab00;font-size: 18px; font-weight: 600; color: #ffffff; position: relative; border: 5px solid #fff; padding: 10px; border-radius: 20px;">
+                                    <div style="border: 3px solid white; border-radius: 5px; padding: 5px;">
+                                        ADD YOUR PHOTOS
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <div style="text-align: center;">
+                <div style="background-color: #35537d; padding: 1%; margin: 20px auto 0; text-align: left; width: 780px; ">
+                    <div style="border: 5px solid #fff; padding: 3%; color:#fff;">
+                        <b>Hello {{ order.billingAddress.firstName }}, </b>
+                        <p>This is Yard Sign Plus Customer Service.</p>
+                        <p style="line-height: 1.40;">
+                            Thank you for placing an order with us! We would greatly appreciate you sharing photos of your
+                            custom order in use! You can share photos by clicking the button above. Please respond with a screenshot of your upload and your order number. We will immediately apply 5% off, up to $50 in YSP Rewards
+                            to your account, it’s that simple! For questions, please do not hesitate to contact us by calling 
+                            <a href="tel: +1-877-958-1499" style="text-decoration: none"><span style="color: #fff202">+1-877-958-1499</span></a> or
+                            emailing <a href="mailto: {{storeInfo.storeEmail}}" style="text-decoration: none"><span style="color: #fff202">{{storeInfo.storeEmail}}</span></a>.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="3">
+            <a href="{{ url('subscribe_and_Save') }}" target="_blank" class="btn-shop-now" style="background-color: #e8c94c;color: #000000 !important;font-size: 20px;text-decoration: none;padding: 4px 20px;display: inline-block;font-weight: normal;border-radius: 5px;margin-top: 20px;">Subscribe & Save</a>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="3">
+            <a href="{{ url('login') }}" class="btn-shop-now" target="_blank" style="font-size: 14px !important;color: #753dbc !important; font-size: 18px; text-transform: uppercase; text-decoration: underline; display: inline-block; font-weight: 700; border-radius: 6px; font-style: italic; margin-top: 20px;">My Account</a>
+        </td>
+    </tr>
+{% endblock %}
+
+
+

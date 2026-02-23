@@ -1,0 +1,163 @@
+{% set viewProofForm = createFormView('App\\Form\\Page\\ViewProofType') %}
+{{ form_start(viewProofForm, { attr: {'validation' : 'jquery-view-proof'}}) }}
+{{ form_errors(viewProofForm) }}
+<div class="ysp-ft-form-wrapper" id="top_footer_form">
+	<div class="view-proof-message-wrapper"></div>
+	<div class="form-group">
+		{{ form_row(viewProofForm.orderId) }}
+		{{ form_errors(viewProofForm.orderId) }}
+	</div>
+
+	<div class="form-group">
+		{{ form_row(viewProofForm.email) }}
+		{{ form_errors(viewProofForm.email) }}
+	</div>
+
+	<div class="form-group">
+		{{ form_row(viewProofForm.telephone) }}
+		{{ form_errors(viewProofForm.telephone) }}
+	</div>
+
+	{% if viewProofForm.recaptcha is defined %}
+        <div class="form-group d-flex justify-content-center">
+            {{ form_row(viewProofForm.recaptcha) }}
+		    {{ form_errors(viewProofForm.recaptcha) }}
+        </div>
+    {% endif %}
+
+	<div class="form-group mt-3 form-group-submit text-center">
+		<button type="submit" class="btn">Submit</button>
+	</div>
+	<div class="errorTxt"></div>
+</div>
+
+{{ form_end(viewProofForm) }}
+
+ <script>
+    window.addEventListener('DOMContentLoaded', function () {
+    const emojiRegex = /[\p{So}\p{Cs}\u{1F300}-\u{1FAFF}]/u;
+
+    $.validator.addMethod('noEmoji', function (value, element) {
+        return this.optional(element) || !emojiRegex.test(value);
+    }, 'Emojis are not allowed.');
+
+    $('[validation="jquery-view-proof"]').validate({
+        rules: {
+            'view_proof[orderId]': { required: false, noEmoji: true },
+            'view_proof[email]': { required: false, noEmoji: true, email: true },
+            'view_proof[telephone]': { required: false, noEmoji: true }
+        },
+        submitHandler: function (form) {
+            const orderId = $(form).find('[name="view_proof[orderId]"]').val().trim();
+            const email = $(form).find('[name="view_proof[email]"]').val().trim();
+            const phone = $(form).find('[name="view_proof[telephone]"]').val().trim();
+
+            if (!orderId && !email && !phone) {
+                $('.view-proof-message-wrapper').html(`<div class="alert alert-danger">Please provide at least one of the following details.</div>`);
+                setTimeout(() => $('.view-proof-message-wrapper').html(''), 5000);
+                return;
+            }
+
+            if (orderId && !email && !phone) {
+                $('.view-proof-message-wrapper').html(`<div class="alert alert-danger">Please provide at least one of the following with Order Number: Email or Phone Number</div>`);
+                setTimeout(() => $('.view-proof-message-wrapper').html(''), 5000);
+                return;
+            }
+
+            $(form).find('button[type="submit"]').attr('disabled', true).text('Processing...');
+            $.ajax('{{ url('form_view_proof') }}', {
+                method: 'POST',
+                data: $(form).serialize(),
+                success: function (response) {
+                    let messages = '';
+                    if (response.success) {
+                        $('.view-proof-message-wrapper').html(`<div class="alert alert-success">${response.message}</div>`);
+                        $(form)[0].reset();
+                        grecaptcha.enterprise.reset();
+
+                        if (response.redirectUrl) {
+                            window.location.href = response.redirectUrl;
+                        }
+
+                        if (response.orders) {
+                            let orderHtml = `
+                                <table class="table table-bordered table-centered table-fixed mb-4 view-proof-table">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Order Date</th>
+                                            <th>Order ID</th>
+                                            <th>Signs</th>
+                                            <th>Amount</th>
+                                            <th>Order Status</th>
+                                            <th>Payment Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>`;
+
+                            response.orders.forEach((order, index) => {
+                            let categoriesDisplay = `<ul class="list-unstyled mb-0">`;
+                            order.categories.forEach(category => {
+                                categoriesDisplay += `
+                                    <li>
+                                        <a href="${category.url}" class="d-flex align-items-center">
+                                           <i class="fas fa-external-link-alt"></i>
+                                            <span class="ms-1">${category.name}</span>
+                                        </a>
+                                    </li>`;
+                            });
+                            categoriesDisplay += `</ul>`;
+
+                            orderHtml += `
+                                <tr>
+                                    <td>${index + 1}</td>
+                                    <td>${new Date(order.orderAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</td>
+                                    <td class="text-break">${order.orderId}</td>
+                                    <td>${categoriesDisplay}</td>
+                                    <td>$${parseFloat(order.totalAmount).toFixed(2)}</td>
+                                    <td>
+                                        <span class="badge bg-info-subtle text-dark fw-medium w-100 text-wrap">${order.status}</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-warning-subtle text-dark fw-medium w-100 text-wrap">${order.paymentStatus}</span>
+                                    </td>
+                                    <td>
+                                        <a href="${order.proofUrl}" class="" target="_blank">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg> 
+                                        <span class="text-dark">Proof Link</span>
+                                        </a>
+                                    </td>
+                                </tr>`;
+                            });
+
+                            orderHtml += `</tbody></table>`;
+
+                            $('#order-proof-container').html(orderHtml);
+                        }
+                    } else {
+                        if (response.errors.length > 0) {
+                            response.errors.forEach(function (message) {
+                                messages += `<div class="alert alert-danger">${message}</div>`;
+                            });
+                        } else {
+                            messages = `<div class="alert alert-danger">${response.message}</div>`;
+                        }
+                        grecaptcha.enterprise.reset();
+                        $('.view-proof-message-wrapper').html(messages);
+                    }
+                    setTimeout(function () {
+                        $('.view-proof-message-wrapper').html('');
+                    }, 5000);
+
+                    $(form).find('button[type="submit"]').attr('disabled', false).text('Submit');
+                },
+                error: function () {
+                    $(form).find('button[type="submit"]').attr('disabled', false).text('Submit');
+                }
+            });
+        }
+    });
+});
+
+</script>

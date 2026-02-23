@@ -1,0 +1,11 @@
+<tr>
+    <td colspan="3">
+        <p style="font-size: 14px;color: #999;padding: 0 50px;line-height: 135%;margin: 20px 0 8px;" class="proof-instruction">
+        {% if instruction is defined %}
+            {{ instruction|raw }}
+        {% else %}
+            Your order will not go into production until you Approve your Proof. You will receive an email with a proof for you to Approve or Request Changes shortly. Once approved, we will begin processing your order.
+        {% endif %}
+        </p>
+    </td>
+</tr>

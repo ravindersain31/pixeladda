@@ -1,0 +1,98 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Categories{% endblock %}
+
+{% block pageTitle %}
+    <div class="page-header-icon">
+        <i class="fas fa-list"></i>
+    </div>
+    Categories
+{% endblock %}
+
+{% block body %}
+    <div class="card card-header-actions mx-auto shadow-none">
+        <div class="card-header d-flex justify-content-between">
+            <span>List of Categories</span>
+            <a href="{{ url('admin_category_add') }}" class="btn btn-primary btn-sm">
+                <i class="fas fa-plus me-2"></i> Add
+            </a>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>#</th>
+                        <th>Website</th>
+                        <th>Name</th>
+                        <th>Slug</th>
+                        <th>SKU</th>
+                        <th>Sort</th>
+                        <th>Menu</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if categories | length > 0 %}
+                        {% for category in categories %}
+                            {% set collapseId = 'collapse-' ~ category.id %}
+                            <tr>
+                                <td>{{ categories.getPaginationData.firstItemNumber + loop.index - 1 }}</td>
+                                <td class="pointer" data-bs-toggle="collapse" data-bs-target="#{{ collapseId }}">{{ category.store.shortName }}</td>
+                                <td class="pointer" data-bs-toggle="collapse" data-bs-target="#{{ collapseId }}">
+                                    {{ category.name }}
+                                    <span class="badge bg-secondary ms-1">{{ category.productsAll | length }}</span>
+                                </td>
+                                <td class="pointer" data-bs-toggle="collapse" data-bs-target="#{{ collapseId }}">{{ category.slug }}</td>
+                                <td>{{ category.skuInitial }}</td>
+                                <td>{{ category.sortPosition }}</td>
+                                <td>
+                                    <span class="badge {{ category.displayInMenu ? 'bg-success' : 'bg-danger' }}">
+                                        {{ category.displayInMenu ? 'Yes' : 'No' }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="d-flex gap-2">
+                                        {% if is_granted('admin_category_edit') %}
+                                            <a href="{{ url('admin_category_edit', {id: category.id}) }}" class="badge bg-info text-white text-decoration-none my-1">
+                                                <i class="fas fa-edit"></i> Edit
+                                            </a>
+                                        {% endif %}
+                                        {% if category.isEnabled %}
+                                            <a href="{{ url('category', {slug: category.slug}) }}" target="_blank" class="badge bg-dark text-white text-decoration-none my-1">
+                                                <i class="fas fa-external-link-alt"></i> View
+                                            </a>
+                                        {% endif %}
+                                        <button class="btn btn-sm" data-bs-toggle="collapse" data-bs-target="#{{ collapseId }}">
+                                            <i class="fas fa-chevron-down"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="collapse" id="{{ collapseId }}">
+                                <td colspan="8">
+                                    <div class="bg-light p-1">
+                                        <h5 class="border-bottom m-2 pb-2">
+                                            <i class="fas fa-sitemap me-2 text-primary"></i>
+                                            <strong>{{ category.name }}</strong>
+                                            <span class="badge bg-info ms-2">{{ category.subCategories | length }} Sub Categories</span>
+                                        </h5>
+                                        {% include 'admin/category/_subcategory_table.html.twig' with {'categories': category.subCategories} %}
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="8" class="text-center">No categories found</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        {{ knp_pagination_render(categories) }}
+    </div>
+{% endblock %}

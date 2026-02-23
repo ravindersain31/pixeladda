@@ -1,0 +1,135 @@
+{% set materialBreakdown = order.materialCost %}
+{% set adsPerOrder = getAdsPerOrder(order)|default(0) %}
+
+{% set table_content %}
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead>
+                <tr class="text-end p-1 bg-light">
+                    <th class="text-end small p-1 text-dark" style="text-align: right;">Item</th>
+                    <th class="text-end small p-1 text-dark" style="text-align: right;">Qty</th>
+                    <th class="text-end small p-1 text-dark" style="text-align: right;">Unit Cost</th>
+                    <th class="text-end small p-1 text-dark" style="text-align: right;">Total Cost</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in materialBreakdown.materialCostBreakdown %}
+                    <tr>
+                        <td class="text-end small p-1 text-dark">{{ row.item }}</td>
+                        <td class="text-end small p-1 text-dark" style="text-align: right;">{{ row.quantity }}</td>
+                        <td class="text-end small p-1 text-dark" style="text-align: right;">{% if row.item != 'Total' %}${% endif %}{{ row.unitCost }}</td>
+                        <td class="text-end small p-1 text-dark" style="text-align: right;">${{ row.totalCost | number_format(2) }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endset %}
+
+{% if materialBreakdown.materialCostBreakdown | length > 0 %}
+    <div class="row">
+        <div class="pt-4 col-6">
+            <h3>Material Cost Breakdown</h3>
+            <span>{{ table_content }}</span>
+        </div>
+        <div class="pt-4 col-6">
+    <h3>Cost Breakdown</h3>
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead>
+                <tr class="text-end p-1 bg-light">
+                    <th class="text-end small p-1 text-dark">Item</th>
+                    <th class="text-end small p-1 text-dark">Cost</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="text-end small p-1 text-dark">Order Total</td>
+                    <td class="text-end small p-1 text-dark">
+                        ${{ order.totalReceivedAmount | number_format(2) }}
+                    </td>
+                </tr>
+                <tr>
+                    <td class="text-end small p-1 text-dark">Labor Cost</td>
+                    <td class="text-end small p-1 text-dark">
+                        ${{ order.totalLaborCost | number_format(2) }}
+                    </td>
+                </tr>
+                <tr>
+                    <td class="text-end small p-1 text-dark">Ads Cost per Order</td>
+                    <td class="text-end small p-1 text-dark">
+                        ${{ order.weightedAdsCost | number_format(2) }}
+                    </td>
+                </tr>
+                <tr>
+                    <td class="text-end small p-1 text-dark">Shipping Cost</td>
+                    <td class="text-end small p-1 text-dark">
+                        ${{ order.totalShippingCost | default(0) | number_format(2) }}
+                    </td>
+                </tr>
+                <tr>
+                    <td class="text-end small p-1 text-dark">Total Material Cost</td>
+                    <td class="text-end small p-1 text-dark">
+                        ${{ materialBreakdown.totalMaterialCost | default(0) | number_format(2) }}
+                    </td>
+                </tr>
+                <tr class="bg-light">
+                    <td class="text-end small p-1 text-dark"><strong>Profit/Loss</strong></td>
+                    <td class="text-end small p-1 text-dark">
+                        {% set profitAndLoss = order.profitAndLoss | default(0) %}
+                        <strong>
+                        ${{ profitAndLoss | default(0) | number_format(2) }}
+                        </strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="text-end small p-1 text-dark">Gross Margin</td>
+                    {% set grossMarginPercentage = order.grossMarginPercentage|default(0) %}
+                    <td class="text-end small p-1 text-dark" style="
+                            {% if grossMarginPercentage > 55 %}
+                                background-color:rgba(0, 255, 0, 0.45);
+                            {% elseif grossMarginPercentage > 30 and grossMarginPercentage < 55 %}
+                                background-color:rgba(0, 255, 0, 0.3);
+                            {% elseif grossMarginPercentage > 20 and grossMarginPercentage < 30 %}
+                                background-color:rgba(255, 255, 0, 0.3);
+                            {% elseif grossMarginPercentage < 20 and grossMarginPercentage > 0 %}
+                                background-color:rgba(255, 0, 0, 0.2);
+                            {% else %}
+                                background-color:rgba(255, 0, 0, 0.6);
+                            {% endif %}
+                    ">
+                        ${{ order.grossMargin|default(0)|number_format(2) }}
+                        ({{ grossMarginPercentage|number_format(2) }}%)
+                    </td> <!-- (Profit / Revenue) * 100 -->
+                </tr>
+                <tr>
+                    <td class="text-end small p-1 text-dark">Net Margin</td>
+                    {% set grossMarginPercentage = order.netMarginPercentage|default(0) %}
+                    <td class="text-end small p-1 text-dark" style="
+                            {% if grossMarginPercentage > 55 %}
+                                background-color:rgba(0, 255, 0, 0.45);
+                            {% elseif grossMarginPercentage > 30 and grossMarginPercentage < 55 %}
+                                background-color:rgba(0, 255, 0, 0.3);
+                            {% elseif grossMarginPercentage > 20 and grossMarginPercentage < 30 %}
+                                background-color:rgba(255, 255, 0, 0.3);
+                            {% elseif grossMarginPercentage < 20 and grossMarginPercentage > 0 %}
+                                background-color:rgba(255, 0, 0, 0.2);
+                            {% else %}
+                                background-color:rgba(255, 0, 0, 0.6);
+                            {% endif %}
+                        ">
+                        ${{ order.netMargin|default(0)|number_format(2) }}
+                        ({{ grossMarginPercentage|number_format(2) }}%)
+                    </td> <!-- (Net Profit / Revenue) * 100 -->
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+    </div>
+{% else %}
+    <div class="text-end pt-4">
+        <span>No Material Breakdown Data</span>
+    </div>
+{% endif %}

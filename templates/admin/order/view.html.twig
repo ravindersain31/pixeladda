@@ -1,0 +1,250 @@
+{% extends 'admin/base.html.twig' %}
+{% set ProductEnum = enum('App\\Enum\\ProductEnum') %}
+{% block title %}Orders{% endblock %}
+{% block pageTitle %}
+    <div>
+        <div class="d-flex">
+            <div class="d-flex flex-column" id="page-header">
+                <div class="d-flex">
+                    <div class="page-header-icon">
+                        <i class="fa-solid fa-shopping-cart"></i>
+                    </div>
+                    <span>Order #{{ order.orderId }}</span>
+                </div>
+                <small class="text-muted fs-13 text-center mt-1">{{ order.orderAt | date('M d, Y h:i A') }}</small>
+            </div>
+            <div>
+                {% if order.orderChannel and order.isManual %}
+                    <span class="badge bg-warning ms-1">{{ order.orderChannel.label }}</span>
+                {% endif %}
+                {% if is_granted('order_view_cart_link') and order.cart %}
+                <a href="{{ storeBasedUrl(url('cart', {id: order.cart.cartId}), order.storeDomain) }}" target="_blank"
+                class="badge bg-dark text-white text-decoration-none mx-2"><i class="fa fa-external-link-alt me-1"></i> View Cart</a>
+                {% endif %}
+                {% if is_granted('admin_order_repeat_order') and order.status != 'CANCELLED' %}
+                    {% if order.isManual %}
+                        {{ include('admin/order/view/action/_repeat_order.html.twig') }}
+                    {% else %}
+                        <a href="{{ url('admin_order_repeat_order', {orderId: order.orderId}) }}" target="_blank"
+                        class="badge bg-primary text-white text-decoration-none mx-2"> <i class="fa fa-external-link-alt me-1"></i> Repeat Order</a>
+                    {% endif %}
+                {% endif %}
+                <a href="{{ storeBasedUrl(url('order_proof', {oid: order.orderId}), order.storeDomain) }}" class="badge ms-1 bg-warning text-white text-decoration-none"
+                target="_blank">
+                    <i class="fa fa-external-link-alt me-1"></i>
+                    View Customer Proofs
+                </a>
+                {% if is_granted('admin_order_move_to_upload_proof') and order.isAllowedToMoveToUploadProof() %}
+                    <button class="btn badge ms-1 bg-info text-white text-decoration-none" data-bs-toggle="modal" data-bs-target="#move_to_upload_proof_{{ order.orderId }}">
+                        <i class="fa fa-arrow-left me-1"></i> Move to Upload Proof
+                    </button>
+                    {% include 'admin/order/view/_move_to_upload_proof.html.twig' %}
+                {% endif %}
+                {% if order.printerName %}
+                    <span class="badge bg-secondary mx-2">{{ order.printerName }}</span>
+                {% elseif order.subOrders %}
+                    {% for subOrder in order.subOrders %}
+                        <span class="badge bg-secondary mx-2">{{ subOrder.printerName }}</span>
+                    {% endfor %}
+                {% endif %}
+                <button class="badge ms-1 bg-warning text-white text-decoration-none btn"
+                    data-controller="canvas-to-image"
+                    data-action="click->canvas-to-image#click"
+                    data-canvas-to-image-order-id-value="{{ order.orderId }}"
+                    data-canvas-to-image-proof-url-value="{{ storeBasedUrl(url('order_auto_generated_proof', {orderId: order.orderId, withCustomerDesign: 1}), order.storeDomain) }}"
+                    data-canvas-to-image-items-value='{{ getOrderCanvasData(order)|json_encode|e("html_attr") }}'
+                    data-canvas-to-image-grommet-templates-value='{{ getGrommetTemplates()|json_encode|e("html_attr") }}'
+                    data-canvas-to-image-wire-stake-templates-value='{{ getWireStakeTemplates()|json_encode|e("html_attr") }}'
+                >
+                    <i class="fa fa-palette me-2"></i>
+                    Convert Canvas To Image (JPEG)
+                </button>
+            </div>
+        </div>
+        {% if is_granted(['ROLE_SUPER_ADMIN', 'ROLE_PROOF_DESIGNER', 'ROLE_DESIGNER_LEAD', 'ROLE_CSR']) %}
+            {{ component('OrderDesignerTasks', {
+                order: order
+            }) }}
+        {% endif %}
+    </div>
+{% endblock %}
+{% block pageTitleAction %}
+    {% if is_granted('admin_order_cancel_order') and order.status != 'CANCELLED' %}
+        <button class="btn btn-danger btn-sm" type="button" data-bs-toggle="offcanvas"
+                data-bs-target="#offcanvasCancelOrder" aria-controls="offcanvasCancelOrder">
+            <i class="fa fa-times me-1"></i> Cancel Order
+        </button>
+    {% endif %}
+{% endblock %}
+
+{% block body %}
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyApxy-puRWe0-tyK_eH-1NjadBfucNNmks&libraries=places"></script>
+    <div class="card card-header-actions mx-auto shadow-none">
+        {{ include('/admin/order/view/action/_header_actions.html.twig') }}
+        <div class="card-header p-0 h-100 border-0 flex-column-reverse flex-sm-row">
+            <nav class="w-auto">
+                <div class="nav nav-tabs ps-2 pe-2 pt-2" role="tablist">
+                    {% if is_granted('admin_order_overview') %}
+                        <a href="{{ url('admin_order_overview', {orderId: order.orderId}) }}"
+                           class="nav-link {% if app.request.get('_route') in ['admin_order_overview'] %}active{% endif %}"
+                           type="button">
+                            Overview
+                        </a>
+                    {% endif %}
+                    {% if is_granted('admin_order_proofs') %}
+                        <a href="{{ url('admin_order_proofs', {orderId: order.orderId}) }}"
+                           class="nav-link {% if app.request.get('_route') in ['admin_order_proofs'] %}active{% endif %}"
+                           type="button">
+                            Proofs & Changes Request
+                        </a>
+                    {% endif %}
+                    {% if is_granted('admin_order_transactions') %}
+                        <a href="{{ url('admin_order_transactions', {orderId: order.orderId}) }}"
+                           class="nav-link {% if app.request.get('_route') in ['admin_order_transactions'] %}active{% endif %}"
+                           type="button">
+                            Transactions
+                        </a>
+                    {% endif %}
+                    {% if is_granted('admin_order_logs') %}
+                        <a href="{{ url('admin_order_logs', {orderId: order.orderId}) }}"
+                           class="nav-link {% if app.request.get('_route') in ['admin_order_logs'] %}active{% endif %}"
+                           type="button">
+                            Logs
+                        </a>
+                    {% endif %}
+                    {% if is_granted('admin_order_related_orders') %}
+                        <a href="{{ url('admin_order_related_orders', {orderId: order.orderId}) }}"
+                           class="nav-link {% if app.request.get('_route') in ['admin_order_related_orders'] %}active{% endif %}"
+                           type="button">
+                            Related Orders
+                        </a>
+                    {% endif %}
+                    {% if is_granted('admin_order_update_payment') and order.paymentMethod == 'CHECK' and order.paymentStatus != 'COMPLETED' %}
+                        <a href="{{ url('admin_order_update_payment', {orderId: order.orderId}) }}"
+                           class="nav-link {% if app.request.get('_route') in ['admin_order_update_payment'] %}active{% endif %}"
+                           type="button">
+                            Update Payment
+                        </a>
+                    {% endif %}
+                    {% if is_granted('admin_order_reward_history') %}
+                        <a href="{{ url('admin_order_reward_history', {orderId: order.orderId}) }}"
+                            class="nav-link {% if app.request.get('_route') in ['admin_order_reward_history'] %}active{% endif %}"
+                            type="button">
+                            Rewards History
+                        </a>
+                    {% endif %}
+                    {% if order.subOrders|length > 0 and is_granted('admin_order_sub_orders') %}
+                        <a href="{{ url('admin_order_split_order', {orderId: order.orderId}) }}"
+                            class="nav-link {% if app.request.get('_route') in ['admin_order_split_order'] %}active{% endif %}"
+                            type="button">
+                            Split Order
+                        </a>
+                    {% endif %}
+                </div>
+            </nav>
+            <div class="actions me-sm-2 text-sm-left-else-center">
+                {% set lastProof = null %}
+                {% set lastMessage = order.lastOrderMessages %}
+                {% if lastMessage.files is defined %}
+                    {% for file in lastMessage.files %}
+                        {% if file.type == 'PROOF_FILE' %}
+                            {% set lastProof = file %}
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+
+                <div class="btn-group">
+                    <button class="btn btn-secondary btn-sm dropdown-toggle d-flex align-items-center" data-bs-toggle="dropdown">
+                        <i class="fa fa-cloud-download me-1"></i>
+                        Auto Generated Proof
+                    </button>
+
+                    <ul class="dropdown-menu shadow-sm border-0 p-2">
+                        <!-- WITH Templates -->
+                        <li>
+                            <a class="dropdown-item rounded px-3 py-2"
+                            href="{{ storeBasedUrl(url('order_auto_generated_proof', {orderId: order.orderId, withTemplate: 1}), order.storeDomain) }}"
+                            target="_blank">
+                                <i class="fa fa-image me-2 text-primary"></i>
+                                With Template Images
+                            </a>
+                        </li>
+
+                        <!-- WITHOUT Templates -->
+                        <li>
+                            <a class="dropdown-item rounded px-3 py-2"
+                            href="{{ storeBasedUrl(url('order_auto_generated_proof', {orderId: order.orderId, withTemplate: 0}), order.storeDomain) }}"
+                            target="_blank">
+                                <i class="fa fa-file me-2 text-secondary"></i>
+                                Without Template Images
+                            </a>
+                        </li>
+
+                        <!-- WITH Customer Design -->
+                        <li>
+                            <a class="dropdown-item rounded px-3 py-2"
+                            href="{{ storeBasedUrl(url('order_auto_generated_proof', {orderId: order.orderId, withCustomerDesign: 1}), order.storeDomain) }}"
+                            target="_blank">
+                                <i class="fa fa-palette me-2 text-success"></i>
+                                With Customer Design
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                {% if lastProof is not null %}
+                    <a href="{{ vich_s3.asset(lastProof, 'fileObject') }}" class="btn btn-secondary btn-sm my-1"
+                       target="_blank">
+                        <i class="fa fa-cloud-download me-1"></i>
+                        Download Proof
+                    </a>
+                {% endif %}
+
+                {% if is_granted('admin_order_proof_upload') and order.status != 'CANCELLED' %}
+                    <a class="btn btn-info btn-sm my-1" type="button" data-bs-toggle="offcanvas"
+                       data-bs-target="#offcanvasUploadProof" aria-controls="offcanvasUploadProof">
+                        <i class="fa fa-cloud-upload me-1"></i> Upload Proof
+                    </a>
+                {% endif %}
+
+                {% if is_granted('admin_order_assign_to_me') %}
+                    {% set isAssignedToMe = order.proofDesigner == app.user %}
+                    {% set canAssign = order.status in ['RECEIVED', 'CHANGES_REQUESTED', 'DESIGNER_ASSIGNED'] %}
+
+                    {% if canAssign %}
+                        <a class="btn btn-primary btn-sm my-1"
+                        href="{{ path('admin_order_assign_to_me', {orderId: order.orderId}) }}">
+                            <i class="fa {{ isAssignedToMe ? 'fa-user-times' : 'fa-user' }} me-1"></i>
+                            {{ isAssignedToMe ? 'Unassign' : 'Assign to me' }}
+                        </a>
+                    {% endif %}
+                {% endif %}
+                {# <a href="{{ url('order_view', {oid: order.orderId}) }}" class="btn btn-warning btn-sm my-1" target="_blank">
+                    <i class="fa fa-external-link-alt me-1"></i>
+                    View Order
+                </a> #}
+                {# <button class="btn btn-warning btn-sm my-1" type="button" data-bs-toggle="offcanvas"
+                            data-bs-target="#offcanvasCustomerProofs" aria-controls="offcanvasCustomerProofs">
+                    <i class="fa fa-times me-1"></i>  View Customer Proofs
+                </button>
+                <button class="btn btn-purple btn-sm my-1" type="button" data-bs-toggle="offcanvas"
+                            data-bs-target="#offcanvasDownload" aria-controls="offcanvasDownload">
+                    <i class="fa fa-times me-1"></i> Download Order
+                </button>  #}
+                <button class="btn btn-primary btn-sm my-1" id="copyDriveLinkBtn" data-drive-link="{{ order.driveLink }}" data-orderId="{{ order.orderId }}" title="Copy Drive Link">
+                    <i class="fa-solid fa-copy me-1"></i>
+                    Share Drive Link
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            {% include 'admin/order/view/'~ app.request.get('_route') | replace({'admin_order_': '', }) ~ '.html.twig' %}
+        </div>
+    </div>
+    {% include 'admin/order/view/_upload_proof.html.twig' %}
+    {% if order.status != 'CANCELLED' %}
+        {% include 'admin/order/view/_cancel_order.html.twig' %}
+    {% endif %}
+
+    {% include "common/_canvas-to-image-progress-modal.html.twig" %}
+{% endblock %}

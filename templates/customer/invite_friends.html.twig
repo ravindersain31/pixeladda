@@ -1,0 +1,53 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+	Invite Friends
+{% endblock %}
+
+{% block body %}
+	{{ include('common/common_mobile_bar.html.twig',{commonBarText: 'Order Online Or Call Now',commonBarTele: '+1-877-958-1499'}) }}
+	{{ include('customer/common/top_section.html.twig',
+		{ section: { name: 'Invite Friends', active: true }}) 
+		}}
+	{{ include("customer/common/customer_details.html.twig") }}
+
+	<div class="container">
+		<div class="container proof-order-container">
+			<div class="pages-contents">
+				<div class="row">					
+					<div class="col-lg-12 col-md-12 col-12 mx-auto">
+                        <h2 class="mt-3">Your Referral Link</h2>
+						<div class="card shadow-sm rounded-lg">
+							<div class="card-body">
+                                <p>Invite friends with your unique referral link and earn rewards.</p> 
+                                <input type="text" id="referralUrl" value="{{referralUrl}}" class="w-100 p-2 rounded border-1 mb-3" readonly />
+                                <button id="copyRefCode" class="btn btn-ysp-outline">Copy to Clipboard</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<br><br>
+		</div>
+	</div>
+    
+
+    <script>
+        document.getElementById('copyRefCode').addEventListener('click', function () {
+            const referralUrl = document.getElementById("referralUrl");
+
+            referralUrl.select();
+            referralUrl.setSelectionRange(0, 99999); 
+
+            try {
+                const successful = document.execCommand('copy');
+                if (!successful) {
+                    console.error('Failed to copy the referral URL.');
+                } 
+            } catch (err) {
+                console.error('Error copying text: ', err);
+            }
+        });
+    </script>
+
+{% endblock %}

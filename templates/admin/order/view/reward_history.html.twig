@@ -1,0 +1,30 @@
+<div class="table-responsive">
+	<div class="card-header d-flex justify-content-end">
+		<div class="card-header-actions">
+			{% if order.user is defined and order.user is not null %}
+				<button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+					<i class="fas fa-plus me-2"></i>
+					Add Order Reward
+				</button>
+			{% endif %}
+		</div>
+	</div>
+		{% include 'admin/customer/users/reward/_reward_history_table.html.twig' with {'transactions': order.rewardTransactions} %}
+</div>
+
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="transactionModal" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="transactionModal">Add Order Reward</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+				{{ component('OrderRewardTransactionForm',{
+						form:rewardForm,
+						rewardTransaction: rewardTransaction
+				}) }}
+      </div>
+    </div>
+  </div>
+</div>

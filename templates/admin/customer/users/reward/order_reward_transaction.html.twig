@@ -1,0 +1,13 @@
+<div {{ attributes }}>
+	{{ form_start(form) }}
+	{{ form_errors(form) }}
+	<div class="row">
+        <div class="col-md-12">
+            {{ form_row(form.points) }}
+        </div>
+        <div class="col-md-12">
+            {{ form_row(form.comment) }}
+        </div>
+    </div>
+    {{ form_end(form) }}
+</div>

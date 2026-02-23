@@ -1,0 +1,14 @@
+<div {{ attributes }} class="me-1">
+    <label class="w-100">
+        <input
+                id="notes_{{ warehouseOrder.id }}"
+                class="form-control shadow-none p-1 border-0"
+                name="notes"
+                data-model="notes"
+                placeholder="Add notes"
+                data-live-action-param="debounce(300)|save"
+                data-action="live#action"
+                value="{{ notes }}"
+        />
+    </label>
+</div>

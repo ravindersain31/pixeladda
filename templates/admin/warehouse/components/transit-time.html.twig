@@ -1,0 +1,23 @@
+<div {{ attributes }} class="me-1">
+    {% if this.order.metaData.epDaysInTransit is defined and this.order.metaData.epDaysInTransit %}
+        <span class="badge bg-info">{{ this.order.metaData.epDaysInTransit }} Days</span>
+    {% else %}
+        {% if this.order.deliveryDate|date('Y-m-d') >= date()|date('Y-m-d') %}
+            {{ this.generateTransitTime() }}
+            <button class="btn badge bg-info text-white ms-1"
+                    data-action="live#action"
+                    data-live-action-param="generateTransitTime"
+                    data-loading="addClass(opacity-50 disabled)">
+                Generate Transit Time
+            </button>
+        {% else %}
+            No transit time available
+        {% endif %}
+    {% endif %}
+    <button class="btn badge bg-info text-white ms-1 d-none"
+            data-action="live#action"
+            data-live-action-param="generateTransitTime"
+            data-loading="addClass(opacity-50 disabled)">
+        <i class="fa fa-refresh" aria-hidden="true"></i>
+    </button>
+</div>

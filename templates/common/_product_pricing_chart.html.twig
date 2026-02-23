@@ -1,0 +1,124 @@
+{% set firstValidEntry = null %}
+{% set sizeKey = variantSize ?? '12x12' %}
+{% for key, pricingArray in product.productTypePricing %}
+    {% if firstValidEntry is null and key == 'pricing_' ~ sizeKey and product.categorySlug is not defined %}
+        {% set firstValidEntry = [key, pricingArray] %}
+    {% endif %}
+
+    {% if product.categorySlug is defined 
+        and product.categorySlug == 'custom-signs'
+        and (key == ('pricing_' ~ product.slug))
+    %}
+        {% set firstValidEntry = [key, pricingArray] %}
+    {% endif %}
+{% endfor %}
+
+{% if firstValidEntry is not null %}
+    {% set sizeKey = firstValidEntry|first|replace({'pricing_': ''}) %}
+    {% set sizePricing = firstValidEntry|last %}
+{% elseif product.productTypePricing|length > 0 %}
+    {% set sizeParts = product.slug|lower|split('x') %}
+    {% set width = sizeParts|first %}
+    {% set height = sizeParts|last %}
+    {% set swappedKey = 'pricing_' ~ height ~ 'x' ~ width %}
+    {% set sizeKey = product.slug %}
+
+    {% if product.productTypePricing[swappedKey] is defined %}
+        {% set sizePricing = product.productTypePricing[swappedKey] %}
+    {% else %}
+        {% set closestKey = product.productTypePricing|keys
+            |sort((a, b) =>
+                (
+                    (((a|replace({'pricing_':''})|split('x')[0]|default(0)|abs) - (width|abs)) >= 0
+                        ? ((a|replace({'pricing_':''})|split('x')[0]|default(0)|abs) - (width|abs))
+                        : 9999)
+                    +
+                    (((a|replace({'pricing_':''})|split('x')[1]|default(0)|abs) - (height|abs)) >= 0
+                        ? ((a|replace({'pricing_':''})|split('x')[1]|default(0)|abs) - (height|abs))
+                        : 9999)
+                )
+                <=>
+                (
+                    (((b|replace({'pricing_':''})|split('x')[0]|default(0)|abs) - (width|abs)) >= 0
+                        ? ((b|replace({'pricing_':''})|split('x')[0]|default(0)|abs) - (width|abs))
+                        : 9999)
+                    +
+                    (((b|replace({'pricing_':''})|split('x')[1]|default(0)|abs) - (height|abs)) >= 0
+                        ? ((b|replace({'pricing_':''})|split('x')[1]|default(0)|abs) - (height|abs))
+                        : 9999)
+                )
+            )
+        |first %}
+
+        {% if closestKey is empty %}
+            {% set closestKey = product.productTypePricing|keys|first %}
+        {% endif %}
+
+        {% set sizePricing = product.productTypePricing[closestKey]|default([]) %}
+    {% endif %}
+{% else %}
+    {% set sizeKey = null %}
+    {% set sizePricing = [] %}
+{% endif %}
+
+<button class="btn btn-link btn-sm ant-btn-link-custom p-0 m-0"
+        onClick="event.preventDefault();"
+        data-bs-html="true"
+        tabindex="0"
+        data-bs-toggle="popover"
+        data-bs-placement="top"
+        data-bs-trigger="hover"
+        data-bs-custom-class="shop-product-custom-popover"
+        data-bs-content='
+            <div class="popover-content">
+                <div
+                    style="font-size: 14px;
+                        min-width: 180px;
+                        line-height: 1.5;
+                        margin-bottom: 8px;
+                        color: rgba(0, 0, 0, 0.88);
+                        font-weight: 400;
+                        font-family: revert;
+                        border-bottom: none;
+                        padding: 0;"
+                >
+                    <strong>Price Chart*</strong>
+                </div>
+                <table class="table table-sm table-bordered mb-2" style="font-size:12px;">
+                    <thead>
+                        <tr>
+                            <th style="padding: 4px !important; font-size: 12px;background-color: #fafafa;">Quantity</th>
+                            <th style="padding: 4px !important; font-size: 12px;background-color: #fafafa;">Price per Item</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for key,pricing in sizePricing %}
+                                <tr>
+                                    <td>
+                                        {{ pricing.qty }}
+                                        {% if key == 0 %}
+                                            (minimum)
+                                        {% endif %}
+                                    </td>
+                                    <td>${{ pricing.usd ?? 0 }}</td>
+                                </tr>
+                        {% else %}
+                                <tr>
+                                    <td colspan="2" class="text-center">No pricing available</td>
+                                </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <div style="font-size: 12px; line-height: 1.5;">
+                    <strong>All-inclusive pricing includes:</strong><br />
+                    <strong style="color: #1C824C">✓ FREE</strong> artwork review<br />
+                    <strong style="color: #1C824C">✓ FREE</strong> artwork setup<br />
+                    <strong style="color: #1C824C">✓ FREE</strong> delivery orders +$50<br />
+                    <span style="font-size: 10px; color: #6c757d;">
+                        *Table shown is {{ sizeKey }}. Pricing varies by size.<br/> See our order page for details.
+                    </span>
+                </div>
+            </div>'
+>
+    View Pricing
+</button>

@@ -1,0 +1,68 @@
+name: ysp-cicd
+on:
+  push:
+    branches:
+      - prod
+
+env:
+  AWS_REGION: us-east-1
+  ECR_REPOSITORY: yardsignplus-prod
+  ECS_SERVICE: ysp-prod
+  ECS_CLUSTER: VerticalBrands
+  ECS_TASK_DEFINITION: ysp-prod
+  CONTAINER_NAME: ysp
+
+jobs:
+   build:
+    name: build-stage
+    runs-on: ubuntu-latest
+    # environment: development
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+        with:
+          fetch_depth: 0
+  
+      - name: configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+      
+      - name: login AWS ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: build, tag, push nx-base-image to AWS ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          # build, tag and push nx-base-image to ECR
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
+          docker push --all-tags $ECR_REGISTRY/$ECR_REPOSITORY
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+      - name: Download task definition
+        id: download-taskdef
+        run: |
+          aws ecs describe-task-definition --task-definition ${{ env.ECS_TASK_DEFINITION }} --query taskDefinition > ${{ env.ECS_TASK_DEFINITION }}.json
+      
+      - name: Fill in the new image ID in the Amazon ECS task definition
+        id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: ${{ env.ECS_TASK_DEFINITION }}.json
+          container-name: ${{ env.CONTAINER_NAME }}
+          image: ${{ steps.build-image.outputs.image }}
+
+      - name: Deploy Amazon ECS task definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+        with:
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          service: ${{ env.ECS_SERVICE }}
+          cluster: ${{ env.ECS_CLUSTER }}
+          wait-for-service-stability: false

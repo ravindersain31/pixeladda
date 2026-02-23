@@ -1,0 +1,82 @@
+{% extends 'base.html.twig' %}
+
+{% set title = metaData.title ?: metaData.pageTitle ~ ' - ' ~ storeInfo.storeTitle %}
+
+{% block title %}{{ title }}{% endblock %}
+{% block metaData %}
+    {% set pageUrl = url('return_policy') %}
+    {% set pageImageUrl = storeInfo.isPromoStore
+        ? 'https://static.yardsignplus.com/storage/promo-store/Return-Policy-Banner-Mobile.webp' 
+        : 'https://static.yardsignplus.com/return-policy_20230104-dd049e40-8c29-11ed-9d31-a90927673b80.png'
+    %}
+
+    {% include 'common/_page_meta.html.twig' with {
+        title: title,
+        metaData: metaData,
+        pageUrl: pageUrl,
+        pageImageUrl: pageImageUrl,
+        storeInfo: storeInfo
+    } %}
+{% endblock %}
+{% block body %}
+{{ include('common/common_mobile_bar.html.twig',{commonBarText: 'Order Online Or Call Now',commonBarTele: '+1-877-958-1499'}) }}
+    <div class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <picture>
+                    <source srcset="{{ storeInfo.isPromoStore ? 'https://static.yardsignplus.com/storage/promo-store/Return-Policy-Banner-Mobile.webp' : 'https://static.yardsignplus.com/return-policy_20230104-dd049e40-8c29-11ed-9d31-a90927673b80.png' }}"
+                            media="(max-width: 765px)">
+                    <img fetchpriority="high" width="1905" height="338" class="d-block w-100 h-auto"
+                         src="{{ storeInfo.isPromoStore ? 'https://static.yardsignplus.com/storage/promo-store/Return-Policy-Banner-Desktop.webp' : 'https://static.yardsignplus.com/return-policy_20221226-01e0fba0-84e4-11ed-a5ed-b37c3a8e98d2.jpg' }}"
+                         alt="YSP Return Policy Banner">
+                </picture>
+            </div>
+        </div>
+    </div>
+    {{ include('common/highlights.html.twig') }}
+    {{ include('common/breadcrumb.html.twig', { breadcrumbs: [
+        { name: 'Return Policy', active: true }
+    ]}) }}
+    <div class="page-content container-fluid">
+        <p>
+            Due to the nature and process of customizing products, all of our yard signs are fully custom. 
+            All customized signs with or without text and artwork are final sale. This also includes blank 
+            designs as these are fully custom. Any accepted returns are required to be returned within 30 
+            days and fulfill the return shipping costs. We recommend using a method of shipping that includes 
+            a tracking number. We are not responsible for lost packages. We will not be able to provide 
+            a return label. We will email you return instructions. Accepted returns may include restocking 
+            fees. Please note margins are subject to nominal differences, up to 1 inch. Please allow 1 to 5 
+            business days to process your return. This does not include shipping time to our return shipping 
+            address. If a refund is issued, the amount paid for YSP ORDER PROTECTION (if selected) will not 
+            be returned. Undamaged samples returned within 30 days of delivery will be issued a full refund. 
+            Samples must return in original packaging. Please mention your order number on the package. Visit 
+            our  <a href="{{ url('contact_us') }}" target="_blank" >Contact Us</a> page for our return 
+            shipping address.
+        </p>
+        <p>
+            Any concern on the order must be registered within 30 days of receiving the product via email to
+            <a href="mailto:{{storeInfo.storeSupportEmail}}">{{storeInfo.storeSupportEmail}}</a>. After this, no concerns will be
+            registered. No returns or exchanges will be accepted after 30 days from delivery of order. Please email 
+            us at <a href="mailto:{{storeInfo.storeSupportEmail}}">{{storeInfo.storeSupportEmail}}</a> with your order number, 
+            photos of your order, and a brief description.
+        </p>
+        <p>
+            If your order is deemed to be incorrectly produced, we will recreate and reship your order free of charge. 
+            You may keep your initial received order as well due to the inconvenience. Please simply email us your order number, 
+            images of your order, and the reason of concern to <a href="mailto:{{storeInfo.storeSupportEmail}}">{{storeInfo.storeSupportEmail}}</a>. 
+            Our Support Representatives will respond within 24 hours.
+        </p>
+        <p>
+            If an order is delivered late, only the shipping fees (if any) will be refunded on a prorated basis. 
+            We fully refund the shipping fees depending on the date that your order is delivered.
+        </p>
+        <p>
+            If you are unsatisfied with your order, please simply email us your order number, images of your order, and
+            the reason for concern to <a href="mailto: {{storeInfo.storeSupportEmail}}">{{storeInfo.storeSupportEmail}}</a>. Our
+            Support Representatives will respond within 24 hours with the best viable solutions.
+        </p>
+        <p>
+            For questions or to initiate a request, please email us at <a href="mailto: {{storeInfo.storeSupportEmail}}.">{{storeInfo.storeSupportEmail}}</a>.
+        </p>
+    </div>
+{% endblock %}

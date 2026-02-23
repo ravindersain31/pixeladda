@@ -1,0 +1,11 @@
+<div {{ attributes }}>
+    {{ form_start(form, {
+        attr: {
+            'novalidate': true,
+            'data-action': 'live#action:prevent',
+            'data-live-action-param': 'save'
+        }
+    }) }}
+    {{ form_widget(form) }}
+    {{ form_end(form) }}
+</div>

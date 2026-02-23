@@ -1,0 +1,55 @@
+<div class="card card-header-actions mx-auto shadow-none">
+    <div class="card-header">
+        List of Referral Coupon ({{user.email}})        
+    </div>
+    <div class="table-responsive">
+        <table class="card-body table table-striped mb-0">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Code</th>
+                    <th>Referred</th>
+                    <th>Website</td>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if referralCoupons | length > 0 %}
+                    {% for key,referralCoupon in referralCoupons %}
+                        <tr>
+                            <td>{{key + 1}}</td>
+                            <td>{{referralCoupon.couponCode}}</td>
+                            <td>{{referralCoupon.referredEmail}}</td>
+                            <td>{{referralCoupon.couponStore}}</td>
+                            <td>{{referralCoupon.couponStartDate|date}}</td>
+                            <td>{{referralCoupon.couponEndDate|date}}</td>
+                            <td>
+                                {% if referralCoupon.couponUsesTotal == 0 %}
+                                    <span class="badge bg-success">Used</span>
+                                {% else %}
+                                    <span class="badge bg-warning text-dark">Unused</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{{path('admin_users_customer_referral_coupon_edit', {id: user.id, couponId: referralCoupon.couponId})}}" class="btn btn-info btn-sm">
+                                    <i class="fas fa-edit me-1"></i>
+                                    <p class="mb-0 mx-1">Edit</p>
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr class="text-center">
+                        <td colspan="9">No records</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+    <div class="mt-4 d-flex justify-content-center">
+        {{ knp_pagination_render(referralCoupons) }}
+    </div>
+</div>

@@ -1,0 +1,26 @@
+{% set refunds = transaction.orderTransactionRefunds %}
+{% if refunds | length > 0 %}
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th colspan="4" class="bg-light">Refunds</th>
+        </tr>
+        <tr>
+            <th>Amount</th>
+            <th>Refunded At</th>
+            <th>Internal Note</th>
+            <th>Customer Note</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for refund in transaction.orderTransactionRefunds %}
+            <tr>
+                <td>${{ refund.amount }}</td>
+                <td>{{ refund.refundedAt | date('M d, Y') }}</td>
+                <td>{{ refund.getMetaDataKey('internalNote') | raw | default('-') }}</td>
+                <td>{{ refund.getMetaDataKey('customerNote') | raw | default('-') }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endif %}

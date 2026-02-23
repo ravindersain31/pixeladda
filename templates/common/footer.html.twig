@@ -1,0 +1,298 @@
+<footer>
+    <div class="container-fluid" {{ stimulus_controller('exclusive-offer') }}>
+        <div class="exclusive-offers footer-mobile-only" >
+            <h3>Get Exclusive Offers</h3>
+            {{ include('default/exclusive-offer-mobile.html.twig') }}
+        </div>
+        <div class="row footer-row-group">
+            <div class="col-lg-6 col-md-6 mb-2 col-12">
+                <div class="exclusive-offers footer-desktop-only gap-2">
+                    <h3 class="exclusive-offers-heading">Get Exclusive Offers</h3>
+                    {{ include('default/exclusive-offer.html.twig') }}
+                </div>
+                <div class="row footer-payment-review-group">
+                    <div class="col-xxl-9 col-xl-8">
+                        <h4>Our Payment Methods</h4>
+                        <ul class="payment-methods list-group list-group-flush">
+                            <li class="list-group-item">
+                                <img width="353" height="44" loading="lazy"  class="lazy" src={{"https://static.yardsignplus.com/storage/images/group-payment-icon-1.jpg"| lazyDefaultImage}} data-src={{"https://static.yardsignplus.com/storage/images/group-payment-icon-1.jpg"}}
+                                     alt="payment method"/>
+                            </li>
+                            <li class="list-group-item">
+                                <img width="353" height="44" loading="lazy"  class="lazy" src={{"https://static.yardsignplus.com/storage/icons/group-payment-icon-yard.png"| lazyDefaultImage}} data-src={{"https://static.yardsignplus.com/storage/icons/group-payment-icon-yard.png"}}
+                                     alt="payment method"/>
+                            </li>
+                            {% if  storeInfo.isPromoStore %}
+                                <li class="list-group-item">
+                                    <img width="353" height="44" loading="lazy"  class="lazy" src={{"https://static.yardsignplus.com/storage/images/venmo.jpg" | lazyDefaultImage}} data-src={{"https://static.yardsignplus.com/storage/images/venmo.jpg"}}
+                                        alt="payment method"/>
+                                </li>
+                                <div class="d-flex gap-4 list-group-row">
+                                    <li class="list-group-item">
+                                    <img width="163" height="44" loading="lazy"  class="lazy" src={{"https://static.yardsignplus.com/storage/images/apple-pay-payment-logo.png" | lazyDefaultImage}} data-src={{"https://static.yardsignplus.com/storage/images/apple-pay-payment-logo.png"}}
+                                        alt="payment method"/>
+                                </li>
+                                    <li class="list-group-item">
+                                        <img width="163" height="44" loading="lazy"  class="lazy" src={{"https://static.yardsignplus.com/storage/images/affirm_300x50.webp" | lazyDefaultImage}} data-src={{"https://static.yardsignplus.com/storage/images/affirm_300x50.webp"}}
+                                            alt="payment method"/>
+                                    </li>
+                                </div>
+                                
+                                {% else %}
+                                <li class="list-group-item">
+                                    <a href="https://account.venmo.com/u/yardsignplus" target="_blank">
+                                        <img width="353" height="44" loading="lazy"  class="lazy" src={{"https://static.yardsignplus.com/storage/images/venmo.jpg" | lazyDefaultImage}} data-src={{"https://static.yardsignplus.com/storage/images/venmo.jpg"}}
+                                            alt="payment method"/>
+                                    </a>
+                                </li>
+                                <div class="d-flex gap-4 list-group-row">
+                                    <li class="list-group-item">
+                                    <img width="163" height="44" loading="lazy"  class="lazy" src={{"https://static.yardsignplus.com/storage/images/apple-pay-payment-logo.png" | lazyDefaultImage}} data-src={{"https://static.yardsignplus.com/storage/images/apple-pay-payment-logo.png"}}
+                                        alt="payment method"/>
+                                </li>
+                                    <li class="list-group-item">
+                                        <img width="163" height="44" loading="lazy"  class="lazy" src={{"https://static.yardsignplus.com/storage/images/affirm_300x50.webp" | lazyDefaultImage}} data-src={{"https://static.yardsignplus.com/storage/images/affirm_300x50.webp"}}
+                                            alt="payment method"/>
+                                    </li>
+                                </div>
+                            {% endif %}
+                        </ul>
+                        <div class="footer-mobile-only">
+                            {{ include('common/_footer_social.html.twig') }}
+                        </div>
+                    </div>
+                    {% if not storeInfo.isPromoStore %}
+                        <div class="col-xxl-3 col-xl-4 mb-1 mb-lg-0 mt-1 mt-sm-3 mt-xl-0">
+                            <h4>Our Reviews</h4>
+                            <ul class="list-group list-group-flush d-flex flex-column">
+                                <li class="list-group-item">
+                                    <a href="https://www.shopperapproved.com/reviews/yardsignplus.com"
+                                    class="shopperlink new-sa-seals placement-default" target="_blank"><img width="140" height="47"
+                                                loading="lazy" 
+                                                src="//www.shopperapproved.com/seal/36686/default-sa-seal.gif"
+                                                style="border-radius: 4px;width: 140px;" alt="Customer Reviews"
+                                                oncontextmenu="var d = new Date(); alert('Copying Prohibited by Law - This image and all included logos are copyrighted by Shopper Approved \251 '+d.getFullYear()+'.'); return false;"></a>
+                                </li>
+                                <li class="list-group-item">
+                                    <a href="https://www.facebook.com/yardsignplusdotcom"
+                                    class="shopperlink new-sa-seals placement-default" target="_blank"><img width="140" height="42"
+                                                loading="lazy" 
+                                                src="https://img.sportsgearswag.com/assets/facebook_review_image-removebg-preview.jpg"
+                                                style="border-radius: 4px;width: 140px;" alt="Customer Reviews"></a>
+                                </li>
+                                <li class="list-group-item">
+                                    <a href="https://www.google.com/search?authuser=0&amp;gl=us&amp;hl=en&amp;output=search&amp;q=Yard+Sign+Plus&amp;ludocid=200471614840345230&amp;gsas=1&amp;lsig=AB86z5Ur0IiD6awPUKGxOa7kX85u&amp;ved=1i%3A3%2Ct%3A109124%2Ce%3A2%2Cp%3A_LkGZMLBIK-uqtsP-u6Q2A0%3A132#lrd=0x62e3136b09d1b8a1:0x2c837df1e1b928e,1"
+                                    class="shopperlink new-sa-seals placement-default" target="_blank"><img width="140" height="42"
+                                                loading="lazy" 
+                                                src="https://img.sportsgearswag.com/assets/google_review_image.jpg"
+                                                style="border-radius: 4px;width: 140px;" alt="Customer Reviews"></a>
+                                </li>
+                                <li class="list-group-item">
+                                    <a href="https://customerreviews.google.com/v/merchant?q=yardsignplus.com&c=US&v=19&hl=en"
+                                    class="shopperlink new-sa-seals placement-default" target="_blank"><img width="140" height="42"
+                                                loading="lazy" 
+                                                src="https://static.yardsignplus.com/assets/google-business-review.jpeg"
+                                                style="border-radius: 4px;width: 140px;" alt="Customer Reviews"></a>
+                                </li>
+                            </ul>
+                        </div>
+                    {% endif %}
+
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6 mb-3 mb-md-0 mt-3 mt-md-0 order-1 order-sm-0">
+                <h4 class="mb-1 mb-md-3">Company Information</h4>
+                <div class="row">
+                    <div class="col-6">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">
+                                <a href="{{ url('contact_us') }}" target="_blank" >Contact Us</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="{{ url('request_call_back') }}" target="_blank" >Request Immediate Call</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="{{ url('new_arrivals') }}" target="_blank">New Arrivals</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="{{ url('shop_now') }}" target="_blank" >Shop Now</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="{{ url('shipping_information') }}" target="_blank" >Shipping Information</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="{{ url('order_sample') }}">Order Samples</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="{{ url('order_wire_stake') }}">Order Wire Stakes</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="{{ url('order_blank_sign') }}">Order Blank Signs</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="{{ url('repeat_order') }}" target="_blank" >Repeat Orders</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="{{ url('purchase_order') }}" target="_blank" >Purchase Orders</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="{{ url('pricing') }}" target="_blank" >View Pricing</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="{{ url('how_to_order') }}" target="_blank" >How to Order</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="{{ url('faqs') }}" target="_blank" >FAQs</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="{{path('login')}}" target="_blank">My Account</a>
+                            </li>
+                            <li class="list-group-item">
+                                <button type="button" class="ysp-delivery-calendar-btn mt-0 fs-15" data-bs-toggle="modal" data-bs-target="#ysp-delivery-calendar" tabIndex="-1">View Delivery Calendar</button>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="{{ url('track_order') }}" target="_blank" >Track Your Order</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="{{ url('view_proof') }}" target="_blank" >View Your Proof</a>
+                            </li>
+                            {% if not storeInfo.isPromoStore %}
+                                <li class="list-group-item">
+                                    <a href="{{ url('customer_feedback') }}" target="_blank" >Customer Reviews</a>
+                                </li>
+                            {% endif %}
+                            <li class="list-group-item">
+                                <a href="{{ url('customer_photos') }}" target="_blank" >Customer Photos</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="{{ url('about_us') }}" target="_blank" >About Us</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-6">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">
+                                <a href="{{ url('privacy_policy') }}" target="_blank" >Privacy Policy</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="{{ url('terms_and_conditions') }}" target="_blank" >Terms and Conditions</a>
+                            </li>
+                            <li class="list-group-item">
+                                {{ include("common/quick_quote.html.twig") }}
+                            </li>
+                            <li class="list-group-item">
+                                <a href="{{ url('bulk_order_program') }}" target="_blank" >Bulk Order Program</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#referralModal">Refer a Friend</a>
+                            </li>
+                            {% if not storeInfo.isPromoStore %}
+                                <li class="list-group-item">
+                                    <a href="{{ url('distributor_form') }}">Distributor Program</a>
+                                </li>
+                            {% endif %}
+                            <li class="list-group-item">
+                                <a href="{{ url('teacher_discount') }}" target="_blank" >Teacher Discount</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="{{ url('healthcare_workers') }}" target="_blank" >Healthcare Workers</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="{{ url('military_veterans') }}" target="_blank" >Military & Veterans</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="{{ url('first_responder') }}" target="_blank" >First Responders</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="{{ url('organization_members') }}" target="_blank" >Organization Members</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="{{ url('scholarship') }}" target="_blank" >Scholarship</a>
+                            </li>
+                            {% if not storeInfo.isPromoStore %}
+                                <li class="list-group-item">
+                                    <a href="https://yardsignplus.attn.tv/p/iwy/landing-page" target="_blank" >Subscribe & Save</a>
+                                </li>
+                            {% endif %}
+                            <li class="list-group-item">
+                                <a href="{{ url('download_catalog') }}" target="_blank" >Download Catalog</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="{{ url('order_protection') }}" target="_blank" >YSP Order Protection</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="{{ url('ysp_rewards') }}" target="_blank">YSP Rewards</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="{{ url('blogs') }}" target="_blank" >YSP Blogs</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="{{ url('return_policy') }}" target="_blank" >Return Policy</a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="{{ url('site_map') }}" target="_blank" >Site Map</a>
+                            </li>
+                            {# <li class="list-group-item">
+                                {% if app.user %}
+                                    <a class="nav-link" href="{{ url('invite_friends') }}">Invite Friends</a>
+                                {% else %}
+                                    <a class="nav-link" href="{{ url('login') }}">Invite Friends</a>
+                                {% endif %}
+                            </li> #}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-12 mb-3 mb-md-0 mt-md-3 mt-xl-0">
+                <div class="row">
+                    <div class="col-xl-12 col-md-6">
+                        <h4 class="mb-1 mb-md-3">Contact Information</h4>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">
+                                <strong>Address: </strong>
+                                <a href="http://maps.google.com/?q=10511 Kipp Way St #430, Houston, TX 77099, USA" target="_blank">10511 Kipp Way St #430, Houston, TX 77099</a>
+                            </li>
+                            <li class="list-group-item">
+                                <strong>Toll Free: </strong>
+                                <a href="tel: +1-877-958-1499">+1-877-958-1499</a>
+                            </li>
+                            <li class="list-group-item">
+                                <strong>Sales: </strong>
+                                <a href="mailto: {{storeInfo.storeEmail }}">{{storeInfo.storeEmail }}</a>
+                            </li>
+                            <li class="list-group-item">
+                                <strong>Support: </strong>
+                                <a href="mailto: {{storeInfo.storeSupportEmail }}">{{storeInfo.storeSupportEmail }}</a>
+                            </li>
+                             {% if not storeInfo.isPromoStore %}
+                                <li class="list-group-item">
+                                    <strong>Live Chat: </strong>
+                                    <button class="nav-link d-inline" onclick="javascript:void(Tawk_API.toggle())">Message Now</button>
+                                </li>
+                           
+                                <li class="list-group-item">
+                                    <strong>Follow Us: </strong>
+                                    <a href="https://www.instagram.com/yardsign_plus/" target="_blank">@YardSignPlus</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                    <div class="col-xl-12 col-md-6">
+                        <div class="footer-desktop-only">
+                            {{ include('common/_footer_social.html.twig') }}
+                        </div>
+                    </div>
+                </div> 
+            </div>
+        </div>
+    </div>
+    <div class="copyright-text">
+        {{ "now" | date('Y') }} {{storeInfo.storeName}} | All Rights Reserved
+    </div>
+    {{ include('common/_delivery_calendar.html.twig') }}
+    <button id="scrollToTopBtn" class="btn btn-ysp-outline me-1 rounded-circle d-none" title="Go to top">
+        <i class="fa fa-arrow-up"></i>
+    </button>
+</footer>
+{{ include('common/_discount_popup.html.twig') }}
+{{ include('common/_refferral_coupon.html.twig') }}

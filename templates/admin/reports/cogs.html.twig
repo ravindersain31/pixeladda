@@ -1,0 +1,46 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Reports - Cogs{% endblock %}
+{% block pageTitle %}
+    <div class="page-header-icon">
+        <i class="fa-solid fa-cubes"></i>
+    </div>
+    Cogs Report
+{% endblock %}
+
+{% block body %}
+    <div class="card card-header-actions mx-auto shadow-none">
+        <div class="card-header">
+            List of Cogs Report
+        </div>
+        <div class="table-responsive">
+            <table class="card-body table table-striped mb-0">
+                <thead>
+                <tr>
+                    <th>Sr.</th>
+                    <th>Month</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for month in months %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ month.date | date('M Y') }}</td>
+                        <td>
+                            <a href="{{ url('admin_report_cogs_view', { month: month.id }) }}" class="btn btn-info btn-xs">
+                                <i class="fa fa-eye"></i>
+                                <p class="mb-0 mx-1">View</p>
+                            </a>
+                            <a href="{{ url('admin_report_cogs_export', { month: month.id }) }}" class="btn btn-info btn-xs">
+                                <i class="fa fa-download"></i>
+                                <p class="mb-0 mx-1">Export</p>
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

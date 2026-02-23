@@ -1,0 +1,61 @@
+<div {{ attributes }}>
+    {{ form_start(form, {attr: {
+        'novalidate': true,
+        'data-action': 'live#action:prevent',
+        'data-live-action-param': 'subscribeAction',
+    }}) }}
+    {% if flashMessage %}
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12 p-0 mb-3">
+                    <div class="text-center repeat-info mt-4">
+                        <h3>Thank You for Subscribing!</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="d-flex justify-content-center">
+        {{ include('components/_flash.html.twig') }}
+        </div>
+        <div class="ysp-newsletter-wrapper mb-4">
+            <a href="https://static.yardsignplus.com/storage/catalog/Ysp-Catalog.pdf" target = "_blank">
+                <button type="button" class="subscribe-btn mt-2" >
+                Download Catalog
+                </button>
+            </a>
+        </div>
+    {% else %}
+            <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12 p-0 mb-3">
+                    <div class="text-center repeat-info mt-4">
+                        <h3>Subscribe to Our Newsletter <span>Today</span>!</h3>
+                        <h5 class="pt-3">Enter your email address to subscribe to our newsletter!</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="col-md-12 mb-3">
+                <div class="ysp-common-inner-wrapper">
+                    <p class="ysp-common-contact-us-title">SUBSCRIBE</p>
+                    <div id="subscribe_and_save">
+                       {{ form_errors(form) }}
+                        <div class="ysp-newsletter-wrapper">
+                            <div class="ysp-newsletter-bg-wrapper p-3 p-md-4">                                
+                                {{ form_row(form.email)}}
+                            </div>
+                            <button type="submit" data-loading="action(subscribeAction)|addAttribute(disabled)" class="subscribe-btn mt-2">
+                                <span data-loading="action(subscribeAction)|show" style="display: none">Submiting...</span>
+                                <span data-loading="action(subscribeAction)|hide" style="display: block">Submit</span>
+                            </button>
+                        </div>
+                        {{ form_end(form) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+     

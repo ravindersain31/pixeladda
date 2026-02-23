@@ -1,0 +1,117 @@
+{% if item.canvasData.front is not null and item.canvasData.front is not empty or item.canvasData.back is not null and item.canvasData.back is not empty %}
+    <div class="col-50 text-front-table">
+        {% if item.canvasData.front is not null and item.canvasData.front is not empty and item.canvasData.back is not null and item.canvasData.back is not empty %}
+            <small class="text-purple">Front</small>
+        {% endif %}
+        {% if item.canvasData.front is not null and item.canvasData.front is not empty %}
+        <table class="table-product-texts front-text mb-2 mt-2">
+            {% if item.canvasData.front.objects is defined and item.canvasData.front.objects is not empty %}
+                {% set textSnCount = 1 %}
+                {% set hasIText = false %}
+                {% for canvasObject in item.canvasData.front.objects %}
+                    {% set showFontText = false %}
+                    {% if canvasObject.type in ['i-text', 'text'] and canvasObject.text is not empty %}
+                        {% if driveName == 'CUSTOM-SIZE' and canvasObject.type in ['i-text', 'text'] %}
+                            {% set showFontText = true %}
+                        {% elseif driveName != 'CUSTOM-SIZE' and canvasObject.type == 'i-text' %}
+                            {% set showFontText = true %}
+                        {% endif %}
+                    {% endif %}
+
+                    {% if showFontText %}
+                        {% set hasIText = true %}
+                        <tr>
+                            <td>Text {{textSnCount}}</th>
+                            <td>{{ canvasObject.text }}</td>
+                            {% set textSnCount = textSnCount + 1 %}
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+
+                {% if not hasIText %}
+                    <tr>
+                        <td>Text</td>
+                        <td>--</td>
+                    </tr>
+                {% endif %}
+                <tr>
+                    <td>Size</th>
+                    <td>{{templateSize}} {{ defaultUnit }}</td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td>Text</th>
+                    <td>--</td>
+                </tr>
+                <tr>
+                    <td>Size</th>
+                    <td>{{templateSize}} {{ defaultUnit }}</td>
+                </tr>
+            {% endif %}
+        </table>
+        {% endif %}
+    </div>
+
+    <div class="col-50 text-back-table">
+        {% if item.canvasData.back is not null and item.canvasData.back is not empty %}
+        <small class="text-purple">Back</small>
+        <table class="table-product-texts back-text mb-2 mt-2">
+            {% if item.canvasData.back.objects is defined and item.canvasData.back.objects is not empty %}
+                {% set textSnCount = 1 %}
+                {% set hasIText = false %}
+                {% for canvasObject in item.canvasData.back.objects %}
+                    {% set showFontText = false %}
+                    {% if canvasObject.type in ['i-text', 'text'] and canvasObject.text is not empty %}
+                        {% if driveName == 'CUSTOM-SIZE' and canvasObject.type in ['i-text', 'text'] %}
+                            {% set showFontText = true %}
+                        {% elseif driveName != 'CUSTOM-SIZE' and canvasObject.type == 'i-text' %}
+                            {% set showFontText = true %}
+                        {% endif %}
+                    {% endif %}
+
+                    {% if showFontText %}
+                        {% set hasIText = true %}
+
+                        <tr>
+                            <td>Text {{textSnCount}}</th>
+                            <td>{{ canvasObject.text }}</td>
+                            {% set textSnCount = textSnCount + 1 %}
+                        </tr>   
+                    {% endif %}
+                {% endfor %}
+
+                {% if not hasIText %}
+                    <tr>
+                        <td>Text</td>
+                        <td>--</td>
+                    </tr>
+                {% endif %}
+                <tr>
+                    <td>Size</th>
+                    <td>{{templateSize}} {{ defaultUnit }}</td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td>Text</th>
+                    <td>--</td>
+                </tr>
+                <tr>
+                    <td>Size</th>
+                    <td>{{templateSize}} {{ defaultUnit }}</td>
+                </tr>
+            {% endif %}
+        </table>
+    </div>
+    {% endif %}
+{% else %}
+    <table class="table-product-texts empty-text">
+        <tr>
+            <td>Text</th>
+            <td>--</td>
+        </tr>
+        <tr>
+            <td>Size</th>
+            <td>{{templateSize}} {{ defaultUnit }}</td>
+        </tr>
+    </table>
+{% endif %}

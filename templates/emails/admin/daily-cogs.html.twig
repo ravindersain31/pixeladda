@@ -1,0 +1,360 @@
+<html>
+<head>
+    <style type="text/css">
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            padding: 20px;
+        }
+
+        .date-table td, .date-table th {
+            border: 1px solid #b3b3b3;
+            padding: 5px 10px;
+        }
+        .fit-to-cell{
+            width: 1%;
+            white-space: nowrap;
+        }
+        .text-end {
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+{% set firstDay = dailyCogsReports | first %}
+{% set lastDay = dailyCogsReports | last %}
+<h2 class="mt-5">YSP COGs Report form {{ firstDay.date.format('M d, Y') }} to {{ lastDay.date.format('M d, Y') }}</h2>
+<table class="date-table" style="width: 100%;text-align: center;border: 1px solid #b3b3b3;" cellspacing="0">
+    <thead>
+    <tr>
+        <th class="fit-to-cell">Date</th>
+        <th class="text-end">Gross Sales</th>
+        <th class="text-end">Paid Sales</th>
+        <th class="text-end">Material Cost</th>
+        <th class="text-end">Warehouse Labor</th>
+        <th class="text-end">Shipping Charges</th>
+        <th class="text-end">Shipping Adjustments</th>
+        <th class="text-end">Shipping Total</th>
+        <th class="text-end">Google Ads</th>
+        <th class="text-end">Bing Ads</th>
+        <th class="text-end">Facebook Ads</th>
+        <th class="text-end">Total Ads Cost</th>
+        <th class="text-end">Total Cost</th>
+        <th class="text-end">Partial Refunds</th>
+        <th class="text-end">Total Partial Refunds</th>
+        <th class="text-end">Cancelled Orders</th>
+        <th class="text-end">Cancelled Sales</th>
+        <th class="text-end">AOV</th>
+        <th class="text-end">Orders</th>
+        <th class="fit-to-cell">Ratio</th>
+        <th class="text-end">Profit/Loss</th>
+        <th class="fit-to-cell">Gross Margin</th>
+        <th class="fit-to-cell">Net Margin</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% set totalSales = 0 %}
+    {% set totalPaidSales = 0 %}
+    {% set totalShippingCost = 0 %}
+    {% set totalSheetsUsed = 0 %}
+    {% set totalWireStakesUsed = 0 %}
+    {% set totalMaterialCost = 0 %}
+    {% set totalGoogleAdsCost = 0 %}
+    {% set totalBingAdsCost = 0 %}
+    {% set totalFacebookAdsCost = 0 %}
+    {% set totalCost = 0 %}
+    {% set totalRefundedAmount = 0 %}
+    {% set totalRefundedOrders = 0 %}
+    {% set totalProfitAndLoss = 0 %}
+    {% set totalOrders = 0 %}
+    {% set totalCancelledOrders = 0 %}
+    {% set totalCancelledSales = 0 %}
+    {% set totalPaidOrders = 0 %}
+    {% set totalShippingCharges = 0 %}
+    {% set totalShippingAdjustment = 0 %}
+    {% set netMarginAverage = 0 %}
+    {% set grossMarginAverage = 0 %}
+    {% set marginsCount = 0 %}
+    {% set totalLaborCost = 0 %}
+    
+    {% for day in dailyCogsReports %}
+        {% set materialBreakdown = day.materialCostBreakdown %}
+        {% set shippingBreakdown = day.shippingCostBreakdown %}
+
+        <tr>
+            <td class="fit-to-cell text-end">{{ day.date | date('M d, Y') }}</td>
+            <td class="fit-to-cell text-end">${{ day.totalSales | number_format(2) }}</td>
+            <td class="fit-to-cell text-end">${{ day.totalPaidSales | number_format(2) }}</td>
+            <td class="text-end">${{ day.materialCost | number_format(2) }}</td>
+            <td class="text-end">${{ day.totalLaborCost | number_format(2) }}</td>
+            <td class="text-end">${{ shippingBreakdown.shippingCharges | default(0) | number_format(2) }}</td>
+            <td class="text-end">${{ shippingBreakdown.shippingAdjustment | default(0) | number_format(2) }}</td>
+            <td class="text-end">${{ shippingBreakdown.shippingTotal | default(0) | number_format(2) }}</td>
+            <td class="text-end">${{ day.googleAdsSpent | number_format(2) }}</td>
+            <td class="text-end">${{ day.bingAdsSpent | number_format(2) }}</td>
+            <td class="text-end">${{ day.facebookAdsSpent | number_format(2) }}</td>
+            <td class="text-end">${{ day.googleAdsSpent + day.bingAdsSpent + day.facebookAdsSpent | number_format(2) }}</td>
+            <td class="text-end">${{ day.totalCost | number_format(2) }}</td>
+            <td class="text-end">${{ day.totalRefundedAmount | number_format(2) }}</td>
+            <td class="text-end">{{ day.refundedOrders | length }}</td>
+            <td class="text-end">{{ day.cancelledOrders | length }}</td>
+            <td class="text-end">${{ day.cancelledSales | number_format(2) }}</td>
+            <td class="fit-to-cell text-end">
+                ${{ divide(day.totalPaidSales, day.totalPaidOrders) | number_format(2) }}
+            </td>
+            <td class="fit-to-cell text-end">
+                <span data-toggle="tooltip" title="All Orders">{{ day.totalOrders }}</span> /
+                <span data-toggle="tooltip" title="Paid Orders" class="text-success">
+                    {{ day.totalPaidOrders }}
+                </span>
+            </td>
+            <td class="fit-to-cell text-end">
+                {{ divide(day.totalPaidSales, day.totalAdsCost) | number_format(2) }}
+            </td>
+            <td class="text-end">${{ day.profitAndLoss | number_format(2) }}</td>
+
+            {% set grossMarginPercentage = day.grossMarginPercentage() %}
+            <td>
+               ${{day.grossMargin() | number_format(2)}} <br/>
+                ({{ day.grossMarginPercentage() | number_format(2) }}%)
+            </td>
+
+            {% set netMarginPercentage = day.netMarginPercentage() %}
+            <td>
+                ${{day.netMargin() | number_format(2)}} <br/>
+                ({{ day.netMarginPercentage() | number_format(2) }}%)
+            </td>
+        </tr>
+        {% set totalSales = totalSales + day.totalSales %}
+        {% set totalPaidSales = totalPaidSales + day.totalPaidSales %}
+        {% set totalSheetsUsed = totalSheetsUsed + (materialBreakdown.totalSheetsUsed | default(0)) %}
+        {% set totalWireStakesUsed = totalWireStakesUsed + (materialBreakdown.totalWireStakeUsed | default(0)) %}
+        {% set totalShippingCost = totalShippingCost + day.totalShippingCost %}
+        {% set totalMaterialCost = totalMaterialCost + day.materialCost %}
+        {% set totalLaborCost = totalLaborCost + day.totalLaborCost %}
+        {% set totalGoogleAdsCost = totalGoogleAdsCost + day.googleAdsSpent %}
+        {% set totalBingAdsCost = totalBingAdsCost + day.bingAdsSpent %}
+        {% set totalFacebookAdsCost = totalFacebookAdsCost + day.facebookAdsSpent %}
+        {% set totalCost = totalCost + day.totalCost %}
+        {% set totalRefundedAmount = totalRefundedAmount + day.totalRefundedAmount %}
+        {% set totalRefundedOrders = totalRefundedOrders + (day.refundedOrders | length) %}
+        {% set totalProfitAndLoss = totalProfitAndLoss + day.profitAndLoss %}
+        {% set totalOrders = totalOrders + day.totalOrders %}
+        {% set totalCancelledOrders = totalCancelledOrders + (day.cancelledOrders | length) %}
+        {% set totalCancelledSales = totalCancelledSales + day.cancelledSales %}
+        {% set totalPaidOrders = totalPaidOrders + day.totalPaidOrders %}
+        {% set totalShippingCharges = totalShippingCharges + (shippingBreakdown.shippingCharges | default(0)) %}
+        {% set totalShippingAdjustment = totalShippingAdjustment + (shippingBreakdown.shippingAdjustment | default(0)) %}
+
+        {% set netMarginAverage = netMarginAverage + day.netMargin() %}
+        {% set grossMarginAverage = grossMarginAverage + day.grossMargin() %}
+        {% if totalOrders > 0 %}
+            {% set marginsCount = marginsCount + 1 %}
+        {% endif %}
+    {% endfor %}
+    </tbody>
+    <tfoot>
+    <tr>
+        {% set totalAdsCost = totalGoogleAdsCost + totalBingAdsCost + totalFacebookAdsCost %}
+        <td class="fit-to-cell">Total</td>
+        <td class="fit-to-cell text-end">
+            <span class="badge bg-success">SUM</span><br>
+            ${{ totalSales | number_format(2) }}
+        </td>
+        <td class="fit-to-cell text-end">
+            <span class="badge bg-success">SUM</span><br>
+            ${{ totalPaidSales | number_format(2) }}
+        </td>
+        <td class="text-end">
+            <span class="badge bg-success">SUM</span><br>
+            ${{ totalMaterialCost | number_format(2) }}
+        </td>
+        <td class="text-end">
+            <span class="badge bg-success">SUM</span><br>
+            ${{ totalLaborCost | number_format(2) }}
+        </td>
+        <td class="text-end">
+            <span class="badge bg-success">SUM</span><br>
+            ${{ totalShippingCharges | number_format(2) }}
+        </td>
+        <td class="text-end">
+            <span class="badge bg-success">SUM</span><br>
+            ${{ totalShippingAdjustment | number_format(2) }}
+        </td>
+        <td class="text-end">
+            <span class="badge bg-success">SUM</span><br>
+            ${{ totalShippingCost | number_format(2) }}
+        </td>
+
+        <td class="text-end">
+            <span class="badge bg-success">SUM</span><br>
+            ${{ totalGoogleAdsCost | number_format(2) }}
+        </td>
+        <td class="text-end">
+            <span class="badge bg-success">SUM</span><br>
+            ${{ totalBingAdsCost | number_format(2) }}
+        </td>
+        <td class="text-end">
+            <span class="badge bg-success">SUM</span><br>
+            ${{ totalFacebookAdsCost | number_format(2) }}
+        </td>
+        <td class="text-end">
+            <span class="badge bg-success">SUM</span><br>
+            ${{ totalAdsCost | number_format(2) }}
+        </td>
+        <td class="text-end">
+            <span class="badge bg-success">SUM</span><br>
+            ${{ totalCost | number_format(2) }}
+        </td>
+
+        <td class="text-end">
+            <span class="badge bg-success">SUM</span><br>
+            ${{ totalRefundedAmount | number_format(2) }}
+        </td>
+        <td class="text-end">
+            <span class="badge bg-success">SUM</span><br>
+            {{ totalRefundedOrders }}
+        </td>
+
+        <td class="text-end">
+            <span class="badge bg-success">SUM</span><br>
+            {{ totalCancelledOrders }}
+        </td>
+        <td class="text-end">
+            <span class="badge bg-success">SUM</span><br>
+            ${{ totalCancelledSales | number_format(2) }}
+        </td>
+
+        <td class="fit-to-cell text-end">
+            <span class="badge bg-primary">AVG</span><br>
+            ${{ divide(totalPaidSales, totalPaidOrders) | number_format(2) }}
+        </td>
+
+        <td class="fit-to-cell text-end">
+            <span class="badge bg-primary">AVG</span><br>
+            <span data-toggle="tooltip" title="All Orders">
+                {{ divide(totalOrders, marginsCount) | number_format(1) }}
+            </span> /
+            <span data-toggle="tooltip" title="Paid Orders"class="text-success">
+                    {{ divide(totalPaidOrders, marginsCount) | number_format(1) }}
+            </span>
+        </td>
+        <td class="fit-to-cell text-end">
+            <span class="badge bg-primary">AVG</span><br>
+            {{ divide(totalPaidSales, totalAdsCost) | number_format(2) }}
+        </td>
+        <td class="text-end">
+            <span class="badge bg-success">SUM</span><br>
+            ${{ totalProfitAndLoss | number_format(2) }}
+        </td>
+        {% set Gross = totalPaidSales - (totalShippingCost + totalRefundedAmount + totalMaterialCost + totalLaborCost) %}
+        <td class="text-end">
+            <span class="badge bg-secondary">GM</span>
+            {{ Gross|number_format(2) }}<br/>
+            {% if totalPaidSales != 0 %}
+                ({{ ((Gross / totalPaidSales) * 100) | number_format(2) }}%)
+            {% else %}
+                (0%)
+            {% endif %}
+        </td>
+        {% set Net = totalPaidSales - (totalShippingCost + totalRefundedAmount + totalMaterialCost + totalLaborCost + totalAdsCost) %}
+        <td class="text-end">
+            <span class="badge bg-secondary">NM</span>
+            {{ Net|number_format(2) }}<br/>
+            {% if totalPaidSales != 0 %}
+                ({{ ((Net / totalPaidSales) * 100) | number_format(2) }}%)
+            {% else %}
+                (0%)
+            {% endif %}
+        </td>
+    </tr>
+    </tfoot>
+</table>
+<h2 class="mt-5">Summary For {{ month.date.format('M Y') }}</h2>
+<div class="table-responsive">
+    <table class="date-table" style="width: 40%;text-align: left;border: 1px solid #b3b3b3;" cellspacing="0">
+        <tr>
+            <td class="fw-600">Total Orders (All/Paid/Cancelled)</td>
+            <td class="text-end">
+                <span data-toggle="tooltip" title="All Orders">{{ totalOrders }}</span> /
+                <span data-toggle="tooltip" title="Paid Orders"
+                      class="text-success">{{ totalPaidOrders }}</span> /
+                <span data-toggle="tooltip" title="Cancelled Orders"
+                      class="text-danger">{{ totalCancelledOrders }}</span>
+            </td>
+        </tr>
+        <tr>
+            <td class="fw-600 bg-light">Total Gross Sales</td>
+            <td class="text-end bg-light">${{ totalSales | number_format(2) }}</td>
+        </tr>
+        <tr>
+            <td class="fw-600">Total Paid Sales</td>
+            <td class="text-end">${{ totalPaidSales | number_format(2) }}</td>
+        </tr>
+        <tr>
+            <td class="fw-600">
+                Total Cost
+                <table class="table table-bordered">
+                    <tr>
+                        <td class="fw-600 small p-1">Material Cost</td>
+                        <td class="text-end small p-1">${{ totalMaterialCost | number_format(2) }}</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-600 small p-1">Shipping Cost</td>
+                        <td class="text-end small p-1">${{ totalShippingCost | number_format(2) }}</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-600 small p-1">Ads Cost</td>
+                        <td class="text-end small p-1">${{ totalAdsCost | number_format(2) }}</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-600 small p-1">Warehouse Labor</td>
+                        <td class="text-end small p-1">${{ totalLaborCost | number_format(2) }}</td>
+                    </tr>
+                </table>
+            </td>
+            <td class="text-end">${{ totalCost | number_format(2) }}</td>
+        </tr>
+        <tr>
+            <td class="fw-600">Total Refunded Amount</td>
+            <td class="text-end">${{ totalRefundedAmount | number_format(2) }}</td>
+        </tr>
+        <tr>
+            <td class="fw-600">
+                Payroll Cost
+            </td>
+            <td class="text-end">${{ month.payrollCost | number_format(2) }}</td>
+        </tr>
+        <tr>
+            <td class="fw-600">
+                Fixed Cost
+            </td>
+            <td class="text-end">${{ month.fixedCost | number_format(2) }}</td>
+        </tr>
+        {% for item in month.lineItems %}
+            <tr>
+                <td class="fw-600">
+                    {{ item.key }}                    
+                </button>
+                </td>
+                <td class="text-end">${{ item.value | number_format(2) }}</td>
+            </tr>
+        {% endfor %}
+        <tr>
+            <td class="fw-600 bg-success-soft">Total Profit/Loss</td>
+            <td class="text-end bg-success-soft">
+                ${{ (totalProfitAndLoss - month.monthlyExpense) | number_format(2) }}
+            </td>
+        </tr>
+        {% if month.notes %}
+            <tr>
+                <td colspan="2" class="bg-light fw-600">Notes for {{ month.date | date('M Y') }}</td>
+            </tr>
+            <tr>
+                <td colspan="2">{{ month.notes | nl2br | raw }}</td>
+            </tr>
+        {% endif %}
+    </table>
+</div>
+</body>
+
+</html>

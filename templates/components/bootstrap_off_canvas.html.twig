@@ -1,0 +1,22 @@
+<div {{ attributes.defaults({
+    class: 'offcanvas offcanvas-end',
+    tabindex: '-1',
+    'aria-labelledby': 'offcanvasLabel',
+    id: id ? id : false,
+}).defaults(stimulus_controller('bootstrap-offcanvas-cart')) }}>
+    {% block offcanvas_full_content %}
+        <div class="offcanvas-header">
+            {% if block('offcanvas_header') %}
+                <h5 class="offcanvas-title" id="offcanvasLabel">
+                    {% block offcanvas_header %}{% endblock %}
+                </h5>
+            {% endif %}
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <hr class="m-0">
+
+        <div class="offcanvas-body">
+            {% block offcanvas_body %}{% endblock %}
+        </div>
+    {% endblock %}
+</div>

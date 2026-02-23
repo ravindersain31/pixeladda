@@ -1,0 +1,77 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Call Requests
+{% endblock %}
+{% block pageTitle %}
+	<div class="page-header-icon">
+		<i class="fas fa-list"></i>
+	</div>
+	Call Requests
+{% endblock %}
+
+{% block body %}
+	<div class="card card-header-actions mx-auto shadow-none">
+		<div class="card-header">
+			Request Immediate Call
+		</div>
+		<div class="table-responsive">
+		<table class="card-body table table-striped mb-0">
+			<thead>
+				<tr>
+					<th>Sr.</th>
+					<th>Name</th>
+					<th>Phone</th>
+					<th>Status</th>
+					<th>Message</th>
+					<th>Site</th>
+					<th>Received On</th>
+					<th>Completed On</th>
+					<th class="text-center">Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for key,enquiry in enquiries %}
+					<tr>
+						<td>{{ enquiries.getPaginationData.firstItemNumber + loop.index - 1 }}</td>
+						<td>{{ enquiry.name | default("-")}}</td>
+						{# <td>{{ enquiry.comment | default("-")}}</td> #}
+						<td>{{ enquiry.phone | default("-") }}</td>
+						<td>
+							<span class="badge {{ enquiry.isOpened ? 'bg-warning' : 'bg-success' }}">
+								{{ enquiry.isOpened ? 'OPEN' : 'CLOSED' }}
+							</span>
+						</td>
+						<td class="text-break" style="width: 200px">{{ enquiry.comment | default("-") }}</td>
+						<td>{{ enquiry.store.shortName | default('-') }}</td>
+						<td>{{ enquiry.createdAt|date('d M, Y H:i:s') }}</td>
+						<td>
+							{% if enquiry.updatedAt is not null %}
+								{{ enquiry.updatedAt|date('d M, Y H:i:s') }}
+							{% else %}
+								-
+							{% endif %}
+						</td>
+						<td class="text-end">
+							{% set toggleStatus = not enquiry.isOpened %}
+							<a href="{{ path('admin_call_requests_status', { id: enquiry.id, status: toggleStatus ? 1 : 0 }) }}" class="btn btn-{{ enquiry.isOpened ? 'success' : 'warning' }} btn-xs"
+							onclick="return confirm('{{ toggleStatus ? 'Are you sure to reopen this call request?' : 'Are you sure to complete this call request?' }}')"
+							>{{ toggleStatus ? 'Reopen' : 'Completed' }}
+							</a>
+							<a href="{{ url('admin_call_requests_view',{id:enquiry.id}) }}" class="btn btn-blue btn-xs">View</a>
+						</td>
+					</tr>
+				{% else %}
+					<tr>
+						<td colspan="6">No records</td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+		</div>
+	</div>
+
+	<div class="mt-4">
+		{{ knp_pagination_render(enquiries) }}
+	</div>
+{% endblock %}
+

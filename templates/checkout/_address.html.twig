@@ -1,0 +1,32 @@
+<div class="row" {{ stimulus_target('checkout', target) }}>
+    <div class="col-12 col-sm-6">
+        {{ form_row(address.firstName) }}
+    </div>
+    <div class="col-12 col-sm-6">
+        {{ form_row(address.lastName) }}
+    </div>
+    <div class="col-12">
+        {{ form_row(address.addressLine1) }}
+    </div>
+    <div class="col-12">
+        {{ form_row(address.addressLine2) }}
+    </div>
+    <div class="col-12 col-sm-6">
+        {{ form_row(address.city) }}
+    </div>
+    <div class="col-12 col-sm-6">
+        {{ form_row(address.state) }}
+    </div>
+    <div class="col-12 col-sm-6">
+        {{ form_row(address.country, {attr: {'data-action': 'change->checkout#onCountrySelect'}}) }}
+    </div>
+    <div class="col-12 col-sm-6">
+        {{ form_row(address.zipcode) }}
+    </div>
+    <div class="col-12 col-sm-6">
+        {{ form_row(address.phone) }}
+    </div>
+    <div class="col-12 col-sm-6">
+        {{ form_row(address.email) }}
+    </div>
+</div>

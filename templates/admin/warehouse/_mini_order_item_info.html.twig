@@ -1,0 +1,95 @@
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <th>Product</th>
+        <th>Quantity</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for item in order.orderItemsAll %}
+        {% if item.itemType == 'DEFUALT' or item.product %}
+            {% set product = item.product.parent %}
+            {% set template = item.product %}
+            <tr>
+                <td>
+                    <div class="product-info">
+                        <p class="mb-0">
+                            {% if product.sku == 'SAMPLE' or product.sku == 'WIRE-STAKE' %}
+                                {{ product.sku }} <span class="badge badge-pill fw-bold bg-purple text-white text-decoration-none mx-2 ">{{ product.sku }}</span>
+                            {% elseif item.metaData.customSize.isSample is defined and item.metaData.customSize.isSample %}
+                                {{ product.sku }} <span class="badge badge-pill fw-bold bg-purple text-white text-decoration-none">{{ product.sku }}</span>
+                                <span class="badge badge-pill fw-bold bg-red text-white text-decoration-none me-2">{{ item.metaData.customSize.parentSku }}</span>
+                            {% elseif item.metaData.isCustomSize is defined and item.metaData.isCustomSize %}
+                                {% if item.metaData.customSize.sku is defined %}
+                                    {% set product = ysp.getDefaultCustomProduct(item.metaData.customSize.sku) %}
+                                    {% set variant = item.metaData.customSize.templateSize.width ~ 'x' ~ item.metaData.customSize.templateSize.height %}
+                                    {% set linkToProduct = url('editor', {category: product.primaryCategory.slug, productType: product.productType.slug, sku: product.sku, variant }) %}
+                                    {% if product.sku == 'CUSTOM' %}
+                                        {% set linkToProduct = url('custom_yard_sign_editor', { variant }) %}
+                                    {% endif %}
+                                    <a class="badge badge-pill fw-bold bg-yellow text-white" href="{{ linkToProduct }}" target="_blank">CUSTOM-SIZE</a>
+                                {% else %}
+                                    CUSTOM-SIZE
+                                {% endif %}
+                                <a href="{{ url('admin_order_item_preview', {orderId: order.orderId, itemId: item.id}) }}"
+                                   class="ms-2 badge text-bg-primary text-decoration-none" target="_blank">
+                                    <i class="fa fa-external-link-alt me-1"></i> Preview
+                                </a>
+                            {% else %}
+                                <a href="{{ url('editor', {category: product.primaryCategory.slug, productType: product.productType.slug, sku: product.sku, variant: template.slug}) }}"
+                                   target="_blank">{{ product.sku }}</a>
+                                <a href="{{ url('admin_order_item_preview', {orderId: order.orderId, itemId: item.id}) }}"
+                                   class="ms-2 badge text-bg-primary text-decoration-none" target="_blank">
+                                    <i class="fa fa-external-link-alt me-1"></i> Preview
+                                </a>
+                            {% endif %}
+                        </p>
+                        {% if item.metaData.isCustomSize is defined and item.metaData.isCustomSize %}
+                            <p class="mb-0"><b>Variant:</b> {{ item.metaData.customSize.templateSize.width }}x{{ item.metaData.customSize.templateSize.height }}</p>
+                            <p class="mb-0"><b>SKU:</b> {{ item.metaData.customSize.sku }}</p>
+                        {% elseif item.product.parent.sku == 'WIRE-STAKE' %}
+                            <p class="mb-0"><b>Variant:</b> {{ template.name }} Wire Stake</p>
+                        {% else %}
+                            <p class="mb-0"><b>Variant:</b> {{ template.name }}</p>
+                        {% endif %}
+                        {% if item.addOns | length > 0 %}
+                            <div class="mb-0 addon-badges d-flex flex-wrap align-items-center">
+                                {% for addon in labelForAddons(item.addOns) %}
+                                    <small class="badge bg-gray-600 {% if not loop.last %}me-1{% endif %} mb-1">{{ addon }}</small>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        {% if item.metaData['isHelpWithArtwork'] is defined and item.metaData['isHelpWithArtwork'] %}
+                            <div class="mb-0 addon-badges d-flex flex-wrap align-items-center">
+                                <small class="badge bg-info mt-1">Help With Artwork</small>
+                            </div>
+                        {% endif %}
+                        {% if item.metaData['isEmailArtworkLater'] is defined and item.metaData['isEmailArtworkLater'] %}
+                            <div class="mb-0 addon-badges d-flex flex-wrap align-items-center">
+                                <small class="badge bg-info mt-1">Email Artwork Later</small>
+                            </div>
+                        {% endif %}
+                        {% if item.metaData['deliveryMethod']['key'] is defined and item.metaData['deliveryMethod']['key'] == 'REQUEST_PICKUP' %}
+                            <div class="mb-0 addon-badges d-flex flex-wrap align-items-center">
+                                <small class="badge bg-danger mt-1">{{ item.metaData['deliveryMethod']['label'] }}</small>
+                            </div>
+                        {% endif %}
+                        {% if item.metaData['isBlindShipping'] is defined and item.metaData['isBlindShipping'] %}
+                            <div class="mb-0 addon-badges d-flex flex-wrap align-items-center">
+                                <small class="badge bg-danger mt-1">Blind Shipping</small>
+                            </div>
+                        {% endif %}
+                        {% if item.metaDataKey('additionalNote') | length > 0 %}
+                            <div class="mt-2">
+                                <b>Order Comment</b>
+                                <p class="mb-0">{{ item.metaDataKey('additionalNote') }}</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </td>
+                <td>{{ item.quantity }}</td>
+            </tr>
+        {% endif %}
+    {% endfor %}
+    </tbody>
+</table>

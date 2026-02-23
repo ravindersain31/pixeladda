@@ -1,0 +1,32 @@
+{% extends 'emails/base.html.twig' %}
+{% block title %}New Account - YardSignPlus {% endblock %}
+{% block subject %}New Account{% endblock %}
+{% block body %}
+<tr>
+	<td colspan="3">
+		<p class="off-desc-small ys-mob-ryt-lft-pad15" style="font-size: 16px;color: #000000;padding: 0 50px;line-height: 135%;margin: 25px 0 25px;text-align: left;">
+			Hello Valued Customer,
+		</p>
+
+		<p class="off-desc-small ys-mob-ryt-lft-pad15" style="font-size: 16px;color: #000000;padding: 0 50px;line-height: 135%;margin: 25px 0 25px;text-align: left;">
+			You are receiving this email because we have received a order request for your email.
+		</p>
+
+		<span class="off-desc-small ys-mob-ryt-lft-pad15" style="display: table;font-size: 16px;color: #000000;padding: 0 50px;line-height: 135%;margin: 25px 0 25px;text-align: left;">
+			Click here to login.
+			<br>
+			<b>Temporary Password:</b>
+			{{ password }}
+		</span>
+
+		<p class="off-desc-small ys-mob-ryt-lft-pad15" style="font-size: 16px;color: #000000;padding: 0 50px;line-height: 135%;margin: 25px 0 25px;text-align: left;">
+			Please click the button below to Login
+		</p>
+
+		<p class="off-desc-small ys-mob-ryt-lft-pad15" style="font-size: 16px;color: #000000;padding: 0 50px;line-height: 135%;text-align: left;">
+			<a href="{{ url('login') }}" class="btn-shop-now" style="background-color: #efc825;color: #000000;font-size: 32px;text-transform: uppercase;text-decoration: none;padding: 18px 30px;display: inline-block;font-weight: normal;border-radius: 10px;margin: 0 0 40px;line-height: 1.5;" target="_blank">Click Here</a>
+		</p>
+	</td>
+</tr>
+
+{% endblock %}

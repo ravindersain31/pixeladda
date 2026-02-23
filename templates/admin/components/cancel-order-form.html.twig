@@ -1,0 +1,48 @@
+<div {{ attributes }}>
+	{{ form_start(form, {attr: {
+        'novalidate': true,
+        'data-action': 'live#action:prevent',
+        'data-live-action-param': 'save',
+    }}) }}
+	<style>
+		.choices {
+			.form-check {
+				margin-right: 10px;
+			}
+		}
+	</style>
+	{% if flashMessage is not null and flashError == 'danger' %}
+		<div class="alert mx-4 alert-{{ flashError }}">{{ flashMessage }}</div>
+	{% endif %}
+	{{ form_row(form.refund) }}
+	<div class="d-flex justify-content-between align-items-center">
+		{% if form.refund is defined and form.refund.vars.value == 'YES' %}
+			<div class="{{ form.amount is defined ? 'col-md-5' : 'col-md-12' }}">
+				{{ form_row(form.refundType) }}
+			</div>
+			{% if form.refundType.vars.value == 'PARTIAL_REFUND' and form.amount is defined %}
+				<div class="col-md-5">
+					{{ form_row(form.amount) }}
+				</div>
+			{% endif %}
+		{% endif %}
+	</div>
+	<div class="alert alert-warning text-center">
+		<p>
+            If <b>Yes</b>: It will refund all associated payments (if any) to original payment option from which the
+				            payment was received
+		</p>
+		<p class="mb-0">
+            Check the <b>Transaction</b> tab for more details.
+		</p>
+	</div>
+	{{ form_row(form.cancellationNotes) }}
+	<div class="mb-3">
+		<button type="submit" data-loading="action(save)|addAttribute(disabled)" class="btn btn-primary">
+			<span data-loading="action(save)|show" style="display: none">Cancelling Order...</span>
+			<span data-loading="action(save)|hide" style="display: block">Cancel Order</span>
+		</button>
+	</div>
+	<p class="small mb-0">The order cancellation may take sometime. Please don't refresh or close this window.</p>
+	{{ form_end(form) }}
+</div>

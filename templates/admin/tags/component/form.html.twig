@@ -1,0 +1,27 @@
+<div {{ attributes }}>
+	{{ form_start(form) }}
+	{{ form_errors(form) }}
+     <div class="row">
+        <div class="col-sm-12">
+            <div class="form-group">
+                {{ form_row(form.urlName) }}
+            </div>
+        </div>
+        <div class="col-sm-12">
+            <div class="form-group">
+                {{ form_row(form.tags) }}
+            </div>
+        </div>
+        <div class="col-sm-12">
+            <div class="form-group">
+                {{ form_row(form.store) }}
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <div class="form-group">
+                 {{ form_row(form.submit) }}
+            </div>
+        </div>
+    </div>
+    {{ form_end(form) }}
+</div>

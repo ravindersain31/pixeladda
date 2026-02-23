@@ -1,0 +1,64 @@
+{# <div class="modal fade" id="ysp-delivery-calendar" tabIndex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content ysp-delivery-calendar">
+            <div class="modal-body">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" tabIndex="-1"></button>
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th></th>
+                            <th colspan="3" class="text-center get-it-by">Get It By</th>
+                        </tr>
+                        <tr>
+                            <th class="order-by">Order By</th>
+                            <th>Free Delivery</th>
+                            <th>Rush Delivery</th>
+                            <th>Super Rush Delivery</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% set calendar = deliveryCalendar.get() %}
+                        {% for day in calendar %}
+                            <tr>
+                                {% set keys = day.chart|keys %}
+                                {% set index = day.isSaturday is defined and day.isSaturday ? 5 : 4 %}
+                                <td>{{ day.label }}</td>
+                                <td>{{ day.chart[keys[index]].date | default('+7 days') | date('D M j') }}</td>
+                                <td>{{ day.chart[keys[1]].date | default('+4 days') | date('D M j') }}</td>
+                                <td>{{ day.chart[keys[0]].date | default('+3 days') | date('D M j') }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="terms-of-delivery">
+                    <ul>
+                        <li>For Standard and Rush delivery, place your order by 4pm CST.</li>
+                        <li>For Super Rush delivery, place your order by 4pm CST.</li>
+                        <li>Delivery dates apply to the continental United States and parts of Canada.</li>
+                        <li>Pickup is offered for all delivery dates. Please choose your delivery date, then contact us to change your order to pickup. We will discount your delivery fee by 50% (does not apply to same day delivery).</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('hidden.bs.modal', function (ev) {
+            var modal = ev.target;
+            if (!modal || !modal.id) return;
+            setTimeout(function () {
+                var selector = '[data-bs-toggle="modal"][data-bs-target="#' + modal.id + '"]';
+                var triggers = document.querySelectorAll(selector);
+
+                triggers.forEach(function (btn) {
+                    btn.blur();
+                });
+            }, 0);
+        });
+    });
+</script>
+ #}

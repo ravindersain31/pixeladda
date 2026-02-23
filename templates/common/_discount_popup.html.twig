@@ -1,0 +1,42 @@
+<button type="button" class="btn btn-primary d-none" id="discount-popup-button" data-bs-toggle="modal" data-bs-target="#discount-popup">
+</button>
+
+<div class="modal fade" id="discount-popup" data-bs-keyboard="false" tabindex="-1" aria-labelledby="discount-popup" aria-label="discount popup" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content discount-popup border-0">
+            <div class="modal-header border-0">
+                <button id="close-discount-popup" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body discount-popup-content">
+                <div class="text-center">
+                    <img width="100" height="100" src="{{ asset('app-images/logo/logo.svg') }}" alt="YSP Logo" class="img-fluid">
+                </div>
+                <span class="discount-text-header">10% OFF</span>
+                    {% set showDiscountPopup = true %}
+                    {% if app.request.cookies.has('popup-subscribe') and app.request.cookies.get('popup-subscribe') == true %}
+                        {% set showDiscountPopup = false %}
+                    {% endif %}
+
+                    {% if showDiscountPopup %}
+                        {{ component('DiscountPopupForm') }}
+                    {% endif %}
+                <div id="shop-now-popup" hidden>
+                    <span class="shop-now-popup-header">Use Code</span>
+                    <span class="shop-now-popup-header-code">SAVE10</span>
+                    <button class="btn" data-bs-dismiss="modal" aria-label="Close">Shop Now</button>
+                </div>
+                <div class="yard-signs">
+                    <div>
+                        <img width="150" height="150" src="{{ asset('app-images/images/house1.webp') }}" class="img-fluid" alt="house">
+                    </div>
+                    <div>
+                        <img width="150" height="150" src="{{ asset('app-images/images/house2.webp') }}" class="img-fluid" alt="house2">
+                    </div>
+                    <div>
+                        <img width="150" height="150" src="{{ asset('app-images/images/gym.webp') }}" class="img-fluid" alt="real-estate">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

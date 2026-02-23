@@ -1,0 +1,110 @@
+<div class="card-body p-0 table-responsive warehouse-table">
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th class="fit-to-cell"><small>Delivery Date</small></th>
+            <th class="fit-to-cell">#</th>
+            <th class="fit-to-cell">Order</th>
+            <th class="fit-to-cell">Signs</th>
+            <th class="fit-to-cell">Stakes</th>
+            <th class="fit-to-cell">Approved</th>
+            <th class="fit-to-cell">Delivery</th>
+            <th class="fit-to-cell">Printer</th>
+            <th class="fit-to-cell">Proof</th>
+            <th class="fit-to-cell">Drive</th>
+            <th class="fit-to-cell">Shipping Service</th>
+            <th class="fit-to-cell">State</th>
+            <th>Notes</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% if ordersGroupedByDeliveryDate | length <= 0 %}
+            <tr>
+                <td colspan="12" class="text-center">No orders found</td>
+            </tr>
+        {% endif %}
+        {% set orderIndex = 1 %}
+        {% for date, ordersOfDate in ordersGroupedByDeliveryDate %}
+            <tr>
+                <th class="text-white text-end fit-to-cell" style="background: #627ce4">{{ date | date('D M d') }}</th>
+                <th colspan="11">&nbsp;</th>
+            </tr>
+            {% for order in ordersOfDate %}
+                {% set warehouseOrder = order.warehouseOrder %}
+                {% set totalQuantities = order.totalQuantities %}
+                <tr>
+                    <td>&nbsp;</td>
+                    <td>{{ orders.getPaginationData.firstItemNumber + orderIndex - 1 }}</td>
+                    <td>
+                        <a href="{{ url('admin_order_overview', {orderId: order.orderId}) }}" target="_blank">
+                            {{ order.orderId }}
+                        </a>
+                    </td>
+                    <td>{{ totalQuantities['totalQuantity'] }}</td>
+                    <td>{{ totalQuantities['frameQuantity'] }}</td>
+                    <td class="fit-to-cell">
+                        {% if order.proofApprovedAt %}
+                            {{ order.proofApprovedAt | date('D M d') }}
+                        {% else %}
+                            --
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if order.shippingAmount <= 0 %}
+                            Free
+                        {% else %}
+                            ${{ order.shippingAmount | number_format(2) }}
+                        {% endif %}
+                    </td>
+                    <td class="fit-to-cell">
+                        {% if order.printerName %}
+                            {{ enum.warehousePrinterName(order.printerName, true) | raw }}
+                        {% endif %}
+                    </td>
+                    <td class="fit-to-cell">
+                        <a href="{{ url('order_proof', {oid: order.orderId }) }}" target="_blank">
+                            Proof
+                        </a>
+                    </td>
+                    <td class="fit-to-cell">
+                        {% set warehouseDriveLink = null %}
+                        {% if warehouseOrder is not null %}
+                            {% set warehouseDriveLink = warehouseOrder.driveLink %}
+                        {% endif %}
+                        {{ component('AdminWarehouseUpdateDriveLinkComponent', {
+                            order,
+                            warehouseOrder,
+                            driveLink: warehouseDriveLink,
+                        }) }}
+                    </td>
+                    <td class="fit-to-cell">
+                        {{ component('AdminWarehouseUpdateShippingServiceComponent', {
+                            order,
+                            warehouseOrder,
+                        }) }}
+                    </td>
+                    <td class="fit-to-cell">{{ order.shippingAddress.state }}</td>
+                    <td>
+                        {{ component('AdminWarehouseOrderNotesComponent', {
+                            order,
+                            warehouseOrder,
+                            notes: warehouseOrder.notes | default(''),
+                        }) }}
+                    </td>
+                    <td class="fit-to-cell">
+                        {% if is_granted('warehouse_update_order_details') %}
+                            {% include 'admin/warehouse/queue/_offcanvas_add_to_queue.html.twig' %}
+                        {% endif %}
+                    </td>
+                </tr>
+                {% set orderIndex = orderIndex + 1 %}
+            {% endfor %}
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="mt-4 d-flex justify-content-around">
+        {{ knp_pagination_render(orders) }}
+    </div>
+</div>

@@ -1,0 +1,113 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Wholesaler List
+{% endblock %}
+{% block pageTitle %}
+	<div class="page-header-icon">
+		<i class="fas fa-list"></i>
+	</div>
+	Wholesaler
+{% endblock %}
+
+{% block body %}
+	{% if isFilterFormSubmitted %}
+        Showing results for:
+        <div class="small">
+            {% if filterForm.vars.value.email %}
+                <span><b>Email: </b>{{ filterForm.vars.value.email }}</span>
+            {% endif %}
+        </div>
+    {% endif %}
+	{{ include('common/flash.html.twig') }}
+	<div class="card card-header-actions mx-auto shadow-none">
+		<div class="card-header">
+			List of Wholesaler
+			<div class="card-header-actions">
+				{{ include('admin/customer/users/component/_filter_customer.html.twig') }}
+				<a href="{{ url('admin_users_users_order_export') }}" class="btn text-uppercase btn-primary btn-sm d-none">Export Users</a>
+			</div>
+		</div>
+		<div class="table-responsive">
+			<table class="card-body table table-striped mb-0">
+				<thead>
+					<tr>
+						<th>Sr.</th>
+						<th>Name</th>
+						<th>Email</th>
+						<th>Whole Seller Status</th>
+						<th>Address</th>
+						<th>Available Rewards</th>
+						<th>CreatedAt</th>
+						<th>Action</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for key,user in users %}
+							<tr>
+									<td>{{ users.getPaginationData.firstItemNumber + loop.index - 1 }}</td>
+									<td>
+									{{ user.name }}
+									{% if user.store.shortName is defined %}
+											<span class="badge bg-dark">
+													{{ user.store.shortName }}
+											</span>
+									{% endif %}
+									</td>
+									<td>{{ user.email }}</td>
+									<td>{{ user.wholeSellerStatus.value }}</td>
+									<td>{{ user.wholeSeller.address ?? ""}}</td>
+									<td>{{ user.wholeSeller.reward.availablePoints|default(0) }}</td>
+									<td>{{ user.createdAt|date }}</td>
+									<td>
+											{% set status = user.wholeSellerStatus.value %}
+											{% set WholeSellerEnum = enum('App\\Enum\\WholeSellerEnum') %}
+
+											{% if status != WholeSellerEnum.ACCEPTED.value %}
+												<a href="{{ url('admin_users_whole_seller_accept', { id: user.id }) }}"
+												class="btn btn-success btn-xs m-0">
+													Accept
+												</a>
+											{% elseif status == WholeSellerEnum.ACCEPTED.value %}
+												<a href="{{ url('admin_users_whole_seller_reject', { id: user.id }) }}"
+												class="btn btn-danger btn-xs m-0">
+													Reject
+												</a>
+											{% endif %}
+
+											<a href="{{ url('admin_users_customer_reward_points', { id: user.id }) }}" class="btn btn-blue btn-xs m-0">
+													Rewards
+											</a>
+											<a href="{{ url('admin_users_customer_update_password', { id: user.id }) }}" class="btn btn-success btn-xs m-0">
+													Manage Password
+											</a>
+											<a href="{{ url('admin_users_customer_edit', { id: user.id }) }}" class="btn btn-blue btn-xs m-0">
+													<i class="fas fa-edit"></i>&nbsp;Edit
+											</a>
+											<a href="{{ url('admin_users_whole_seller_view', { id: user.id }) }}" class="btn btn-blue btn-xs m-0">
+													<i class="fas fa-eye"></i>&nbsp;View
+											</a>
+											{% if user.wholeSeller.wholeSellerImageFile ?? null %}
+												<a href="{{ vich_s3.asset(user.wholeSeller.wholeSellerImageFile, 'fileObject') }}"
+												class="btn btn-blue btn-xs m-0"
+												target="_blank">
+													<i class="fa fa-external-link"></i>&nbsp;View File
+												</a>
+											{% else %}
+												<span class="badge bg-warning">No File</span>
+											{% endif %}
+									</td>
+							</tr>
+					{% else %}
+							<tr>
+									<td colspan="6">No records</td>
+							</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</div>
+
+	<div class="mt-4">
+		{{ knp_pagination_render(users) }}
+	</div>
+{% endblock %}

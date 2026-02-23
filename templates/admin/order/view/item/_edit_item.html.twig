@@ -1,0 +1,14 @@
+<div class="offcanvas offcanvas-end" tabindex="-1" id="offChargeItem{{ item.id }}" aria-labelledby="offChargeItemLabel{{ item.id }}">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="offChargeItemLabel{{ item.id }}">
+            Edit Item
+        </h5>
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        {{ component('EditOrderItemForm', {
+            orderItem: item,
+            order: order,
+        }) }}
+    </div>
+</div>

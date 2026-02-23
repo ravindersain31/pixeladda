@@ -1,0 +1,153 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Manage PayPal Invoices{% endblock %}
+{% block pageTitle %}
+    <div class="page-header-icon">
+        <i class="fas fa-list"></i>
+    </div>
+   Manage PayPal Invoices
+{% endblock %}
+
+{% block body %}
+    <div class="card card-header-actions mx-auto shadow-none">
+        <div class="card-header">
+            Invoices List
+            <a href="{{ url('admin_invoice_paypal_add') }}" class="btn btn-primary btn-sm">
+                <i class="fas fa-plus me-2"></i>Add
+            </a>
+        </div>
+        <div class="table-responsive">
+            <table class="card-body table table-striped mb-0">
+                <thead>
+                    <tr>
+                        <th class="fit-to-cell">Invoice No.</th>
+                        <th>Email</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th class="fit-to-cell">Refund Amount</th>
+                        <th>Created At</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for invoice in paypalInvoices %}
+                        {% set paidAmount = invoice.payments.paid_amount.value ?? invoice.amount.value %}
+                        {% set refundedAmount = invoice.refunds.refund_amount.value ?? 0 %}
+                        {% set refundableAmount = paidAmount - refundedAmount %}
+                        {% set currency = invoice.amount.currency_code %}
+
+                        <tr>
+                            <td class="fit-to-cell">{{ invoice.id }}</td>
+                            <td class="fit-to-cell">
+                                {% if invoice.primary_recipients is defined %}
+                                    {% for index, recipients in invoice.primary_recipients %}
+                                        {{ recipients.billing_info.email_address }}
+                                    {% endfor %}
+                                {% endif %}
+                            </td>
+                            <td>${{ invoice.amount.value }}</td>
+                            <td class="fit-to-cell">
+                                {% set badgeClass = {
+                                    'DRAFT': 'badge bg-dark',
+                                    'SENT': 'badge bg-orange-soft text-dark',
+                                    'PAID': 'badge bg-success',
+                                    'UNPAID': 'badge bg-danger',
+                                    'REFUNDED': 'badge bg-warning',
+                                    'PARTIALLY_REFUNDED': 'badge bg-warning'
+                                }[invoice.status]|default('badge bg-light text-dark') %}
+                                <span class="{{ badgeClass }}">{{ invoice.status|replace({'_':' '})|capitalize }}</span>
+                            </td>
+                            <td>
+                                {% if refundedAmount > 0 %}
+                                    ${{ refundedAmount|number_format(2) }}
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </td>
+                            <td>{{ invoice.detail.metadata.create_time|date('M d, Y h:i A') }}</td>
+                            <td>
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-danger btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+                                        Action
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        {% if invoice.status in ['DRAFT'] %}
+                                            <li>
+                                                <a href="{{ url('admin_invoice_paypal_edit', { invoiceId: invoice.id }) }}" class="dropdown-item">
+                                                    <i class="fas fa-eye me-1"></i>Edit Invoice
+                                                </a>
+                                            </li>
+                                        {% endif %}
+                                        <li>
+                                            <a class="dropdown-item share-invoice-btn"
+                                                data-gateway="paypal"
+                                                data-invoice-url="{{ paypalUrl ~ '/invoice/p/#' ~ invoice.id }}"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#shareInvoiceModal">
+                                                <i class="fas fa-share-nodes me-1"></i>Share Invoice Link
+                                            </a>
+                                        </li>
+                                        {% if invoice.status in ['PAID', 'PARTIALLY_REFUNDED'] %}
+                                            <li>
+                                                <a class="dropdown-item refund-invoice-btn text-danger"
+                                                    data-gateway="paypal"
+                                                    data-invoice-id="{{ invoice.id }}"
+                                                    data-invoice-number="{{ invoice.id ?? invoice.detail.invoice_number }}"
+                                                    data-full-amount="{{ paidAmount }}"
+                                                    data-refunded-amount="{{ refundedAmount }}"
+                                                    data-remaining-amount="{{ refundableAmount }}"
+                                                    data-action="{{ path('admin_invoice_paypal_refund', { invoiceId: invoice.id }) }}"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#refundInvoiceModal">
+                                                    <i class="fas fa-undo me-1"></i>Refund Invoice
+                                                </a>
+                                            </li>
+                                        {% endif %}
+                                        <form action="{{ path('admin_invoice_paypal_send', { invoiceId: invoice.id }) }}" method="post" class="d-none">
+                                            <button type="submit" class="btn btn-link text-decoration-none" onclick="return confirm('Send this invoice to the recipient?')">
+                                                <i class="fas fa-paper-plane me-1"></i> Send Invoice
+                                            </button>
+                                        </form>
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="7" class="text-center">No records found</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {% component BootstrapModal with { id: 'shareInvoiceModal' } %}
+        {% block modal_full_content %}
+            <div class="modal-header">
+                <h1 class="modal-title fs-5">PayPal invoice share link</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center">
+                <p>Your invoice link is ready to be shared.</p>
+                <div class="input-group mb-3">
+                    <input type="text" id="invoiceLinkInput" class="form-control" readonly>
+                    <button class="btn btn-outline-primary" id="copyInvoiceLinkBtn">Copy</button>
+                </div>
+            </div>
+        {% endblock %}
+    {% endcomponent %}
+
+    <div class="modal fade" id="refundInvoiceModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5 text-dark" id="refundModalTitle">Refund Invoice</h1> <!-- ✅ Added ID -->
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="refundModalBody">Loading...</div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+

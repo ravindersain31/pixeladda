@@ -1,0 +1,73 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+	Create Account
+{% endblock %}
+
+{% block body %}
+
+	{{ include('customer/common/top_section.html.twig',
+		{ section: { name: title, active: true }})
+	}}
+
+	<div class="container">
+		<div
+			class="page-content">
+			<!-- Begin page content -->
+			<section class="pages-contents customer-login common-account-pages-wrapper mb-5">
+				<div class="container">
+					<div class="row justify-content-center">
+					{{ include('common/flash.html.twig') }}
+						<div class="{{ accountType == 'user' ? 'col-lg-5' : 'col-lg-7' }}">
+							<div class="text-left repeat-info-login mb-4">
+								<p>Please create an account using the email address associated with your order history. We suggest using the same email address for all orders.</p>
+							</div>
+							<div class="card shadow-sm border-black rounded-lg">
+								<div class="card-body login-form-body">
+								{{ accountType == 'user'
+									? component('CreateAccountForm')
+									: component('WholeSellerCreateAccountForm')
+								}}
+
+									<div class="dont-have-account text-center mt-4">
+										<a href="{{ path(signinRoute) }}">
+											{% if accountType == "user" %}
+												<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-log-in text-sgs-purple" aria-hidden="true" data-acsb-hidden="true" data-acsb-force-hidden="true">
+													<path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+													<polyline points="10 17 15 12 10 7"></polyline>
+													<line x1="15" y1="12" x2="3" y2="12"></line>
+												</svg>
+											{% endif %}
+											<span class="{{ wholeSellerShow ? 'whole-seler-create-account' :' ' }}">{{loginTitle}}</span>
+										</a>
+									</div>
+								</div>
+								<!-- /.login-card-body -->
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+		</div>
+	</div>
+
+	{% if storeInfo.isPromoStore and wholeSellerShow %}
+		<section class="checkout-banner-text-wrapper-promo shopping-cart-title-space-promo">
+			<p class="text-white mb-4">Create your account to access discounted wholesale pricing, fast next-day delivery on all eligible products, and round-the-clock customer support whenever you need it.</p>
+				<div class="dont-have-account text-center mt-4">
+					<a href="{{ path('whole_seller_create_account') }}" class="btn btn-light rounded text-bold px-md-4 py-2 rounded-5">
+						{% if not wholeSellerShow %}
+							<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-user-plus text-sgs-purple" aria-hidden="true" data-acsb-hidden="true" data-acsb-force-hidden="true">
+								<path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+								<circle cx="8.5" cy="7" r="4"></circle>
+								<line x1="20" y1="8" x2="20" y2="14"></line>
+								<line x1="23" y1="11" x2="17" y2="11"></line>
+							</svg>
+						{% endif %}
+						<span class="create-account">{{createAccount}}</span>
+					</a>
+				</div>
+		</section>
+	{% endif %}
+
+{% endblock %}

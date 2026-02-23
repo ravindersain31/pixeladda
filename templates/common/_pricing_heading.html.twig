@@ -1,0 +1,8 @@
+{% if productType.slug == 'yard-sign' %}
+    {{ productType.name ~ 's' }}
+{% elseif productType.slug == 'die-cut' %}
+    {{ productType.slug|title }} Signs
+{% else %}
+    {{ productType.name }}
+{% endif %}
+Pricing

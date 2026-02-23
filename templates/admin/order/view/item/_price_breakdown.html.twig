@@ -1,0 +1,120 @@
+<div id="accordionItems">
+    <div class="mb-0 addon-badges d-flex flex-wrap align-items-center col-6" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne{{ item.id }}" aria-expanded="true" aria-controls="collapseOne{{ item.id }}">
+        <small class="badge bg-gray-300 text-dark my-1">Price / Add-Ons Breakdown (Not Including Discounts or Shipping) ▼</small>
+    </div>
+    <div id="collapseOne{{ item.id }}" class="accordion-collapse collapse col-8" data-bs-parent="#accordionItems">
+        <div class="accordion-body">
+            <table class="table table-bordered mb-0 sortable">
+                <thead>
+                    <tr class="bg-light">
+                        <th class="fw-600 small p-1 text-dark">Add-On</th>
+                        <th class="text-end small p-1 text-dark">Price</th>
+                        <th class="text-end small p-1 text-dark">Quantity</th>
+                        <th class="text-end small p-1 text-dark">Total Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% set variantName =  template.name %}
+                {% if item.metaData.isCustomSize is defined and item.metaData.isCustomSize %}
+                    {% set variantName = item.metaData.customSize.templateSize.width ~ 'x' ~ item.metaData.customSize.templateSize.height %}
+                {% elseif item.product.parent.sku == 'WIRE-STAKE' %}
+                    {% set variantName =  (template.label) ?? (template.name ~ ' Wire Stake') %}
+                {% else %}
+                    {% set variantName = template.name %}
+                {% endif %}
+                <tr>
+                    <td class="fw-600 small p-1 fw-bold">{{ variantName }}</td>
+                    <td class="text-end small p-1">${{ item.price|default(0) }}</td>
+                    <td class="text-end small p-1">{{ item.quantity|default(0) }}</td>
+                    <td class="text-end small p-1">${{ (item.price * item.quantity)|default(0)|number_format(2) }}</td>
+                </tr>
+                {% if item.addOns is defined and item.addOns|length > 0 and item.addOns|filter((itemAddOn) => (itemAddOn.amount|default(0) > 0)) is not empty %}
+                    {% for addonName, itemAddOn in item.addOns %}
+                        {% if hasSubAddon(itemAddOn) %}
+                            {% for subAddonName, subAddon in itemAddOn %}
+                                {% if subAddon.amount > 0 %}
+                                    <tr>
+                                        <td class="fw-600 small p-1 fw-bold">
+                                            {{ addonName|capitalize|replace({'Imprintcolor': 'Imprint Color', 'Grommetcolor': 'Grommet Color'}) }}
+                                            <small> ({{ subAddon.key|replace({'ONE': '1', 'TWO': 2, 'THREE': 3})|default('-') }})</small>
+                                        </td>
+                                        <td class="text-end small p-1">
+                                            {% if addonName == 'frame' %}
+                                                {% set totalFramePrice = (subAddon.amount * (subAddon.quantity ?? subAddon.totalQuantity)) |number_format(2) %}
+                                                ${{ subAddon.amount|default(0)|number_format(2) }} x {{ subAddon.quantity ?? subAddon.totalQuantity }} = {{ totalFramePrice }}
+                                            {% else %}
+                                                ${{ subAddon.unitAmount|default(0)|number_format(2) }}
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-end small p-1">
+                                            {% if subAddon.totalQuantity is defined %}
+                                                {{ subAddon.totalQuantity|default(0) }}
+                                            {% else %}
+                                                {{ item.quantity|default(0) }}
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-end small p-1">
+                                            {% if addonName == 'frame' %}
+                                                ${{ (totalFramePrice|default(0) * item.quantity|default(0))|number_format(2) }}
+                                            {% else %}
+                                                ${{ (subAddon.unitAmount|default(0))|number_format(2) }}
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endif %}
+                            {% endfor %}
+                        {% else %}
+                            {% if itemAddOn.amount > 0 %}
+                                <tr>
+                                    <td class="fw-600 small p-1 fw-bold">
+                                        {{ addonName|capitalize|replace({'Imprintcolor': 'Imprint Color', 'Grommetcolor': 'Grommet Color'}) }}
+                                        <small> ({{ itemAddOn.key|replace({'ONE': '1', 'TWO': 2, 'THREE': 3})|default('-') }})</small>
+                                    </td>
+                                    <td class="text-end small p-1">
+                                        ${{ itemAddOn.unitAmount|default(0)|number_format(2) }}
+                                    </td>
+                                    <td class="text-end small p-1">
+                                        {% if itemAddOn.totalQuantity is defined %}
+                                            {{ itemAddOn.totalQuantity|default(0) }}
+                                        {% else %}
+                                            {{ item.quantity|default(0) }}
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-end small p-1">
+                                        ${{ (itemAddOn.unitAmount|default(0) * item.quantity|default(0))|number_format(2) }}
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        {% endif %}
+                    {% else %}
+                        <tr>
+                            <td colspan="4" class="text-muted text-center">-</td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    {# <tr>
+                        <td colspan="4" class="text-muted text-center">-</td>
+                    </tr> #}
+                {% endif %}
+                {% if item.metaData['YSPLogoDiscount']['hasLogo'] is defined and item.metaData['YSPLogoDiscount']['hasLogo'] %}
+                    <tr>
+                        <td class="fw-600 small p-1 fw-bold">YSP Logo (Discount)</td>
+                        <td class="text-end small p-1">-${{ item.metaData['YSPLogoDiscount']['discountAmount']|default(0)|number_format(2) }}</td>
+                        <td class="text-end small p-1"></td>
+                        <td class="text-end small p-1">-${{ item.metaData['YSPLogoDiscount']['discountAmount']|default(0)|number_format(2) }}</td>
+                    </tr>
+                {% endif %}
+                <tbody>
+                <tfoot>
+                    <tr class="bg-light">
+                        <td class="fw-600 small p-1 fw-bold text-dark">Total</td>
+                        <td class="text-end small p-1">${{ item.unitAmount|default(0)|number_format(2) }}</td>
+                        <td class="text-end small p-1"></td>
+                        <td class="text-end small p-1">${{ item.totalAmount|default(0)|number_format(2) }}</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+
+</div>

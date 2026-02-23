@@ -1,0 +1,148 @@
+{% extends 'base.html.twig' %}
+{% set metaData = constant('App\\Constant\\MetaData\\SizeLandingPage::META_DATA')[category.slug][size] | default([]) %}
+{% block title %}{{ metaData.title | default(size ~ ' ' ~category.name ~ ' Custom Yard Signs') | raw }}{% endblock %}
+{% set defaultMetaDescription = categoryName ~ ' Custom Yard Signs, Free shipping on $50+, overnight delivery. Digital proof in 1hr. Order today!' %}
+{% block metaData %}
+    {% if size in ['24x18', '18x12'] %}
+        <meta name="robots" content="noindex, nofollow"/>
+    {% endif %}
+    <meta property="og:title" content="{{ metaData.title | default(size ~ ' ' ~category.name ~ ' Custom Yard Signs') | raw }}">
+    <meta property="og:description" content="{{ metaData.description | default(defaultMetaDescription) | raw }}">
+    <meta property="title" content="{{ metaData.title | default(size ~ ' ' ~category.name ~ ' Custom Yard Signs') | raw }}">
+    <meta name="description" content="{{ metaData.description | default(defaultMetaDescription) | raw }}">
+    <meta name="keywords" content="{{ metaData.keywords | default('') | raw }}">
+    <link rel="canonical" href="{{ url('category_sizes', {slug: category.slug, size}) }}"/>
+{% endblock %}
+
+{% block body %}
+    {% set marketingCategories = {'business-signs': 'Business Sign'} %}
+    {{ include('common/common_mobile_bar.html.twig',{commonBarText: 'Order Online Or Call Now',commonBarTele: '+1-877-958-1499'}) }}
+    <div class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <picture>
+                    <source srcset="{{ vich_s3.asset(category, 'mobileBannerFile') }}" media="(max-width: 480px)">
+                    <img fetchpriority="high" width="1905" height="338" class="d-block w-100 h-auto"
+                         src="{{ vich_s3.asset(category, 'bannerFile') }}"
+                         alt="YSP Custom Banner">
+                </picture>
+            </div>
+        </div>
+    </div>
+    <div class="pay-later-sec-banner d-flex pb-2 pb-sm-0">
+        {{ include('common/paylater.html.twig') }}
+    </div>
+    {{ include('common/drawerPurchaseOrder.html.twig') }}
+    {{ include('common/breadcrumb.html.twig', { breadcrumbs: [
+        { name: category.name, link: url('category',{slug: category.slug}) },
+        { name: size ~ ' Yard Signs', active: true }
+    ]}) }}
+    <div class=" select-template-to-fully-customize common-sec-horizontal-pad mb-2">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="pay-latter-text-wrapper ysp-template-custom-text">
+                        <div class="custom-mock-wrap">
+                            <h1>{{ metaData.pageHeader | default(size ~ ' ' ~category.name ~ ' Custom Yard Signs') }}</h1>
+                            {% if category.slug == 'yard-letters' %}
+                                <h2 class="right-text d-sm-block text-custom">Fully Customize Your Message with Our Easy-to-Use Templates</h2>
+                            {% else %}
+                                <h2 class="right-text d-sm-block text-custom">Create Your Own Custom {{ marketingCategories[category.slug] is defined ? marketingCategories[category.slug] : 'Outdoor Yard Sign' }}! 
+                                    Select Any Template to Fully Customize!</h2>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% set categoryDescription = '' %}
+    {% if category.description and (category.description | striptags | length) > 50 %}
+        {% set categoryDescription = category.description | striptags %}
+    {% else %}
+        {% set categoryDescription = include('common/category-description/default.html.twig', {
+            categoryName: category.name
+        }) | striptags %}
+    {% endif %}
+    {% set shopperApprovedRating = getShopperApprovedRating() %}
+
+    <div class="container-fluid products-common-block">
+        <div class="product-block border-bottom">
+            <div class="row product-list">
+                {% set products = ysp.categoryProducts(ysp.storeId, category, [], 24, size) %}
+                {% set schemaItemList = [] %}
+                {% set lastItemPosition = 1 %}
+                {% for key,p in products %}
+                    {% set product = p.product %}
+                    {% set productUrl = url('editor', {
+                        category: product.primaryCategory.slug,
+                        productType: product.productType.slug,
+                        sku: product.sku
+                    }) %}
+                    {% if size is defined %}
+                        {% set productUrl = url('editor', {
+                            category: product.primaryCategory.slug,
+                            productType: product.productType.slug,
+                            sku: product.sku,
+                            variant: size
+                        }) %}
+                    {% endif %}
+
+                    {% set variantSize = size ?? '12x12' %}
+
+                    {% set productImage = 'https://static.yardsignplus.com/product/img/' ~ p.image %}
+
+                    {% set schemaItemList = schemaItemList | merge([{
+                        "@type": "ListItem",
+                        "position": lastItemPosition,
+                        "item": {
+                            "@type": "Product",
+                            "@id": productUrl ~ "#product",
+                            "name": product.name,
+                            "url": productUrl,
+                            "image": [productImage],
+                            "description": product.seoMeta.description ?? category.seoMeta.description ?? defaultMetaDescription,
+                            "sku": product.sku,
+                            "brand": {
+                                "@type": "Brand",
+                                "name": 'Yard Sign Plus'
+                            },
+                            "offers": {
+                                "@type": "AggregateOffer",
+                                "priceCurrency": 'USD',
+                                "lowPrice": product.lowestPrice,
+                                "highPrice": product.highestPrice,
+                                "offerCount": product.variants|length|default(1),
+                                "availability": "https://schema.org/InStock",
+                                "url": productUrl
+                            },
+                            "aggregateRating": {
+                                "@type": "AggregateRating",
+                                "ratingValue": shopperApprovedRating,
+                                "reviewCount": reviewCount(),
+                                "bestRating": "5",
+                                "worstRating": "1"
+                            }
+                        }
+                    }]) %}
+                    <div class="col-6 col-md-4 col-xl-3 product-item">
+                        {% include 'product/_product_card.html.twig' with {size: size} %}
+                    </div>
+                    {% set lastItemPosition = lastItemPosition + 1 %}
+                {% endfor %}
+            </div>
+        </div>
+        <div class="category-description mb-3">
+            <div class="category-description-content size-page">
+                {% include 'common/category-description/'~ category.slug ~ '/' ~ size ~ '.html.twig' ignore missing %}
+            </div>
+        </div>
+        <div class="text-center mb-3 view-all-product">
+            <a href="{{ url('category_shop',{c: category.slug}) }}" class="btn btn-ysp-outline">
+                View All {{ marketingCategories[category.slug] is defined ? marketingCategories[category.slug] : category.name ~ ' Yard Sign' }}s
+            </a>
+        </div>
+    </div>
+    {% include 'common/_category_schema.html.twig' with { schemaItemList: schemaItemList } %}
+{% endblock %}

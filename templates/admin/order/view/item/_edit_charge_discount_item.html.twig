@@ -1,0 +1,25 @@
+<div class="offcanvas offcanvas-end" tabindex="-1" id="offChargeItem{{ item.id }}{{ item.itemType }}" aria-labelledby="offChargeItemLabel{{ item.id }}{{ item.itemType }}">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="offChargeItemLabel{{ item.id }}{{ item.itemType }}">
+            {% if item.itemType == 'CHARGED_ITEM' %}
+                Edit Charge Item
+            {% else %}
+                Edit Discount Item
+            {% endif %}
+        </h5>
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        {% if item.itemType == 'CHARGED_ITEM' %}
+            {{ component('EditChargeItemForm', {
+                orderItem: item,
+                order: order
+            }) }}
+        {% else %}
+            {{ component('EditDiscountItemForm', {
+                orderItem: item,
+                order: order
+            }) }}
+        {% endif %}
+    </div>
+</div>

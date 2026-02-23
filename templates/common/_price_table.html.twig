@@ -1,0 +1,99 @@
+{% if data is empty %}
+    <p>No pricing available.</p>
+{% else %}
+    {% set maxVariant = null %}
+    {% set maxCount = 0 %}
+
+    {% for key, variantList in data %}
+        {% set count = variantList|length %}
+        {% if count > maxCount %}
+            {% set maxCount = count %}
+            {% set maxVariant = variantList %}
+        {% endif %}
+    {% endfor %}
+
+    <div class="table-responsive">
+        <table class="table table-bordered overflow-auto m-0">
+            <thead class="thead-light">
+                <tr class="text-center">
+                    <th class="fw-500 bg-priceChart p-1 first-col fw-semibold">Qty</th>
+                    {% for row in maxVariant %}
+                        <th class="fw-500 bg-priceChart p-1 fw-semibold">{{ row.qty }}+</th>
+                    {% endfor %}
+                    <th class="fw-500 bg-priceChart p-1 first-col fw-semibold">2500+</th>
+                </tr>
+            </thead>
+
+            <tbody>
+            {% for variantKey, variantList in data %}
+                {% if variantKey not in ['pricing_WIRE_STAKE_10X30', 'pricing_WIRE_STAKE_10X30_PREMIUM'] %}
+                    {% set hasPrice = false %}
+                    {% for row in variantList %}
+                        {% if row.usd != 0 %}
+                            {% set hasPrice = true %}
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if hasPrice %}
+                        <tr class="text-center">
+                            <th class="fw-500 bg-priceChart p-1 first-col fit-to-cell">
+                                {% set size = variantKey|replace({'pricing_':''}) %}
+                                {% if size == '8x12' %}
+                                    {% set label = 'Circle (8x12)' %}
+                                {% elseif size == '7x14' %}
+                                    {% set label = 'Rectangle (7x13)' %}
+                                {% elseif size == '7x13' %}
+                                    {% set label = 'Hourglass (7x13)' %}
+                                {% elseif size == '5x23' %}
+                                    {% set label = 'Paddle (5x23)' %}
+                                {% else %}
+                                    {% set label = size %}
+                                {% endif %}
+                                {{ label matches '/WIRE_STAKE/' ? label|getFrameTypeDisplayText  : (label) }}
+                            </th>
+
+                            {% for row in maxVariant %}
+                                {% set item = variantList[loop.index0] ?? null %}
+                                {% if item %}
+                                    <td class="p-1 fit-to-cell">${{ item.usd|number_format(2, '.', '') }} </td>
+                                {% else %}
+                                    <td class="p-1">$0.00</td>
+                                {% endif %}
+                            {% endfor %}
+                            <td class="p-1 fit-to-cell">
+                                <a class="contact-us-trigger" href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#bulkOrderPricingModal">
+                                    Contact us
+                                </a> for bulk pricing!
+                            </td>
+                        </tr>
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+<style>
+    .table .first-col,
+    .table thead th {
+        background: #e9eff1 !important;
+        font-size: 12px !important;
+    }
+
+    .table,
+    .table td,
+    .table th {
+        border-color: #bbbbbb !important;
+    }
+    .fit-to-cell {
+        width: 1%;
+        white-space: nowrap;
+        font-size: 12px !important;
+    }
+
+   .contact-us-trigger {
+        color: #0d6efd !important;
+    }
+
+</style>
+{% endif %}

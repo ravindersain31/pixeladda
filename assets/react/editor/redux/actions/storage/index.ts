@@ -1,0 +1,1 @@
+export {default as saveProduct} from './saveProduct';

@@ -1,0 +1,110 @@
+<div {{ attributes }}>
+    <style>
+        .offcanvas.offcanvas-end {
+            width: 50%;
+        }
+
+        @media (max-width: 580px) {
+            .offcanvas.offcanvas-end {
+                width: 100%;
+            }
+        }
+    </style>
+    {% if type.value == 'return' %}
+        <button class="btn btn-sm bg-warning text-decoration-none text-white" data-bs-toggle="offcanvas"
+                data-bs-target="#order_shipment_action_{{ order.orderId }}"
+                aria-controls="order_shipment_action_{{ order.orderId }}">
+            Create Return
+        </button>
+    {% else %}
+        {% if order.shippingStatus == 'label_purchased' %}
+            <button class="btn badge bg-secondary text-decoration-none text-white" data-bs-toggle="offcanvas"
+                    data-bs-target="#order_shipment_action_{{ order.orderId }}"
+                    aria-controls="order_shipment_action_{{ order.orderId }}">
+                Mark Shipped
+            </button>
+        {% else %}
+            <button class="btn badge bg-primary text-decoration-none text-white" data-bs-toggle="offcanvas"
+                    data-bs-target="#order_shipment_action_{{ order.orderId }}"
+                    aria-controls="order_shipment_action_{{ order.orderId }}">
+                Create Shipment
+            </button>
+        {% endif %}
+    {% endif %}
+    <div class="text-start offcanvas offcanvas-end w-md-50 w-sm-50" tabindex="-1"
+         id="order_shipment_action_{{ order.orderId }}"
+         aria-labelledby="order_shipment_action_{{ order.orderId }}_label">
+        <div class="offcanvas-header p-2">
+            <div class="heading-offcanvas d-flex justify-content-center align-items-center">
+                <h5 class="offcanvas-title me-1" id="order_shipment_action_{{ order.orderId }}_label">
+                    {{ type.label }} #{{ order.orderId }}
+                </h5>
+                <a href="{{ url('admin_order_overview', {orderId: order.orderId }) }}"
+                   target="_blank"
+                   class="badge bg-primary small text-decoration-none text-white">
+                    <i class="fa fa-external-link"></i> View
+                </a>
+                {% if order.shippingOrderId is null %}
+                    <button type="button" class="btn ms-1 badge bg-primary text-decoration-none text-white"
+                            data-bs-toggle="modal" data-bs-target="#push_to_se_{{ order.orderId }}">
+                        <i class="fa fa-upload me-1"></i> Push to SE
+                    </button>
+                    {% include 'admin/order/view/_push_to_se_confirm.html.twig' with { from: 'ready-to-ship'} %}
+                {% endif %}
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body p-2 border-top">
+            {% set epShippingAddress = order.metaDataKey('epShippingAddress') %}
+            {{ include('common/flash-dismissible.html.twig') }}
+            {% include 'admin/components/order/ep-shipment/_from_address.html.twig' %}
+            {% include 'admin/components/order/ep-shipment/_current_delivery_address.html.twig' %}
+            {% if order.metaData['isSaturdayDelivery'] is defined and order.metaData['isSaturdayDelivery'] %}
+                <span class="badge bg-danger">Super Rush: Saturday Delivery</span>
+            {% endif %}
+            {% if order.metaData['isBlindShipping'] is defined and order.metaData['isBlindShipping'] %}
+                <span class="badge bg-warning">Blind Shipping</span>
+            {% endif %}
+            {% if order.isCustomsPending() %}
+                {% include 'admin/components/order/ep-shipment/_customs_form.html.twig' %}
+            {% else %}
+                {% set orderShipments = order.orderShipments %}
+                {% if order.isInternational() %}
+                    <div class="mt-2 border-top">
+                        <h5 class="mt-2">
+                            Customs Form
+                            {% if orderShipments | length <= 0 %}
+                                <button data-action="live#action" data-live-action-param="removeCustomsForm"
+                                        class="btn badge bg-danger text-white text-decoration-none px-1 py-0">
+                                    <i class="fa fa-times"></i> &nbsp;<small>Remove</small>
+                                </button>
+                            {% endif %}
+                        </h5>
+                        <table class="table table-bordered">
+                            <tr>
+                                <th>Signed By</th>
+                                <td>{{ order.customsForm.customsSigner }}</td>
+                                <th>EEL/PFC Number</th>
+                                <td>{{ order.customsForm.eelPfc }}</td>
+                            </tr>
+                            <tr>
+                                <th>Contents</th>
+                                <td>{{ order.customsForm.contentType }}</td>
+                                <th>Non Delivery</th>
+                                <td>{{ order.customsForm.nonDeliveryAction }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                {% endif %}
+                {% if epShippingAddress %}
+                    {% set orderShipmentBatches = this.orderShipmentBatches(type) %}
+                    {% include 'admin/components/order/ep-shipment/_create_shipment.html.twig' %}
+                    {% if orderShipments | length > 0 %}
+                        {#                        {% include 'admin/components/order/ep-shipment/_shipping_services.html.twig' %} #}
+                        {#                        {% include 'admin/components/order/ep-shipment/_tracking_details.html.twig' %} #}
+                    {% endif %}
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+</div>

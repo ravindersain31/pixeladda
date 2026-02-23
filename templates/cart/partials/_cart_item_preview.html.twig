@@ -1,0 +1,105 @@
+<div class="col-12 col-md-4 m-auto cart-item-section mb-3 mt-0 {% if item.data.isCustomSize is defined and not item.data.isCustomSize or item.data.isSample is defined and item.data.isSample or item.data.isWireStake is defined and item.data.isWireStake %}mt-0{% endif %}">
+    {% if item.data.isCustomSize is defined and item.data.isCustomSize %}
+        {% set templateSize = item.data.customSize.templateSize.width ~ 'x' ~ item.data.customSize.templateSize.height %}
+    {% else %}
+        {% set templateSize = item.product.name %}
+    {% endif %}
+    {% set hasCustomDesign = false %}
+
+    {% for side, data in item.canvasData %}
+        {% if data is defined and data.objects is defined and data.objects is not empty %}
+            {% for obj in data.objects %}
+                {% if obj['custom']['type'] is defined and obj['custom']['type'] == 'custom-design' %}
+                    {% set hasCustomDesign = true %}
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    {% endfor %}
+    {% if item.data['isCustom'] == true and item.data.isCustomSize is defined and item.data.isCustomSize == false or item.data['isSample'] is defined and item.data['isSample'] == true and item.data.isCustom == true  %}
+        {% if item.canvasData['front'] is defined and item.canvasData['front'] != null and item.data['isSample'] is defined and item.data['isSample'] == false and item.data.isCustom is defined and item.data.isCustom == true %}
+            {% if hasCustomDesign %}
+                <div class="card-preview-canvas" {{ react_component('CartItemPreview', {
+                    itemId: item.itemId,
+                    name: templateSize,
+                    item: item.data,
+                    canvasData: item.canvasData,
+                }) }}></div>
+            {% elseif item.canvasData['front']['version'] is not defined %}
+                {{ include('cart/partials/_custom_files.html.twig') }}
+            {% else %}
+                <div class="image-preview mb-3 mb-md-0 custom-image-preview">
+                    {% set addons = item.data['addons'] %}
+                    {% if addons.sides is defined and addons.sides.key == 'DOUBLE' %}
+                        <div class="d-flex flex-sm-column gap-3 align-items-center custom-image">
+                            <img src="{{ item.data['image'] }}" alt="{{ item.data['name'] }}" class="img-fluid double-image">
+                            <img src="{{ item.data['image'] }}" alt="{{ item.data['name'] }}" class="img-fluid double-image">
+                        </div>
+                    {% else %}
+                        <img src="{{ item.data['image'] }}" alt="{{ item.data['name'] }}" class="img-fluid single-image">
+                    {% endif %}
+                </div>
+            {% endif %}
+        {% else %}
+            <div class="image-preview mb-3 mb-md-0">
+                {% set addons = item.data['addons'] %}
+                {% if addons.sides is defined and addons.sides.key == 'DOUBLE' %}
+                    <div class="d-flex flex-sm-column gap-3 align-items-center 46">
+                        <img src="{{ item.data['image'] }}" alt="{{ item.data['name'] }}" class="img-fluid double-image">
+                        <img src="{{ item.data['image'] }}" alt="{{ item.data['name'] }}" class="img-fluid double-image">
+                    </div>
+                {% else %}
+                    <img width="200" height="200" src="{{ item.data['image'] }}" alt="{{ item.data['name'] }}" class="img-fluid single-image">
+                {% endif %}
+            </div>
+        {% endif %}
+    {% elseif (item.data.isCustomSize is defined and item.data.isCustomSize and item.data.isCustom) %}
+        {% if item.canvasData['front'] != null and item.data['isSample'] is defined and item.data['isSample'] == false %}
+            {% if hasCustomDesign %}
+            <div class="card-preview-canvas" {{ react_component('CartItemPreview', {
+                itemId: item.itemId,
+                name: templateSize,
+                item: item.data,
+                canvasData: item.canvasData,
+                }) }}></div>
+            {% elseif item.canvasData['front']['version'] is not defined %}
+                {{ include('cart/partials/_custom_files.html.twig') }}
+            {% else %}
+                <div class="image-preview mb-3 mb-md-0 customize-your-design ">
+                    {% set addons = item.data['addons'] %}
+                    {% if addons.sides is defined and addons.sides.key == 'DOUBLE' %}
+                        <div class="d-flex flex-sm-column gap-3 align-items-center 70">
+                            <img src="{{ item.data['image'] }}" alt="{{ item.data['name'] }}" alt="{{ item.data['name'] }}" class="img-fluid double-image">
+                            <img src="{{ item.data['image'] }}" alt="{{ item.data['name'] }}" alt="{{ item.data['name'] }}" class="img-fluid double-image">
+                        </div>
+                    {% else %}
+                        <img width="200" height="200" src="{{ item.data['image'] }}" alt="{{ item.data['name'] }}" alt="{{ item.data['name'] }}" class="img-fluid single-image">
+                    {% endif %}
+                </div>
+            {% endif %}
+        {% else %}
+            <div class="image-preview mb-3 mb-md-0">
+                <img width="200" height="200" src="{{ item.data['image'] }}" alt="{{ item.data['name'] }}" class="img-fluid">
+            </div>
+        {% endif %}
+
+    {% elseif item.data.previewType is defined and item.data.previewType == 'image' %}
+    <div class="image-preview mb-3 mb-md-0  custom-image-preview">
+        {% set addons = item.data['addons'] %}
+        {% if addons.sides is defined and addons.sides.key == 'DOUBLE' %}
+            <div class="d-flex flex-sm-column gap-3 align-items-center custom-image">
+                <img src="{{ item.data['image'] }}" alt="{{ item.data['name'] }}" class="img-fluid double-image">
+                <img src="{{ item.data['image'] }}" alt="{{ item.data['name'] }}" class="img-fluid double-image">
+            </div>
+        {% else %}
+            <img src="{{ item.data['image'] }}" alt="{{ item.data['name'] }}" class="img-fluid single-image">
+        {% endif %}
+    </div>
+    {% else %}
+        <div class="card-preview-canvas" {{ react_component('CartItemPreview', {
+            itemId: item.itemId,
+            name: templateSize,
+            item: item.data,
+            canvasData: item.canvasData,
+        }) }}></div>
+    {% endif %}
+</div>

@@ -1,0 +1,58 @@
+{% extends 'base.html.twig' %}
+{% block title %}Custom Yard Signs and Lawn Signs - {{storeInfo.storeTitle}}{% endblock %}
+{% block metaData %}
+    <meta property="og:title" content="Custom Yard Signs and Lawn Signs - {{storeInfo.storeName}}">
+    <meta property="og:description" content="{{storeInfo.storeName}} is a leading provider of custom yard signs for businesses, realtors, events and more. Templates available. Free shipping over $50. Shop now!">
+    <meta property="title" content="Custom Yard Signs and Lawn Signs - {{storeInfo.storeName}}">
+    <meta name="description" content="{{storeInfo.storeName}} is a leading provider of custom yard signs for businesses, realtors, events and more. Templates available. Free shipping over $50. Shop now!">
+    <link rel="canonical" href="{{ url('homepage') }}" />
+    {% include 'common/_default_schema.html.twig' %}
+{% endblock %}
+{% block body %}
+    {{ include('common/common_mobile_bar.html.twig',{commonBarText: 'Order Online Or Call Now',commonBarTele: '+1-877-958-1499'}) }}
+    {{ include('default/_carousel.html.twig') }}
+    {{ include('common/common_mobile_bar.html.twig',{commonBarText: 'Overnight Delivery Available',commonBarTele: ''}) }}
+    {% if not storeInfo.isPromoStore %}
+        {{ include('common/_sa_trust_widget.html.twig') }}
+    {% endif %}
+    <div>
+        {{ include('common/custom_search.html.twig') }}
+    </div>
+    {{ include('common/customer_photos.html.twig')}}
+    {{ include('common/highlights.html.twig') }}
+    {% if blocks is defined %}
+        {% for block in blocks %}
+            <div class="container-fluid common-sec-horizontal-pad {{block.title}}">
+                {{ include('default/_product_block.html.twig', {
+                    title: block.title,
+                    category: block.linkToCategory,
+                    products: block.products
+                }) }}
+            </div>
+        {% else %}
+        {% endfor %}
+    {% endif %}
+    {{ include('common/_signs_icon.html.twig') }}
+    <div class="text-center py-3 view-all-product border-bottom">
+        <a href="{{ url('category_shop') }}" class="btn btn-ysp-outline">
+            View All Yard Signs
+        </a>
+    </div>
+    {{ include('common/paylater.html.twig') }}
+    {{ include('common/upload_shop_design.html.twig') }}
+    {{ include('common/footer_top.html.twig') }}
+    {{ include('common/_footer_content.html.twig') }}
+    <!-- BEGIN MerchantWidget Code -->
+    <script id='merchantWidgetScript' src="https://www.gstatic.com/shopping/merchant/merchantwidget.js" defer>
+    </script>
+    <script type="text/javascript">
+    merchantWidgetScript.addEventListener('load', function () {
+        merchantwidget.start({
+        position: 'LEFT_BOTTOM',
+        mobileSideMargin: 25,
+        mobileBottomMargin: 70,
+        });
+    });
+    </script>
+    <!-- END MerchantWidget Code -->
+{% endblock %}

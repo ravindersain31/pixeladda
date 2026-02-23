@@ -1,0 +1,755 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Reports - Cogs {{ month.date | date('M Y') }}{% endblock %}
+{% block pageTitle %}
+    <div class="page-header-icon">
+        <i class="fa-solid fa-cubes"></i>
+    </div>
+    Cogs Report - {{ month.date | date('M Y') }}
+{% endblock %}
+
+{% block body %}
+    <div class="card shadow-none month-fixed-table-responsive">
+        <div class="card-header p-2">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h5 class="card-title mb-0">Cogs Report - {{ month.date | date('M Y') }}</h5>
+                </div>
+                <div class="col text-end">
+                    <button class="btn btn-sm btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#uploadShippingInvoice" aria-controls="uploadShippingInvoice">
+                        Upload Shipping
+                    </button>
+                    <a type="button" class="btn btn-sm btn-secondary"
+                            data-bs-toggle="modal"
+                            data-bs-target="#refresh_cogs_report_month">Refresh</a>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="card-body table table-bordered mb-0 fw-500">
+            <thead>
+            <tr>
+                <th class="fit-to-cell" style="z-index: 4">Date</th>
+                <th class="text-end">Gross Sales</th>
+                <th class="text-end">Paid Sales</th>
+                {#                <th class="fit-to-cell">Shipping</th> #}
+                <th class="fit-to-cell">Sheets Breakdown</th>
+                <th class="fit-to-cell text-end">Sheets</th>
+                <th class="fit-to-cell">Stakes Breakdown</th>
+                <th class="fit-to-cell text-end">Stakes</th>
+                <th class="text-end">Cost Breakdown</th>
+                <th class="text-end">Material Cost</th>
+                <th class="text-end">Warehouse Labor</th>
+                <th class="text-end">Shipping Charges</th>
+                <th class="text-end">Shipping Adjustments</th>
+                <th class="text-end">Shipping Total</th>
+                <th class="text-end">Google Ads</th>
+                <th class="text-end">Bing Ads</th>
+                <th class="text-end">Facebook Ads</th>
+                <th class="text-end">Total Ads Cost</th>
+                <th class="text-end">Total Cost</th>
+                <th class="text-end">Partial Refunds</th>
+                <th class="text-end">Total Partial Refunds</th>
+                <th class="text-end">Cancelled Orders</th>
+                <th class="text-end">Cancelled Sales</th>
+                <th class="text-end">AOV</th>
+                <th class="fit-to-cell">Orders</th>
+                <th class="fit-to-cell">Ratio</th>
+                <th class="text-end">Profit/Loss</th>
+                <th class="fit-to-cell">Gross Margin</th>
+                <th class="fit-to-cell">Net Margin</th>
+                <th class="fit-to-cell">Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% set totalSales = 0 %}
+            {% set totalPaidSales = 0 %}
+            {% set totalShippingCost = 0 %}
+            {% set totalSheetsUsed = 0 %}
+            {% set totalWireStakesUsed = 0 %}
+            {% set totalMaterialCost = 0 %}
+            {% set totalGoogleAdsCost = 0 %}
+            {% set totalBingAdsCost = 0 %}
+            {% set totalFacebookAdsCost = 0 %}
+            {% set totalCost = 0 %}
+            {% set totalRefundedAmount = 0 %}
+            {% set totalRefundedOrders = 0 %}
+            {% set totalProfitAndLoss = 0 %}
+            {% set totalOrders = 0 %}
+            {% set totalCancelledOrders = 0 %}
+            {% set totalCancelledSales = 0 %}
+            {% set totalPaidOrders = 0 %}
+            {% set totalShippingCharges = 0 %}
+            {% set totalShippingAdjustment = 0 %}
+            {% set netMarginAverage = 0 %}
+            {% set grossMarginAverage = 0 %}
+
+            {% set marginsCount = 0 %}
+
+            {% set totalLaborCost = 0 %}
+
+            {% for day in dailyCogsReports %}
+                {% set materialBreakdown = day.materialCostBreakdown %}
+                {% set shippingBreakdown = day.shippingCostBreakdown %}
+                <tr>
+                    <td class="fit-to-cell text-end">{{ day.date | date('M d, Y') }}</td>
+                    <td class="fit-to-cell text-end">${{ day.totalSales | number_format(2) }}</td>
+                    <td class="fit-to-cell text-end">${{ day.totalPaidSales | number_format(2) }}</td>
+                    {#                    <td class="fit-to-cell text-end">${{ day.shippingCost | number_format(2) }}</td> #}
+
+                    <td class="text-end small">
+                        {% if materialBreakdown.sheets.sheetsData is defined %}
+                            {% for name, sheet in materialBreakdown.sheets.sheetsData %}
+                                {% if sheet > 0 %}
+                                    <b>
+                                        {{ name|replace({'fullSheetsUsed': 'Full Sheet'}) }}
+                                    </b>: {{ sheet | number_format(2) }}<br>
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                    </td>
+                    <td class="text-end">
+                        {% if materialBreakdown.totalSheetsUsed is defined %}
+                            {{ materialBreakdown.totalSheetsUsed | number_format(2) }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td class="text-end small">
+                        {% if materialBreakdown.wireStakes is defined %}
+                            {% for name, stake in materialBreakdown.wireStakes %}
+                                {% if stake > 0 %}
+                                    <b>
+                                        {{ (name | getAddonsFrameDisplayText) | raw }}:
+                                    </b> {{ stake }}<br>
+                                {% endif %}
+                            {% endfor %}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td class="text-end">
+                        {% if materialBreakdown.totalWireStakeUsed is defined %}
+                            {{ materialBreakdown.totalWireStakeUsed }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    {% set table_content %}
+                        {% if materialBreakdown.materialCostBreakdown is defined and materialBreakdown.materialCostBreakdown | length > 0 %}
+                            <a class="badge bg-primary text-white" type="button" data-bs-toggle="collapse" data-bs-target="#breakdownTable{{day.id}}" aria-expanded="false" aria-controls="breakdownTable">
+                                View Breakdown
+                            </a>
+                            <div id="breakdownTable{{day.id}}" class="collapse">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th style="text-align: left;">Item</th>
+                                                <th style="text-align: right;">Qty</th>
+                                                <th style="text-align: right;">Unit Cost</th>
+                                                <th style="text-align: right;">Total Cost</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                {% for row in materialBreakdown.materialCostBreakdown %}
+                                                    <tr>
+                                                        <td>{{ row.item }}</td>
+                                                        <td style="text-align: right;">{{ row.quantity }}</td>
+                                                        <td style="text-align: right;">{% if row.item != 'Total' %}${% endif %}{{ row.unitCost }}</td>
+                                                        <td style="text-align: right;">${{ row.totalCost | number_format(2) }}</td>
+                                                    </tr>
+                                                {% endfor %}
+                                                {% if day.materialCost is defined 
+                                                    and day.materialCost is not null
+                                                    and day.originalMaterialCost is defined
+                                                    and day.originalMaterialCost is not null
+                                                    and day.materialCost|number_format(2) != day.originalMaterialCost|number_format(2) %}
+                                                    <tr>
+                                                        <td>Updated Material Cost</td>
+                                                        <td></td>
+                                                        <td></td>
+                                                        <td>${{ day.materialCost | number_format(2) }}</td>
+                                                    </tr>
+                                                {% endif %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        {% else %}
+                            -
+                        {% endif %}
+                    {% endset %}
+
+                    <td class="text-end" style="font-size: 0.8rem;">
+                        <span>{{ table_content }}</span>
+                    </td>
+                    <td class="text-end">${{ day.materialCost | number_format(2) }}</td>
+                     <td class="text-end" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-html="true"
+                        data-bs-content="Please refresh the page to see the updated value.<br><strong>Note:</strong> To reset or recalculate based on orders, set the value to 0 and refresh the report.">
+
+                        {% set totalLaborCost = totalLaborCost + day.totalLaborCost %}
+
+                        {{ component('DailyReportLaborCostComponent', {
+                            dailyCogsReport: day,
+                            laborCost: day.totalLaborCost | default(0) | number_format(2),
+                        }) }}
+
+                    </td>
+                    <td class="text-end fit-to-cell">
+                        ${{ shippingBreakdown.shippingCharges | default(0) | number_format(2) }}
+                    </td>
+                    <td class="text-end">${{ shippingBreakdown.shippingAdjustment | default(0) | number_format(2) }}</td>
+                    <td class="text-end">${{ day.totalShippingCost | default(0) | number_format(2) }}</td>
+                    <td class="text-end">${{ day.googleAdsSpent | number_format(2) }}</td>
+                    <td class="text-end">${{ day.bingAdsSpent | number_format(2) }}</td>
+                    <td class="text-end">${{ day.facebookAdsSpent | number_format(2) }}</td>
+                    <td class="text-end">${{ (day.googleAdsSpent + day.bingAdsSpent + day.facebookAdsSpent) | number_format(2) }}</td>
+                    <td class="text-end">${{ day.totalCost | number_format(2) }}</td>
+                    <td class="text-end">${{ day.totalRefundedAmount | number_format(2) }}</td>
+                    <td class="text-end">{{ day.refundedOrders | length }}</td>
+                    <td class="text-end">{{ day.cancelledOrders | length }}</td>
+                    <td class="text-end">${{ day.cancelledSales | number_format(2) }}</td>
+                    <td class="fit-to-cell text-end">
+                        ${{ divide(day.totalPaidSales, day.totalPaidOrders) | number_format(2) }}
+                    </td>
+                    <td class="fit-to-cell text-end">
+                        <span data-toggle="tooltip" title="All Orders">{{ day.totalOrders }}</span> /
+                        <span data-toggle="tooltip" title="Paid Orders" class="text-success">
+                            {{ day.totalPaidOrders }}
+                        </span>
+                    </td>
+                    <td class="fit-to-cell text-end">
+                        {{ divide(day.totalPaidSales, day.totalAdsCost) | number_format(2) }}
+                    </td>
+                    <td class="text-end">${{ day.profitAndLoss | number_format(2) }}</td>
+                    {% set grossMarginPercentage = day.grossMarginPercentage() %}
+                    <td style="
+                        {% if grossMarginPercentage > 55 %}
+                            background-color:rgba(0, 255, 0, 0.45);
+                        {% elseif grossMarginPercentage > 30 and grossMarginPercentage < 55 %}
+                            background-color:rgba(0, 255, 0, 0.3);
+                        {% elseif grossMarginPercentage > 20 and grossMarginPercentage < 30 %}
+                            background-color:rgba(255, 255, 0, 0.3);
+                        {% elseif grossMarginPercentage < 20 and grossMarginPercentage > 0 %}
+                            background-color:rgba(255, 0, 0, 0.15);
+                        {% elseif grossMarginPercentage  <= '-50' %}
+                            background-color:rgb(255 143 28);
+                        {% else %}
+                            background-color:rgba(255, 0, 0, 0.6);
+                        {% endif %}
+                    ">
+                        ${{day.grossMargin() | number_format(2)}} <br/>
+                        ({{ day.grossMarginPercentage() | number_format(2) }}%)
+                    </td>
+
+                    {% set netMarginPercentage = day.netMarginPercentage() %}
+                    <td style="
+                        {% if netMarginPercentage > 55 %}
+                            background-color:rgba(0, 255, 0, 0.45);
+                        {% elseif netMarginPercentage > 30 and netMarginPercentage < 55 %}
+                            background-color:rgba(0, 255, 0, 0.3);
+                        {% elseif netMarginPercentage > 20 and netMarginPercentage < 30 %}
+                            background-color:rgba(255, 255, 0, 0.3);
+                        {% elseif netMarginPercentage < 20 and netMarginPercentage > 0 %}
+                            background-color:rgba(255, 0, 0, 0.15);
+                        {% elseif netMarginPercentage <= '-50' %}
+                            background-color:rgb(255 143 28);
+                        {% else %}
+                            background-color:rgba(255, 0, 0, 0.6);
+                        {% endif %}
+                    ">
+                        ${{day.netMargin() | number_format(2)}} <br/>
+                        ({{ day.netMarginPercentage() | number_format(2) }}%)
+                    </td>
+
+                    <td class="fit-to-cell text-end">
+                        <a href="{{ url('admin_report_cogs_day_export', {month: month.id, day: day.id}) }}"
+                            class="badge bg-green text-decoration-none text-white">
+                            <i class="fa fa-download"></i> Export
+                        </a>
+                        <a href="{{ url('admin_report_cogs_day_view', {month: month.id, day: day.id}) }}"
+                            class="badge bg-primary text-decoration-none text-white">View</a>
+                        <a type="button" class="badge bg-info text-decoration-none text-white"
+                            data-bs-toggle="modal"
+                            data-bs-target="#daily_cog_{{ day.date|date('Y-m-d') }}_edit">Edit</a>
+                        {% component BootstrapModal with { id: 'daily_cog_'~day.date|date('Y-m-d')~'_edit' } %}
+                            {% block modal_header %}
+                                <h5>Update Cogs for {{ day.date|date('M d, Y') }}</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                            {% endblock %}
+                            {% block modal_body %}
+                                <div class="text-start">
+                                    {{ component('AdminDailyCogUpdateForm', {
+                                        dailyCog: day,
+                                    }) }}
+                                </div>
+                            {% endblock %}
+                        {% endcomponent %}
+                        <a type="button" class="badge bg-danger text-white"
+                            data-bs-toggle="modal"
+                            data-bs-target="#refresh_cogs_report_{{ day.date|date('Y-m-d') }}_edit">Refresh</a>
+                        {% component BootstrapModal with { id: 'refresh_cogs_report_'~day.date|date('Y-m-d')~'_edit' } %}
+                            {% block modal_header %}
+                                <h5>Refresh COGS Report for {{ day.date|date('M d, Y') }}</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                            {% endblock %}
+                            {% block modal_body %}
+                                {{ component('RefreshCogsReport', {
+                                    day: day
+                                }) }}
+                            {% endblock %}
+                        {% endcomponent %}
+                    </td>
+                </tr>
+                    {% set totalSales = totalSales + day.totalSales %}
+                    {% set totalPaidSales = totalPaidSales + day.totalPaidSales %}
+                    {#                {% set totalShippingCost = totalShippingCost + day.shippingCost %} #}
+                    {% set totalSheetsUsed = totalSheetsUsed + (materialBreakdown.totalSheetsUsed | default(0)) %}
+                    {% set totalWireStakesUsed = totalWireStakesUsed + (materialBreakdown.totalWireStakeUsed | default(0)) %}
+                    {% set totalShippingCost = totalShippingCost + day.totalShippingCost %}
+                    {% set totalMaterialCost = totalMaterialCost + day.materialCost %}
+                    {% set totalGoogleAdsCost = totalGoogleAdsCost + day.googleAdsSpent %}
+                    {% set totalBingAdsCost = totalBingAdsCost + day.bingAdsSpent %}
+                    {% set totalFacebookAdsCost = totalFacebookAdsCost + day.facebookAdsSpent %}
+                    {% set totalCost = totalCost + day.totalCost %}
+                    {% set totalRefundedAmount = totalRefundedAmount + day.totalRefundedAmount %}
+                    {% set totalRefundedOrders = totalRefundedOrders + (day.refundedOrders | length) %}
+                    {% set totalProfitAndLoss = totalProfitAndLoss + day.profitAndLoss %}
+                    {% set totalOrders = totalOrders + day.totalOrders %}
+                    {% set totalCancelledOrders = totalCancelledOrders + (day.cancelledOrders | length) %}
+                    {% set totalCancelledSales = totalCancelledSales + day.cancelledSales %}
+                    {% set totalPaidOrders = totalPaidOrders + day.totalPaidOrders %}
+                    {% set totalShippingCharges = totalShippingCharges + (shippingBreakdown.shippingCharges | default(0)) %}
+                    {% set totalShippingAdjustment = totalShippingAdjustment + (shippingBreakdown.shippingAdjustment | default(0)) %}
+
+                    {% set netMarginAverage = netMarginAverage + day.netMargin() %}
+                    {% set grossMarginAverage = grossMarginAverage + day.grossMargin() %}
+                    {% if totalOrders > 0 %}
+                        {% set marginsCount = marginsCount + 1 %}
+                    {% endif %}
+                {% endfor %}
+                </tbody>
+                <tfoot>
+                <tr>
+                    {% set totalAdsCost = totalGoogleAdsCost + totalBingAdsCost + totalFacebookAdsCost %}
+                    <td class="fit-to-cell">Total</td>
+                    <td class="fit-to-cell text-end">
+                        <span class="badge bg-success">SUM</span>
+                        ${{ totalSales | number_format(2) }}
+                    </td>
+                    <td class="fit-to-cell text-end">
+                        <span class="badge bg-success">SUM</span>
+                        ${{ totalPaidSales | number_format(2) }}
+                    </td>
+                    <td class="text-end">-</td>
+                    <td class="text-end">
+                        <span class="badge bg-success">SUM</span>
+                        {{ totalSheetsUsed | number_format(2) }}
+                    </td>
+                    <td class="text-end">-</td>
+                    <td class="text-end">
+                        <span class="badge bg-success">SUM</span>
+                        {{ totalWireStakesUsed }}
+                    </td>
+                    <td class="text-end">-</td>
+                    <td class="text-end">
+                        <span class="badge bg-success">SUM</span>
+                        ${{ totalMaterialCost | number_format(2) }}
+                    </td>
+                    <td class="text-end">
+                        <span class="badge bg-success">SUM</span>
+                        ${{ totalLaborCost | number_format(2) }}
+                    </td>
+                    <td class="text-end">
+                        <span class="badge bg-success">SUM</span>
+                        ${{ totalShippingCharges | number_format(2) }}
+                    </td>
+                    <td class="text-end">
+                        <span class="badge bg-success">SUM</span>
+                        ${{ totalShippingAdjustment | number_format(2) }}
+                    </td>
+                    <td class="text-end">
+                        <span class="badge bg-success">SUM</span>
+                        ${{ totalShippingCost | number_format(2) }}
+                    </td>
+
+                    <td class="text-end">
+                        <span class="badge bg-success">SUM</span>
+                        ${{ totalGoogleAdsCost | number_format(2) }}
+                    </td>
+                    <td class="text-end">
+                        <span class="badge bg-success">SUM</span>
+                        ${{ totalBingAdsCost | number_format(2) }}
+                    </td>
+                    <td class="text-end">
+                        <span class="badge bg-success">SUM</span>
+                        ${{ totalFacebookAdsCost | number_format(2) }}
+                    </td>
+                    <td class="text-end">
+                        <span class="badge bg-success">SUM</span>
+                        ${{ totalAdsCost | number_format(2) }}
+                    </td>
+                    <td class="text-end">
+                        <span class="badge bg-success">SUM</span>
+                        ${{ totalCost | number_format(2) }}
+                    </td>
+
+                    <td class="text-end">
+                        <span class="badge bg-success">SUM</span>
+                        ${{ totalRefundedAmount | number_format(2) }}
+                    </td>
+                    <td class="text-end">
+                        <span class="badge bg-success">SUM</span>
+                        {{ totalRefundedOrders }}
+                    </td>
+
+                    <td class="text-end">
+                        <span class="badge bg-success">SUM</span>
+                        {{ totalCancelledOrders }}
+                    </td>
+                    <td class="text-end">
+                        <span class="badge bg-success">SUM</span>
+                        ${{ totalCancelledSales | number_format(2) }}
+                    </td>
+
+                    <td class="fit-to-cell text-end">
+                        <span class="badge bg-primary">AVG</span>
+                        ${{ divide(totalPaidSales, totalPaidOrders) | number_format(2) }}
+                    </td>
+
+                    <td class="fit-to-cell text-end">
+                        <span class="badge bg-primary">AVG</span>
+                        <span data-toggle="tooltip" title="All Orders">
+                            {# {{ totalOrders }} #}
+                            {{ divide(totalOrders, marginsCount) | number_format(1) }}
+                        </span> /
+                        <span data-toggle="tooltip" title="Paid Orders"class="text-success">
+                              {# {{ totalPaidOrders }} #}
+                              {{ divide(totalPaidOrders, marginsCount) | number_format(1) }}
+                        </span>
+                    </td>
+                    <td class="fit-to-cell text-end">
+                        <span class="badge bg-primary">AVG</span>
+                        {{ divide(totalPaidSales, totalAdsCost) | number_format(2) }}
+                    </td>
+                    <td class="text-end">
+                        <span class="badge bg-success">SUM</span>
+                        ${{ totalProfitAndLoss | number_format(2) }}
+                    </td>
+                    {% set Gross = totalPaidSales - (totalShippingCost + totalRefundedAmount + totalMaterialCost + totalLaborCost) %}
+                    <td class="text-end" data-toggle="tooltip" title="Gross = (Paid Sales - (Shipping + Refunds + Material + Labor))" style="
+                        {% if Gross > 55 %}
+                            background-color:rgba(0, 255, 0, 0.45);
+                        {% elseif Gross > 30 and Gross < 55 %}
+                            background-color:rgba(0, 255, 0, 0.3);
+                        {% elseif Gross > 20 and Gross < 30 %}
+                            background-color:rgba(255, 255, 0, 0.3);
+                        {% elseif Gross < 20 and Gross > 0 %}
+                            background-color:rgba(255, 0, 0, 0.2);
+                        {% else %}
+                            background-color:rgba(255, 0, 0, 0.6);
+                        {% endif %}
+                    ">
+                        <span class="badge bg-secondary">GM</span>
+                        {{ Gross|number_format(2) }}<br/>
+                        {% if totalPaidSales != 0 %}
+                            ({{ ((Gross / totalPaidSales) * 100) | number_format(2) }}%)
+                        {% else %}
+                            (0%)
+                        {% endif %}
+                    </td>
+                    {% set Net = totalPaidSales - (totalShippingCost + totalRefundedAmount + totalMaterialCost + totalLaborCost + totalAdsCost) %}
+                    <td class="text-end" data-toggle="tooltip" title="Net = (Paid Sales - (Shipping + Refunds + Material + Labor + Ads))" style="
+                        {% if Net > 55 %}
+                            background-color:rgba(0, 255, 0, 0.45);
+                        {% elseif Net > 30 and Net < 55 %}
+                            background-color:rgba(0, 255, 0, 0.3);
+                        {% elseif Net > 20 and Net < 30 %}
+                            background-color:rgba(255, 255, 0, 0.3);
+                        {% elseif Net < 20 and Net > 0 %}
+                            background-color:rgba(255, 0, 0, 0.2);
+                        {% else %}
+                            background-color:rgba(255, 0, 0, 0.6);
+                        {% endif %}
+                    ">
+                        <span class="badge bg-secondary">NM</span>
+                        {{ Net|number_format(2) }}<br/>
+                        {% if totalPaidSales != 0 %}
+                            ({{ ((Net / totalPaidSales) * 100) | number_format(2) }}%)
+                        {% else %}
+                            (0%)
+                        {% endif %}
+                    </td>
+
+                </tr>
+                </tfoot>
+            </table>
+        </div>
+        <div class="card-header p-2 text-dark fw-600 fs-6">Summary for {{ month.date | date('M Y') }}</div>
+        <div class="card-body p-0">
+            <table class="table table-bordered mb-0">
+                <tr>
+                    <td class="fw-600">Total Orders (All/Paid/Cancelled)</td>
+                    <td class="text-end">
+                        <span data-toggle="tooltip" title="All Orders">{{ totalOrders }}</span> /
+                        <span data-toggle="tooltip" title="Paid Orders"
+                              class="text-success">{{ totalPaidOrders }}</span> /
+                        <span data-toggle="tooltip" title="Cancelled Orders"
+                              class="text-danger">{{ totalCancelledOrders }}</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="fw-600 bg-light">Total Gross Sales</td>
+                    <td class="text-end bg-light">${{ totalSales | number_format(2) }}</td>
+                </tr>
+                <tr>
+                    <td class="fw-600">Total Paid Sales</td>
+                    <td class="text-end">${{ totalPaidSales | number_format(2) }}</td>
+                </tr>
+                <tr>
+                    <td class="fw-600">
+                        Total Cost
+                        <table class="table table-bordered">
+                            <tr>
+                                <td class="fw-600 small p-1">Material Cost</td>
+                                <td class="text-end small p-1">${{ totalMaterialCost | number_format(2) }}</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-600 small p-1">Shipping Cost</td>
+                                <td class="text-end small p-1">${{ totalShippingCost | number_format(2) }}</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-600 small p-1">Ads Cost</td>
+                                <td class="text-end small p-1">${{ totalAdsCost | number_format(2) }}</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-600 small p-1">Warehouse Labor</td>
+                                <td class="text-end small p-1">${{ totalLaborCost | number_format(2) }}</td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td class="text-end">${{ totalCost | number_format(2) }}</td>
+                </tr>
+                <tr>
+                    <td class="fw-600">Total Refunded Amount</td>
+                    <td class="text-end">${{ totalRefundedAmount | number_format(2) }}</td>
+                </tr>
+                <tr>
+                    <td class="fw-600">
+                        Payroll Cost
+                        <button type="button" class="btn p-0 btn-link" data-bs-toggle="modal"
+                                data-bs-target="#updateMonthlyData">
+                            [Update]
+                        </button>
+                    </td>
+                    <td class="text-end">${{ month.payrollCost | number_format(2) }}</td>
+                </tr>
+                <tr>
+                    <td class="fw-600">
+                        Fixed Cost
+                        <button type="button" class="btn p-0 btn-link" data-bs-toggle="modal"
+                                data-bs-target="#updateMonthlyData">
+                            [Update]
+                        </button>
+                    </td>
+                    <td class="text-end">${{ month.fixedCost | number_format(2) }}</td>
+                </tr>
+                {% for item in month.lineItems %}
+                    <tr>
+                        <td class="fw-600">
+                            {{ item.key }}
+                            <button type="button" class="btn p-0 btn-link" data-bs-toggle="modal"
+                                data-bs-target="#updateMonthlyData">
+                            [Update]
+                        </button>
+                        </td>
+                        <td class="text-end">${{ item.value | number_format(2) }}</td>
+                    </tr>
+                {% endfor %}
+                <tr>
+                    <td class="fw-600 bg-success-soft">Total Profit/Loss</td>
+                    <td class="text-end bg-success-soft">
+                        ${{ (totalProfitAndLoss - month.monthlyExpense) | number_format(2) }}</td>
+                </tr>
+                {% if month.notes %}
+                    <tr>
+                        <td colspan="2" class="bg-light fw-600">Notes for {{ month.date | date('M Y') }}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">{{ month.notes | nl2br | raw }}</td>
+                    </tr>
+                {% endif %}
+            </table>
+        </div>
+    </div>
+    <!-- Modal -->
+    {# <div class="modal fade" id="updateMonthlyData" tabindex="-1" aria-labelledby="updateMonthlyDataLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="updateMonthlyDataLabel">Update Monthly Data</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    {{ form(updateForm) }}
+                </div>
+            </div>
+        </div>
+    </div> #}
+
+    <div {{ stimulus_controller('shipping-invoice') }}>
+
+        {% component BootstrapModal with { id: 'updateMonthlyData' } %}
+            {% block modal_full_content %}
+                {{ component('UpdateMonthlyData', {
+                    monthlyCogsReport: month
+                }) }}
+            {% endblock %}
+        {% endcomponent %}
+
+        {% component BootstrapModal with { id: 'refresh_cogs_report_month' } %}
+            {% block modal_header %}
+                <h5>Update Monthly Data {{ month.date | date('M Y') }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+            {% endblock %}
+            {% block modal_body %}
+                {{ component('RefreshCogsMonthReport', {
+                    month: month
+                }) }}
+            {% endblock %}
+        {% endcomponent %}
+
+        {% component BootstrapOffCanvas with { id: 'uploadShippingInvoice' } %}
+            {% block offcanvas_header %} Upload Shipping Invoice {% endblock %}
+            {% block offcanvas_body %}
+                <!-- File input -->
+                <div class="mb-2">
+                    <label for="carrierSelect" class="form-label text-sm font-semibold text-gray-700">
+                        Select Carrier <span class="text-xs text-gray-500">(Required)</span>
+                    </label>
+                    <select id="carrierSelect" class="form-select form-select-sm" aria-label="Select Carrier" data-shipping-invoice-target="carrierSelect">
+                        <option value="">-- Select Carrier --</option>
+                        <option value="FedEx">FedEx</option>
+                        <option value="UPS" selected>UPS</option>
+                        {# <option value="DHL">DHL</option> #}
+                        {# <option value="USPS">USPS</option> #}
+                    </select>
+                    </div>
+
+                    <div class="mb-2">
+                    <label for="csvFile" class="form-label text-sm font-semibold text-gray-700">
+                        Select Files <span class="text-xs text-gray-500">(Supports multiple: .csv, .xlsx, .xls)</span>
+                    </label>
+                    <input type="file" class="form-control form-control-sm" id="csvFile" data-shipping-invoice-target="fileInput" accept=".csv, .xlsx, .xls" multiple>
+                </div>
+
+
+                <!-- Upload Button -->
+                <button type="button" class="btn btn-sm btn-primary w-100" data-action="click->shipping-invoice#uploadCSV" data-shipping-invoice-target="uploadButton">
+                    Upload
+                </button>
+
+                <!-- Progress Container -->
+                <div class="mt-2 small" data-shipping-invoice-target="progressContainer"></div>
+
+                <div class="mt-3 table-responsive">
+                    <table class="table table-sm table-bordered table-striped table-hover w-100" style="font-size: 0.85rem;">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th><i class="fa fa-hashtag"></i></th>
+                                <th><i class="fa fa-file-alt"></i> File</th>
+                                <th><i class="fa fa-list"></i></th>
+                                <th><i class="fa fa-clock"></i> Timestamps</th>
+                                <th><i class="fa fa-user"></i></th>
+                                <th><i class="fa fa-cogs"></i></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for shippingInvoice in shippingInvoices is defined ? shippingInvoices : [] %}
+                                <tr>
+                                    <td>{{ loop.index }}</td>
+                                    <td class="text-wrap small" style="max-width: 250px;">
+                                        {{ shippingInvoice.file.originalName }}
+                                        {% if shippingInvoice.carrier is defined %}
+                                            <span class="badge bg-success">{{ shippingInvoice.carrier | default('') }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <span class="d-flex gap-1">
+                                            <a target="_blank" href="{{ path('admin_cogs_shipping_invoice_orders', {'invoiceFileId': shippingInvoice.id}) }}"
+                                                class="btn btn-xs btn-primary" data-invoice-file-id="{{shippingInvoice.id}}" data-bs-toggle="tooltip" title="Show Related Orders">
+                                                <i class="fa fa-list-alt"></i>
+                                            </a>
+                                            <a target="_blank" href="{{ path('admin_cogs_shipping_unmatch_tracking_labels', {'invoiceFileId': shippingInvoice.id}) }}"
+                                                class="btn btn-xs btn-warning" data-invoice-file-id="{{shippingInvoice.id}}" data-bs-toggle="tooltip" title="Unmatch Tracking Labels">
+                                                <i class="fa fa-exclamation-triangle"></i>
+                                            </a>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <small class="text-muted">
+                                            <i class="fa fa-edit text-warning"></i> 
+                                            {{ shippingInvoice.updatedAt | date('M d, Y h:i A') }}
+                                        </small><br>
+                                        <small>
+                                            <i class="fa fa-upload text-success"></i> 
+                                            {{ shippingInvoice.uploadedAt | date('M d, Y h:i A') }}
+                                        </small>
+                                    </td>
+                                    <td>
+                                        <small>
+                                            <i class="fa fa-user-circle text-primary"></i> 
+                                            {{ shippingInvoice.uploadedBy.username ?? shippingInvoice.uploadedBy.email ?? 'N/A' }}
+                                        </small>
+                                    </td>
+                                    <td class="text-center">
+                                        <a target="_blank" href="{{ vich_s3.asset(shippingInvoice, 'fileObject') }}"
+                                            class="btn btn-xs btn-primary" data-bs-toggle="tooltip" title="Download">
+                                            <i class="fa fa-download"></i>
+                                        </a>
+                                        <button class="btn btn-danger btn-xs mt-2" 
+                                            data-action="click->shipping-invoice#confirmInvoicesDelete"
+                                            data-file-id="{{ shippingInvoice.id }}"
+                                            data-file-name="{{ shippingInvoice.file.originalName }}"
+                                        >
+                                            <i class="fa fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            {% else %}
+                                <tr>
+                                    <td colspan="5" class="text-center text-muted">
+                                        <i class="fa fa-info-circle"></i> No records found
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+            {% endblock %}
+        {% endcomponent %}
+        
+        {% component BootstrapModal with { id: 'deleteInvoiceModal' } %}
+            {% block modal_header %}
+                <h5>Confirm Deletion</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            {% endblock %}
+            {% block modal_body %}
+                <p class="fw-bold mb-3 text-center">Are you sure? Deleting this invoice will also delete corresponding data.</p>
+                <div id="deleteInvoiceMessage" class="text-center fw-bold mt-2"></div>
+                <div class="modal-buttons text-center mt-3">
+                    <button type="button" class="btn btn-danger btn-sm" id="confirmDeleteButton" data-action="click->shipping-invoice#deleteInvoices">Delete</button>
+                    <button type="button" class="btn btn-primary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            {% endblock %}
+        {% endcomponent %}
+
+    </div>
+{% endblock %}

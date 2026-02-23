@@ -1,0 +1,342 @@
+<div {{ attributes }}>
+    {{ form_start(form, {attr: {
+        'id': 'signupForm',
+        'novalidate': true,
+		'enctype': 'multipart/form-data',
+        'data-action': 'live#action:prevent',
+        'data-live-action-param': 'CreateAccount',
+    }}) }}
+	{{ include('components/_flash.html.twig',{
+		flashError:flashError,
+		flashMessage:flashMessage
+	})}}
+
+    {{ form_errors(form) }}
+    <div class="ysp-ft-form-wrapper" id="top_footer_form">
+    <div class="row" {{ stimulus_controller('wholeSeler', { formName: 'create_account' }) }}>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label class="ysp-label-mrt" for="sign_up_form_name">First Name</label>
+                <div class="input-group mb-3">
+                    <span class="input-group-text">
+                        <i class="fa fa-user" aria-hidden="true" data-acsb-hidden="true" data-acsb-force-hidden="true"></i>
+                    </span>
+                    {{ form_widget(form.firstName) }}
+                    {{ form_errors(form.firstName) }}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label class="ysp-label-mrt" for="sign_up_form_name">Last Name</label>
+                <div class="input-group mb-3">
+                    <span class="input-group-text">
+                        <i class="fa fa-user" aria-hidden="true" data-acsb-hidden="true" data-acsb-force-hidden="true"></i>
+                    </span>
+                    {{ form_widget(form.lastName) }}
+                    {{ form_errors(form.lastName) }}
+                </div>
+            </div>
+        </div>
+
+        {% if form.companyName is defined %}
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="ysp-label-mrt" for="sign_up_form_company_name">Company Name</label>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">
+                                <i class="fa fa-building" aria-hidden="true" data-acsb-hidden="true" data-acsb-force-hidden="true"></i>
+                            </span>
+                        </div>
+                            {{ form_widget(form.companyName) }}
+                            {{ form_errors(form.companyName) }}
+                    </div>
+                </div>
+            </div>
+		{% endif %}
+        {% if form.mobile is defined %}
+        <div class="col-md-6">
+			<div class="form-group">
+				<label class="ysp-label-mrt" for="sign_up_form_mobile">Phone Number</label>
+				<div class="input-group mb-3">
+					<div class="input-group-prepend">
+						<span class="input-group-text">
+							<i class="fa fa-phone" aria-hidden="true" data-acsb-hidden="true" data-acsb-force-hidden="true"></i>
+						</span>
+					</div>
+						{{ form_widget(form.mobile) }}
+						{{ form_errors(form.mobile) }}
+				</div>
+			</div>
+        </div>
+		{% endif %}
+        {% if form.address is defined %}
+        <div class="col-md-6">
+			<div class="form-group">
+				<label class="ysp-label-mrt" for="sign_up_form_address">Address</label>
+				<div class="input-group mb-3">
+					<div class="input-group-prepend">
+						<span class="input-group-text">
+							<i class="fa fa-address-card" aria-hidden="true" data-acsb-hidden="true" data-acsb-force-hidden="true"></i>
+						</span>
+					</div>
+						{{ form_widget(form.address) }}
+						{{ form_errors(form.address) }}
+				</div>
+			</div>
+        </div>
+		{% endif %}
+        {% if form.city is defined %}
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="ysp-label-mrt" for="sign_up_form_city">City</label>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">
+                                <i class="fa fa-city" aria-hidden="true" data-acsb-hidden="true" data-acsb-force-hidden="true"></i>
+                            </span>
+                        </div>
+                            {{ form_widget(form.city) }}
+                            {{ form_errors(form.city) }}
+                    </div>
+                </div>
+            </div>   
+		{% endif %}
+        {% if form.country is defined %}
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="ysp-label-mrt" for="sign_up_form_country">Country</label>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">
+                                <i class="fa fa-globe" aria-hidden="true" data-acsb-hidden="true" data-acsb-force-hidden="true"></i>
+                            </span>
+                        </div>
+                            {{ form_widget(form.country) }}
+                            {{ form_errors(form.country) }}
+                    </div>
+                </div>
+            </div>
+		{% endif %}
+         {% if form.state is defined %}
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="ysp-label-mrt" for="sign_up_form_state">State</label>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">
+                                <i class="fa fa-map" aria-hidden="true" data-acsb-hidden="true" data-acsb-force-hidden="true"></i>
+                            </span>
+                        </div>
+                            {{ form_widget(form.state) }}
+                            {{ form_errors(form.state) }}
+                    </div>
+                </div>
+            </div>   
+		{% endif %}
+        {% if form.zipcode is defined %}
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="ysp-label-mrt" for="sign_up_form_zipcode">Zip Code</label>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">
+                                <i class="fa fa-map-pin" aria-hidden="true" data-acsb-hidden="true" data-acsb-force-hidden="true"></i>
+                            </span>
+                        </div>
+                            {{ form_widget(form.zipcode) }}
+                            {{ form_errors(form.zipcode) }}
+                    </div>
+                </div>
+            </div>
+		{% endif %}
+        {% if form.website is defined %}
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="ysp-label-mrt" for="sign_up_form_website">Website</label>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">
+                                <i class="fa fa-link" aria-hidden="true" data-acsb-hidden="true" data-acsb-force-hidden="true"></i>
+                            </span>
+                        </div>
+                            {{ form_widget(form.website) }}
+                            {{ form_errors(form.website) }}
+                    </div>
+                </div>
+            </div>
+		{% endif %}
+        {% if form.aboutCompany is defined %}
+            <div class="form-group">
+                <label class="ysp-label-mrt" for="sign_up_form_about_company">Tell us about your company</label>
+                <div class="input-group mb-3">
+                    {{ form_widget(form.aboutCompany) }}
+                    {{ form_errors(form.aboutCompany) }}
+                </div>
+            </div>
+		{% endif %}
+
+         {% if form.clientType is defined %}
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="ysp-label-mrt" for="sign_up_form_client_type">Client Type</label>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">
+                                <i class="fa fa-users" aria-hidden="true" data-acsb-hidden="true" data-acsb-force-hidden="true"></i>
+                            </span>
+                        </div>
+                            {{ form_widget(form.clientType) }}
+                            {{ form_errors(form.clientType) }}
+                    </div>
+                </div>
+            </div>
+		{% endif %}
+
+        {% if form.hearAboutUs is defined %}
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="ysp-label-mrt" for="sign_up_form_hear_about_us">How did you hear about us?</label>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">
+                                <i class="fa fa-bullhorn" aria-hidden="true" data-acsb-hidden="true" data-acsb-force-hidden="true"></i>
+                            </span>
+                        </div>
+                            {{ form_widget(form.hearAboutUs) }}
+                            {{ form_errors(form.hearAboutUs) }}
+                    </div>
+                </div>
+            </div>
+		{% endif %}
+	    <div class="col-md-6">
+            <div class="form-group">
+                <label class="ysp-label-mrt" for="sign_up_form_email">Email Address</label>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">
+                            <i class="fa fa-envelope" aria-hidden="true" data-acsb-hidden="true" data-acsb-force-hidden="true"></i>
+                        </span>
+                    </div>
+                    {{ form_widget(form.email, {'attr': {'style': 'padding-right: 30px'}}) }}
+                    {{ form_errors(form.email) }}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label class="ysp-label-mrt" for="sign_up_form_password_first">Enter Password</label>
+                <div class="input-group mb-3 password-container">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">
+                            <i class="fa fa-key" aria-hidden="true" data-acsb-hidden="true" data-acsb-force-hidden="true"></i>
+                        </span>
+                    </div>
+                    {{ form_widget(form.password.second, {'attr': {'style': 'padding-right: 30px'}}) }}
+                    {{ form_errors(form.password.second) }}
+                    <span class="toggle-password" id="toggle-password" data-bs-toggle="popover" data-bs-trigger="hover" data-bs-container="#toggle-password" data-bs-placement="top" data-bs-content="Show Password">
+                        <i class="fa fa-eye" id="eye-icon"></i>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label class="ysp-label-mrt" for="sign_up_form_password_second">Confirm Password</label>
+                <div class="input-group mb-3 password-container">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">
+                            <i class="fa fa-key" aria-hidden="true" data-acsb-hidden="true" data-acsb-force-hidden="true"></i>
+                        </span>
+                    </div>
+                    {{ form_widget(form.password.first, {'attr': {'style': 'padding-right: 30px'}}) }}
+                    {{ form_errors(form.password.first) }}
+                    <span class="toggle-password" id="toggle-confirm-password" data-bs-toggle="popover" data-bs-trigger="hover" data-bs-container="#toggle-confirm-password" data-bs-placement="top" data-bs-content="Show Password">
+                        <i class="fa fa-eye" id="eye-icon-confirm"></i>
+                    </span>
+                </div>
+            </div>
+        </div>
+		{% if form.wholeSellerImageFile is defined %}
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="ysp-label-mrt" for="sign_up_form_wholeSellerImageFile">State Sales Tax Resale Certificate (optional)</label>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">
+                                <i class="fa fa-file" aria-hidden="true" data-acsb-hidden="true" data-acsb-force-hidden="true"></i>
+                            </span>
+                        </div>
+                            {{ form_widget(form.wholeSellerImageFile) }}
+                            {{ form_errors(form.wholeSellerImageFile) }}
+                    </div>
+                </div>
+            </div>
+		{% endif %}
+    </div>
+
+		<div class="form-group mb-sm-0 form-group-submit text-center">
+            <button type="submit" data-loading="addAttribute(disabled)" data-action="live#action"
+			{% if form.wholeSellerImageFile is defined %}
+				data-live-action-param="files({{ form.wholeSellerImageFile.vars.full_name }})|CreateAccount"
+			{% else %}
+				data-live-action-param="CreateAccount"
+			{% endif %}
+		class="btn btn-primary btn-block ysp-account-submit-btn" {{ this.hasValidationErrors ? 'disabled' : '' }}>
+                <span data-loading="action(CreateAccount)|show" style="display: none">Creating Account...</span>
+                <span data-loading="action(CreateAccount)|hide" style="display: block">Create Account</span>
+            </button>
+        </div>
+    </div>
+    {{ form_rest(form) }}
+	{{ form_end(form, { render_rest: false }) }}
+	<script defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyApxy-puRWe0-tyK_eH-1NjadBfucNNmks&loading=async&libraries=places"></script>
+	<script>
+		document.querySelector('input[type="file"]').addEventListener('change', (e) => {
+			const file = e.target.files[0];
+			if (file && file.size > 52428800) {
+				alert('File size must be under 50MB');
+				e.target.value = '';
+			}
+		});
+	</script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const formEl = document.getElementById('signupForm');
+            formEl.addEventListener('submit', function (event) {
+                setTimeout(function () {
+                    const errorElements = formEl.querySelectorAll('.invalid-feedback');
+                    if (errorElements.length > 0) {
+                        errorElements[0].scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'center'
+                        });
+                    }
+                    const quantities = document.querySelectorAll('input[data-scroll]');
+                    const step2 = document.getElementById('step-2');
+                    let allEmpty = true;
+
+                    quantities.forEach(function (quantity) {
+                        if (quantity.value !== '') {
+                            allEmpty = false;
+                        }
+                    });
+
+                    const totalSampleQty = document
+                        .querySelector('.total-sample-qty')
+                        ?.getAttribute('data-total-qty') ?? 0;
+
+                    if (totalSampleQty > 20 || allEmpty) {
+                        step2.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'center'
+                        });
+                    }
+
+                }, 100);
+            });
+        });
+    </script>
+</div>

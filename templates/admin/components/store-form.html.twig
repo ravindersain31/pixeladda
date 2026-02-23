@@ -1,0 +1,43 @@
+<div {{ attributes }}>
+    {{ form_start(form) }}
+    {{ form_errors(form) }}
+    {{ form_row(form.name) }}
+    {{ form_row(form.shortName) }}
+    <div class="domainAlias mb-3">
+        <strong>{{ form_label(form.storeDomains) }}</strong>
+        {% if form.storeDomains | length > 0 %}
+            {% for key, domain in form.storeDomains %}
+                <div class="domain-container">
+                    <div class="row">
+                        <div class="col-12 col-md-1 d-flex justify-content-start align-items-center">
+                            <span>Domain {{ loop.index }}</span>
+                        </div>
+                        <div class="col-12 col-md-3">
+                            {{ form_row(domain.name) }}
+                        </div>
+                        <div class="col-12 col-md-3">
+                            {{ form_row(domain.domain) }}
+                        </div>
+                        <div class="col-12 col-md-3">
+                            {{ form_row(domain.currency) }}
+                        </div>
+                        <div class="col-12 col-md-1 d-flex justify-content-end align-items-center">
+                            <label class="form-label">&nbsp;</label>
+                            {{ form_widget(domain.vars.button_delete) }}
+                        </div>
+                    </div>
+                    {{ form_errors(domain) }}
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="small text-danger no-alias mb-2">
+                No alias added. You can add by clicking "Add Domain Alias"
+            </div>
+        {% endif %}
+        {{ form_widget(form.storeDomains.vars.button_add) }}
+        {{ form_errors(form.storeDomains) }}
+    </div>
+    {{ form_row(form.isEnabled) }}
+    {{ form_row(form.submit) }}
+    {{ form_end(form) }}
+</div>

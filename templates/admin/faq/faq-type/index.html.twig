@@ -1,0 +1,65 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}FAQ Types{% endblock %}
+
+{% block pageTitle %}
+<div class="page-header-icon">
+    <i class="fas fa-list"></i>
+</div>
+FAQ Types
+{% endblock %}
+
+{% block body %}
+<div class="card card-header-actions mx-auto shadow-none">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        List of FAQ Types
+        <div class="d-flex gap-2">
+            <a href="{{ path('admin_faq_index') }}" class="btn btn-outline-dark btn-sm">
+                <i class="fas fa-arrow-left me-2"></i> View FAQs
+            </a>
+            <a href="{{ path('admin_faq_type_new') }}" class="btn btn-sm btn-primary">
+                <i class="fa fa-plus"></i>&nbsp; Add
+            </a>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="card-body table table-striped mb-0">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Sort Order</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for type in types %}
+                    <tr>
+                        <td>{{ type.id }}</td>
+                        <td>{{ type.name }}</td>
+                        <td>{{ type.sortOrder ?? '-' }}</td>
+                        <td>
+                            {% if type.isEnabled %}
+                                <span class="badge bg-success">Enabled</span>
+                            {% else %}
+                                <span class="badge bg-danger">Disabled</span>
+                            {% endif %}
+                        </td>
+                        <td class="d-flex gap-2">
+                            <a href="{{ path('admin_faq_type_edit', {id: type.id}) }}" class="btn btn-sm btn-primary" title="Edit">
+                                <i class="fa fa-edit"></i>
+                            </a>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center">No FAQ Types found.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

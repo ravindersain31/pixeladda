@@ -1,0 +1,57 @@
+<tr>
+    <td colspan="3">
+        <table class="ysp-table-layout-auto ysp-border-top-mob"
+               style="width: 100%;border: none;border-top: solid 4px #83c59c;border-spacing: 0;text-align: left;table-layout: fixed;">
+            <tbody>
+            <tr>
+                <td class="ysp-mob-pad-ryt-5 bold ysp-border-bottom-mob odd"
+                    style="border-bottom: solid 4px #83c59c;padding: 5px 0;font-size: 15px;font-weight: bold;color: {{ primaryColor }};">
+                    Order ID
+                </td>
+                <td class="ysp-border-bottom-mob even oredr-id"
+                    style="border-bottom: solid 4px #83c59c;padding: 5px 0;font-size: 14px;font-weight: normal;color: #000000;">{{ order.orderId }}</td>
+                <td class="ysp-mob-pad-ryt-5 bold ysp-border-bottom-mob odd"
+                    style="border-bottom: solid 4px #83c59c;padding: 5px 0;font-size: 15px;font-weight: bold;color: {{ primaryColor }};">
+                    Email
+                </td>
+                <td class="ysp-border-bottom-mob even"
+                    style="border-bottom: solid 4px #83c59c;padding: 5px 0;font-size: 14px;font-weight: normal;;color: #000000; text-wrap: nowrap;">{{ order.billingAddress.email }}</td>
+            </tr>
+            <tr>
+                <td class="ysp-mob-pad-ryt-5 bold ysp-border-bottom-mob odd"
+                    style="border-bottom: solid 4px #83c59c;padding: 5px 0;font-size: 15px;font-weight: bold;color: {{ primaryColor }};">
+                    Order Date
+                </td>
+                <td class="ysp-border-bottom-mob even"
+                    style="border-bottom: solid 4px #83c59c;padding: 5px 0;font-size: 14px;font-weight: normal;;color: #000000;">{{ order.orderAt | date('D d M, Y') }}</td>
+                <td class="ysp-mob-pad-ryt-5 bold ysp-border-bottom-mob odd"
+                    style="border-bottom: solid 4px #83c59c;padding: 5px 0;font-size: 15px;font-weight: bold;color: {{ primaryColor }};">
+                    Mobile
+                </td>
+                <td class="ysp-border-bottom-mob even"
+                    style="border-bottom: solid 4px #83c59c;padding: 5px 0;font-size: 14px;font-weight: normal;color: #000000;">{{ order.billingAddress.phone }}</td>
+            </tr>
+            <tr>
+                <td class="ysp-mob-pad-ryt-5 bold ysp-border-bottom-mob odd"
+                    style="border-bottom: solid 4px #83c59c;padding: 5px 0;font-size: 15px;font-weight: bold;color: {{ primaryColor }};">
+                    Payment Method
+                </td>
+                <td class="ysp-border-bottom-mob even"
+                    style="border-bottom: solid 4px #83c59c;padding: 5px 0;font-size: 14px;font-weight: normal;;color: #000000;">
+                    {% if transaction is defined %}
+                        {{ transaction.paymentMethod | badgePaymentMethod }}
+                    {% else %}
+                        {{ order.paymentMethod | badgePaymentMethod }}
+                    {% endif %}
+                </td>
+                <td class="ysp-mob-pad-ryt-5 bold ysp-border-bottom-mob odd"
+                    style="border-bottom: solid 4px #83c59c;padding: 5px 0;font-size: 15px;font-weight: bold;color: {{ primaryColor }};">
+                    Order Status
+                </td>
+                <td class="ysp-border-bottom-mob even"
+                    style="border-bottom: solid 4px #83c59c;padding: 5px 0;font-size: 14px;font-weight: normal;color: #000000;">{{ order.status | badgeOrderStatus | raw }}</td>
+            </tr>
+            </tbody>
+        </table>
+    </td>
+</tr>

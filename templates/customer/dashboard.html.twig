@@ -1,0 +1,220 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+	My Account
+{% endblock %}
+
+{% block body %}
+{{ include('common/common_mobile_bar.html.twig',{commonBarText: 'Order Online Or Call Now',commonBarTele: '+1-877-958-1499'}) }}
+{{ include('customer/common/top_section.html.twig',
+	{ section: { name: 'My Account', active: true }}) 
+}}
+{{ include("customer/common/customer_details.html.twig") }}
+
+<div class="container">
+	<div class="page-content dashboard">
+		<section class="customer-account mb-4">
+			<div class="container proof-order-container">
+				<div
+					class="row">
+					<!-- <strong class="mb-3"></strong> -->
+					<div class="col-lg-4 mb-3">
+						<a href="{{ path('order_history') }}">
+							<div class="card dashboard-box-item rounded-lg shadow-sm">
+								<div class="card-body px-2 py-2">
+									<div class="box-icon-image mr-2">
+										<img src="{{asset('app-images/images/order-return-v1.png')}}" alt="">
+									</div>
+									<div class="box-content">
+										<h5 class="box-heading" style="margin-left:5px;">Order History</h5>
+										<p class="box-text" style="margin-top:2.5px;margin-left:5px;">Check the status of your order</p>
+									</div>
+								</div>
+							</div>
+						</a>
+					</div>
+					<div class="col-lg-4 mb-3">
+						<a href="{{ path('repeat_order_history') }}">
+							<div class="card dashboard-box-item rounded-lg shadow-sm">
+								<div class="card-body px-2 py-2">
+									<div class="box-icon-image mr-2">
+										<img src="{{asset('app-images/images/re-order-v1.png')}}" alt="">
+									</div>
+									<div class="box-content">
+										<h5 class="box-heading" style="margin-left:5px;">Repeat Orders</h5>
+										<p class="box-text" style="margin-top:2.5px;margin-left:5px;">Submit repeat orders</p>
+									</div>
+								</div>
+							</div>
+						</a>
+					</div>
+					<div class="col-lg-4 mb-3 d-none">
+						<a href="#">
+							<div class="card dashboard-box-item rounded-lg shadow-sm">
+								<div class="card-body px-2 py-2">
+									<div class="box-icon-image mr-2">
+										<img src="{{asset('app-images/images/order-review-v1.png')}}" alt="">
+									</div>
+									<div class="box-content">
+										<h5 class="box-heading" style="margin-left:5px;">Write Order Review</h5>
+										<p class="box-text" style="margin-top:2.5px;margin-left:5px;">Provide Feedback and Receive $5</p>
+									</div>
+								</div>
+							</div>
+						</a>
+					</div>
+					<div class="col-lg-4 mb-3 d-none">
+						<a href="#">
+							<div class="card dashboard-box-item rounded-lg shadow-sm">
+								<div class="card-body px-2 py-2">
+									<div class="box-icon-image mr-2">
+										<img src="{{asset('app-images/images/bandbucks-v1.png')}}" alt="">
+									</div>
+									<div class="box-content">
+										<h5 class="box-heading" style="margin-left:5px;">BandBucks</h5>
+										<p class="box-text" style="margin-top:2.5px;margin-left:5px;">Check Store credit</p>
+									</div>
+								</div>
+							</div>
+						</a>
+					</div>
+					<div class="col-lg-4 mb-3 d-none">
+						<a href="#">
+							<div class="card dashboard-box-item rounded-lg shadow-sm">
+								<div class="card-body px-2 py-2">
+									<div class="box-icon-image mr-2">
+										<img src="{{asset('app-images/images/support-ticket-v1.png')}}" alt="">
+									</div>
+									<div class="box-content">
+										<h5 class="box-heading" style="margin-left:5px;">Support Tickets</h5>
+										<p class="box-text" style="margin-top:2.5px;margin-left:5px;">Reply to Urgent Messages, Create a Ticket to be Resolved</p>
+									</div>
+								</div>
+							</div>
+						</a>
+					</div>
+					<div class="col-lg-4 mb-3">
+						<a href="{{ path('account_setting') }}">
+							<div class="card dashboard-box-item rounded-lg shadow-sm">
+								<div class="card-body px-2 py-2">
+									<div class="box-icon-image mr-2">
+										<img src="{{asset('app-images/images/account-setting-v1.png')}}" alt="">
+									</div>
+									<div class="box-content">
+										<h5 class="box-heading" style="margin-left:5px;">Account Settings</h5>
+										<p class="box-text" style="margin-top:2.5px;margin-left:5px;">Update your profile</p>
+									</div>
+								</div>
+							</div>
+						</a>
+					</div>
+					<div class="col-lg-4 mb-3">
+						<a href="{{ path('save_design') }}">
+							<div class="card dashboard-box-item rounded-lg shadow-sm">
+								<div class="card-body px-2 py-2">
+									<div class="box-icon-image mr-2">
+										<img src="{{asset('app-images/images/account-setting-web-design.png')}}" alt="">
+									</div>
+									<div class="box-content">
+										<h5 class="box-heading" style="margin-left:5px;">Saved Designs</h5>
+										<p class="box-text" style="margin-top:2.5px;margin-left:5px;">Review your designs</p>
+									</div>
+								</div>
+							</div>
+						</a>
+					</div>
+					<div class="col-lg-4 mb-3">
+						<a href="{{ path('saved_card') }}">
+							<div class="card dashboard-box-item rounded-lg shadow-sm">
+								<div class="card-body px-2 py-2">
+									<div class="box-icon-image mr-2">
+										<img src="{{asset('app-images/images/save-cart.png')}}" alt="">
+									</div>
+									<div class="box-content">
+										<h5 class="box-heading" style="margin-left:5px;">Saved Carts</h5>
+										<p class="box-text" style="margin-top:2.5px;margin-left:5px;">Review your orders</p>
+									</div>
+								</div>
+							</div>
+						</a>
+					</div>
+					<div class="col-lg-4 mb-3">
+						<a href="{{ path('email_quote') }}">
+							<div class="card dashboard-box-item rounded-lg shadow-sm">
+								<div class="card-body px-2 py-2">
+									<div class="box-icon-image mr-2">
+										<img src="{{asset('app-images/images/email-quote.png')}}" alt="">
+									</div>
+									<div class="box-content">
+										<h5 class="box-heading" style="margin-left:5px;">Email Quotes</h5>
+										<p class="box-text" style="margin-top:2.5px;margin-left:5px;">Review your quotes</p>
+									</div>
+								</div>
+							</div>
+						</a>
+					</div>
+					{# <div class="col-lg-4 mb-3">
+						<a href="{{ path('invite_friends') }}">
+							<div class="card dashboard-box-item rounded-lg shadow-sm">
+								<div class="card-body px-2 py-2">
+									<div class="box-icon-image mr-2">
+										<img src="{{asset('app-images/images/email-quote.png')}}" alt="">
+									</div>									
+									<div class="box-content">
+										<h5 class="box-heading" style="margin-left:5px;">Invite Friends</h5>
+										<p class="box-text" style="margin-top:2.5px;margin-left:5px;">Get rewards</p>
+									</div>
+								</div>
+							</div>
+						</a>
+					</div> #}
+					<div class="col-lg-4 mb-3">
+						<a href="{{ path('saved_addresses') }}">
+							<div class="card dashboard-box-item rounded-lg shadow-sm">
+								<div class="card-body px-2 py-2">
+									<div class="box-icon-image mr-2">
+										<img src="{{asset('app-images/images/saved-address.png')}}" alt="">
+									</div>
+									<div class="box-content">
+										<h5 class="box-heading" style="margin-left:5px;">Saved Addresses</h5>
+										<p class="box-text" style="margin-top:2.5px;margin-left:5px;">Manage your delivery locations</p>
+									</div>
+								</div>
+							</div>
+						</a>
+					</div>
+					<div class="col-lg-4 mb-3">
+						<a href="{{ path('saved_cards') }}">
+							<div class="card dashboard-box-item rounded-lg shadow-sm">
+								<div class="card-body px-2 py-2">
+									<div class="box-icon-image mr-2">
+										<img src="https://static.yardsignplus.com/assets/saved-payment-695b5d20a44c8235554742.webp" alt="">
+									</div>
+									<div class="box-content">
+										<h5 class="box-heading" style="margin-left:5px;">Saved Payment Methods</h5>
+										<p class="box-text" style="margin-top:2.5px;margin-left:5px;">Manage your saved payment methods</p>
+									</div>
+								</div>
+							</div>
+						</a>
+					</div>
+				</div>
+			</div>
+		</section>
+	</div>
+</div>
+	{% set WholeSellerEnum = enum('App\\Enum\\WholeSellerEnum') %}
+	{% set RolesEnum = enum('App\\Enum\\RolesEnum') %}
+	{% if storeInfo.isPromoStore
+		and app.user.wholeSellerStatus.value != WholeSellerEnum.ACCEPTED.value
+	%}
+		<section class="checkout-banner-text-wrapper-promo shopping-cart-title-space-promo">
+			<p class="text-white mb-4">Create your account to access discounted wholesale pricing, fast next-day delivery on all eligible products, and round-the-clock customer support whenever you need it.</p>
+				<div class="dont-have-account text-center mt-4">
+					<a href="{{ path('whole_seller_create_account') }}" class="btn btn-light rounded text-bold px-md-4 py-2 rounded-5">
+						<span class="create-account">Wholesaler Sign up</span>
+					</a>
+				</div>
+		</section>
+	{% endif %}
+{% endblock %}

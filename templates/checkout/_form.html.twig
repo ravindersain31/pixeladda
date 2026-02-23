@@ -1,0 +1,282 @@
+
+<style>
+    
+    .international-shipping-charge-btn-purple{
+        background-color: #704d9d;
+        color:white;
+    }
+    .international-shipping-charge-btn-purple:hover{
+        background-color: #704d9d;
+        color:white;
+    }
+
+    .disabled-label {
+        pointer-events: none;
+        opacity: 0.6;
+        background-color: #ccc !important;
+        color: #666 !important;
+        cursor: not-allowed;
+    }
+</style>
+<div {{ stimulus_controller('checkout', {formName: 'checkout'}) }}>
+    {{ form_start(form, {attr: {validation: 'checkout-validation', requirePayment: 'yes'}}) }}
+    {{ form_errors(form) }}
+    <div class="row">
+        <div class="col-12 col-md-6 shipping-billing-form">
+            <div class="card">
+                <div class="card-header">
+                    {{ form_label(form.shippingAddress) }}
+                </div>
+                <div class="card-body">
+                    {{ form_errors(form.shippingAddress) }}
+                    {{ include('checkout/_address.html.twig', {
+                        address: form.shippingAddress,
+                        target: 'shippingAddress',
+                    }) }}
+                    
+                    {% if app.user %}
+                        <div class="saved-address-option">
+                            {{ form_row(form.addToSavedAddress) }}
+                        </div>
+                    {% endif %}
+
+                    <div class="copy-address-button d-flex justify-content-around my-1">
+                        <button
+                                type="button"
+                                class="btn btn-copy-address"
+                                data-loading="action(copyToBillingAddress)|addClass(disabled)"
+                                data-action="click->checkout#copyToBillingAddress"
+                        >
+                            Copy To Billing Address
+                        </button>
+                    </div>
+                    <div id="us-message" class="mt-4 mb-3 international-charge international-shipping d-none">
+                        <p class="international-shipping-border">
+                            International delivery charges will apply to addresses outside of the United States.
+                            For questions please call <a href="tel: +1-877-958-1499">+1-877-958-1499</a>,
+                            email <a href="mailto: {{storeInfo.storeEmail}}">{{storeInfo.storeEmail}}</a>, or message us on our
+                            <a href="javascript:void(Tawk_API.toggle())" class="text-decoration-none display-inline-block">Live Chat</a>.
+                        </p>
+                        <input type="checkbox"
+                        id="popup-ok"
+                        name="internationalShippingCharge"
+                        aria-label="International Shipping Charge"
+                        class="d-none"
+                        data-url="{{ url('international_shipping_charge', {redirect: 'checkout', cartId: cart.cartId}) }}"
+                        {% if cart.isInternationalShippingCharge %}checked{% endif %}>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-6 shipping-billing-form mt-2 mt-md-0">
+            <div class="card">
+                <div class="card-header">
+                    {{ form_label(form.billingAddress) }}
+                </div>
+                <div class="card-body">
+                    {{ form_errors(form.billingAddress) }}
+                    {{ include('checkout/_address.html.twig', {
+                        address: form.billingAddress,
+                        target: 'billingAddress',
+                    }) }}
+                    {{ include('checkout/_text-updates.html.twig') }}
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-12 m-auto">
+            {{ include('checkout/_discount_next_purchase.html.twig') }}
+            {% if cart.subTotal |number_format(2,'.','') <= 1000 %}
+                {% include 'checkout/_order_protection.html.twig' with {from: 'checkout'} %}
+            {% endif %}
+            {{ include('checkout/_payment_method.html.twig') }}
+        </div>
+    </div>
+    {{ form_end(form) }}
+</div>
+<script>
+    window.addEventListener('DOMContentLoaded', function () {
+        const shippingRules = generateValidationRules('shippingAddress');
+        const billingRules = generateValidationRules('billingAddress');
+        const shippingMessage = generateValidationMessages('shippingAddress');
+        const billingMessage = generateValidationMessages('billingAddress');
+        $('[validation="checkout-validation"]').validate({
+            rules: Object.assign({}, shippingRules, billingRules),
+            messages: Object.assign({
+                'checkout[agreeTerms]': {
+                    required: 'Please agree to the terms and conditions',
+                }
+            }, shippingMessage, billingMessage),
+            errorPlacement: function (error, element) {
+                if (element && element.attr('type') === 'checkbox') {
+                    error.insertAfter(element.parent());
+                } else {
+                    error.insertAfter(element);
+                }
+            }
+        });
+    });
+
+    function generateValidationRules(typeOfAddress) {
+        const fieldMessages = {
+            firstName: {
+                required: true,
+            },
+            lastName: {
+                required: true,
+            },
+            addressLine1: {
+                required: true,
+            },
+            city: {
+                required: true,
+            },
+            state: {
+                required: true,
+            },
+            country: {
+                required: true,
+            },
+            zipcode: {
+                required: true,
+            },
+            phone: {
+                required: true,
+            },
+            email: {
+                required: true,
+                email: true,
+            }
+        }
+        let messages = {};
+        for (const [fieldName, fieldMessage] of Object.entries(fieldMessages)) {
+            messages[makeFieldName(typeOfAddress, fieldName)] = fieldMessage;
+        }
+        return messages;
+    }
+
+    function generateValidationMessages(typeOfAddress) {
+        const fieldMessages = {
+            firstName: {
+                required: 'First name cannot be empty',
+            },
+            lastName: {
+                required: 'Last name cannot be empty',
+            },
+            addressLine1: {
+                required: 'Address cannot be empty',
+            },
+            city: {
+                required: 'City cannot be empty',
+            },
+            state: {
+                required: 'State cannot be empty',
+            },
+            country: {
+                required: 'Country cannot be empty',
+            },
+            zipcode: {
+                required: 'Zip code cannot be empty',
+            },
+            phone: {
+                required: 'Phone number cannot be empty',
+            },
+            email: {
+                required: 'Email address cannot be empty',
+                email: 'Email address is not valid',
+            }
+        }
+        let messages = {};
+        for (const [fieldName, fieldMessage] of Object.entries(fieldMessages)) {
+            messages[makeFieldName(typeOfAddress, fieldName)] = fieldMessage;
+        }
+        return messages;
+    }
+
+    function makeFieldName(typeOfAddress, fieldName) {
+        return `checkout[${typeOfAddress}][${fieldName}]`;
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const form = document.querySelector('[validation="checkout-validation"]');
+        const usMessage = document.getElementById('us-message');
+        const checkbox = document.getElementById('popup-ok');
+        const countrySelect = document.querySelector('[name="checkout[shippingAddress][country]"]');
+        const stateSelect = document.querySelector('[name="checkout[shippingAddress][state]"]');
+
+        const domesticCountry = "US";
+        const internationalStates = ["AK", "HI"];
+
+        function saveAndRedirect() {
+            if (!form) return;
+            const formData = new FormData(form);
+            saveAddressToLocalStorage("billingAddress");
+            saveAddressToLocalStorage("shippingAddress");
+
+            sessionStorage.setItem('checkoutFormData', JSON.stringify(Object.fromEntries(formData)));
+            sessionStorage.setItem('checkoutRedirected', 'true');
+
+            const url = checkbox.getAttribute("data-url");
+            setTimeout(() => window.location.href = url, 100);
+        }
+
+        function handleAddressChange() {
+            const country = (countrySelect?.value || "").toUpperCase();
+            const state = (stateSelect?.value || "").toUpperCase();
+            const alreadyRedirected = sessionStorage.getItem('checkoutRedirected') === 'true';
+            const isInternational = (country && country !== domesticCountry) || internationalStates.includes(state);
+
+            if (isInternational) {
+                usMessage?.classList.remove("d-none");
+                if (!checkbox.checked && !alreadyRedirected) {
+                    checkbox.checked = true;
+                    saveAndRedirect();
+                }
+            } else {
+                usMessage?.classList.add("d-none");
+                if (checkbox.checked && !alreadyRedirected) {
+                    checkbox.checked = false;
+                    saveAndRedirect();
+                }
+            }
+        }
+
+        const savedData = sessionStorage.getItem('checkoutFormData');
+        if (savedData) {
+            try {
+                const savedFormData = JSON.parse(savedData);
+                if (savedFormData['checkout[shippingAddress][country]'] && countrySelect) {
+                    countrySelect.value = savedFormData['checkout[shippingAddress][country]'];
+                }
+                if (savedFormData['checkout[shippingAddress][state]'] && stateSelect) {
+                    stateSelect.value = savedFormData['checkout[shippingAddress][state]'];
+                }
+            } catch (e) {
+                console.warn("Invalid checkoutFormData in sessionStorage");
+            }
+        }
+
+        [countrySelect, stateSelect].forEach((select) => {
+            select?.addEventListener("change", () => {
+                sessionStorage.removeItem('checkoutRedirected');
+                handleAddressChange();
+            });
+        });
+
+        let prevCountry = countrySelect?.value || "";
+        let prevState = stateSelect?.value || "";
+
+        setInterval(() => {
+            const currentCountry = countrySelect?.value || "";
+            const currentState = stateSelect?.value || "";
+
+            if (currentCountry !== prevCountry || currentState !== prevState) {
+                prevCountry = currentCountry;
+                prevState = currentState;
+                sessionStorage.removeItem("checkoutRedirected");
+                handleAddressChange();
+            }
+        }, 400);
+
+        handleAddressChange();
+    });
+</script>

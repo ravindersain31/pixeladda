@@ -1,0 +1,63 @@
+{% set currentMonth = "now"|date("Y-m") %}
+{% set selectedMonth = month.date|date("Y-m") %}
+{% set lastDateOfMonth = month.date|date("t") %}
+{% set currentDay = "now"|date("d") %}
+{% set endDate = (currentMonth == selectedMonth) ? currentDay : lastDateOfMonth %}
+
+<div {{ attributes }} style="max-width: 500px; overflow: hidden;">
+
+        <div class="p-4 bg-light rounded shadow-sm w-100" style="max-width: 500px; overflow: hidden;">
+            <p class="text-danger fw-bold mb-3">
+                Are you sure you want to refresh the COGS report for
+                <strong>{{ month.date | date('M Y') }}</strong>?
+            </p>
+
+            <div class="progress mb-3" style="height: 5px;">
+                <div id="progress-bar" class="progress-bar bg-primary" role="progressbar" style="width: 0%;"></div>
+            </div>
+
+            <div class="d-flex align-items-center gap-2 mt-4">
+                <button type="button" id="batch-update" class="btn btn-primary btn-sm w-100">
+                    <span id="button-text">Update All Days</span>
+                </button>
+            </div>
+        </div>
+
+        <script>
+        document.getElementById('batch-update').addEventListener('click', async function () {
+            let button = this;
+            button.disabled = true;
+            let buttonText = document.getElementById('button-text');
+            let progressBar = document.getElementById('progress-bar');
+
+            let startDate = new Date("{{ month.date | date('Y-m-01') }}");
+            let endDate = new Date("{{ month.date | date('Y-m') }}-{{ endDate }}");
+            let totalDays = Math.floor((new Date(endDate) - startDate) / (1000 * 60 * 60 * 24)) + 1;
+            let currentDay = new Date(startDate);
+
+            for (let i = 0; i < totalDays; i++) {
+                let formattedDate = currentDay.toISOString().split('T')[0];
+
+                buttonText.innerText = `Updating ${formattedDate}...`;
+
+                await fetch(`{{ path('admin_update_cogs_month_report') }}?date=${formattedDate}`, {
+                    method: 'POST'
+                });
+                progressBar.style.width = `${((i + 1) / totalDays) * 100}%`;
+                currentDay.setDate(currentDay.getDate() + 1);
+            }
+
+            buttonText.innerText = "Update Complete";
+
+            setTimeout(() => {
+                buttonText.innerText = "Refreshing...";
+            }, 1000);
+
+            setTimeout(() => {
+                location.reload();
+            }, 5000);
+        });
+
+        </script>
+
+</div>

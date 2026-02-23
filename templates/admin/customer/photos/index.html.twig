@@ -1,0 +1,76 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Customer Photos
+{% endblock %}
+{% block pageTitle %}
+	<div class="page-header-icon">
+		<i class="fas fa-list"></i>
+	</div>
+	Customer Photos
+{% endblock %}
+
+{% block body %}
+	<div class="card card-header-actions mx-auto shadow-none">
+		<div class="card-header">
+			List of Customer Photos
+		</div>
+		<div class="table-responsive">
+			<table class="card-body table table-striped mb-0">
+				<thead>
+					<tr>
+						<th>Sr.</th>
+						<th>Website</th>
+						<th>Name</th>
+						<th>Comment</th>
+						<th>Photos</th>
+						<th class="text-nowrap">Updated At / Added At</th>
+						<th>Actions</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for key,photo in customerPhotos %}
+						<tr>
+							<td>{{ customerPhotos.getPaginationData.firstItemNumber + loop.index - 1 }}</td>
+							<td>{{ isPromoStore(photo.storeDomain) ? photo.storeDomain.name : photo.store.shortName }} </td>
+							<td>{{ photo.name | default('-')}}</td>
+							<td>{{ photo.comment }}</td>
+							{% set defaultUrl = 'https://placehold.co/400x400?text=Awaiting+Image' %}
+							{% if 'video' in photo.photo.mimeType %}
+									{% set videoUrl = photo.photo.name is null ? defaultUrl : vich_s3.asset_video(photo, 'photoFile') %}
+									<td>
+											<a href="{{ videoUrl }}">
+													<video src="{{ videoUrl }}" width="100px" controls>
+											</a>
+									</td>
+							{% else %}
+									{% set imageUrl = photo.photo.name is null ? defaultUrl : vich_s3.asset(photo, 'photoFile', '200x200') %}
+									<td>
+											<a href="{{ imageUrl|replace({'100x100/':''}) }}">
+													<img src="{{ imageUrl }}" width="100px">
+											</a>
+									</td>
+							{% endif %}
+							<td>{{ photo.updatedAt|date }} / <br>{{ photo.createdAt|date }}</td>
+							<td>
+								{% set toggleStatus =  photo.isEnabled ? 1 : 0  %}
+								<a href="{{ path('admin_customer_photos_status', { id:photo.id,status: toggleStatus }) }}" class="btn btn-{{ toggleStatus ? 'success' : 'warning' }} btn-xs">
+									{{ toggleStatus ? 'Enabled' : 'Disabled' }}
+								</a>
+								<a href="{{ path('admin_customer_photos_remove',{id:photo.id}) }}" class="btn btn-danger btn-xs"><i class="fas fa-trash me-1"></i>Delete</a>
+							</td>
+						</tr>
+					{% else %}
+						<tr>
+							<td colspan="6">No records</td>
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		<div>
+	</div>
+
+	<div class="mt-4">
+		{{ knp_pagination_render(customerPhotos) }}
+	</div>
+{% endblock %}
+

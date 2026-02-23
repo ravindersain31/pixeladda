@@ -1,0 +1,25 @@
+{% extends 'emails/base.html.twig' %}
+{% block title %}Your Referral Coupon{% endblock %}
+{% block body %}
+<h1>Welcome to YardSignPlus!</h1>
+<p>Dear {{customer.name}},</p>
+
+<p>You received this coupon by signing up through a referral link shared by a friend or family member.</p>
+
+<h3>Your Coupon Details:</h3>
+<table border="1" style="margin-left: auto; margin-right: auto; text-align: left; border-collapse: collapse;">
+    <tr>
+        <th style="padding: 5px;">Coupon Code</th>
+        <td style="padding: 5px;">{{coupon.code}}</td>
+    </tr>
+    <tr>
+        <th style="padding: 5px;">Discount</th>
+        <td style="padding: 5px;">{{coupon.discount}}%</td>
+    </tr>
+    <tr>
+        <th style="padding: 5px;">Valid Until</th>
+        <td style="padding: 5px;">{{coupon.endDate|date('Y-m-d')}}</td>
+    </tr>
+</table>
+<p>Use this coupon at checkout to get your discount. Enjoy shopping with us!</p>
+{% endblock %}

@@ -1,0 +1,53 @@
+
+{% set proofFrameType = '' %}
+{% set proofGrommetsType = '' %}
+{% set proofShapeType = '' %}
+{% set proofFluteType = '' %}
+
+{% if item.addOns.frame is defined and item.addOns.frame.key != 'NONE' %}
+    {% set proofFrameType = item.addOns.frame.displayText %}
+{% endif %}
+{% if (item.isWireStake) %}
+    {% set proofFrameType = (item.product.label | default('')) ~ ' Frame' %}
+{% endif %}
+
+{% if item.addOns.grommets is defined and item.addOns.grommets.key != 'NONE' %}
+    {% set proofGrommetsType = 'GROMMETS: ' ~ item.addOns.grommets.key|replace({'_': ' '})|replace({'ALL': ''})|trim ~ ' ' ~ item.addOns.grommetColor.key %}
+{% endif %}
+
+{% if item.addOns.shape is defined and item.addOns.shape.key == 'CUSTOM' %}
+    {% set proofShapeType = item.addOns.shape.displayText %}
+{% endif %}
+
+{% if item.addOns.flute is defined and item.addOns.flute.key != 'VERTICAL' %}
+	{% set proofFluteType = item.addOns.flute.displayText %}
+{% endif %}
+
+{% if product.sku not in ['WIRE-STAKE', 'SAMPLE', 'BLANK-SIGN'] %}
+    {% if withCustomerDesign %}
+        {{ include('admin/order/auto-generated-proof/proof_blocks/_proof_customer_design_image.html.twig') }}
+    {% else %}
+        {{ include('admin/order/auto-generated-proof/proof_blocks/_proof_template_image.html.twig') }}
+    {% endif %}
+{% endif %}
+
+<p class="text-avenir-next-condensed-boldi-talic custom-bg">{{ proofFrameType|upper }}</p>
+<p class="text-avenir-next-condensed-boldi-talic custom-bg">{{ proofGrommetsType }}</p>
+<p class="text-avenir-next-condensed-boldi-talic">{{ proofShapeType|upper }}</p>
+<p class="text-avenir-next-condensed-boldi-talic custom-bg">{{ proofFluteType|upper }}</p>
+
+{% if item.metaData['isBlindShipping'] is defined and item.metaData['isBlindShipping'] %}
+    <p class="text-avenir-next-condensed-boldi-talic custom-bg">
+        BLIND SHIPPING DO NOT INCLUDE PACKING LIST
+    </p>
+{% endif %}
+{% if item.metaData['isFreeFreight'] is defined and item.metaData['isFreeFreight'] %}
+    <p class="text-avenir-next-condensed-boldi-talic">
+        <span class="custom-bg">FREE FREIGHT: SCORING</span>
+    </p>
+{% endif %}
+
+{% if item.metaData['YSPLogoDiscount']['hasLogo'] is defined and item.metaData['YSPLogoDiscount']['hasLogo'] %}
+    {% set ysp_logo_image_top_space = loop.first ? "10px" : "70px" %}
+    <img src="https://static.yardsignplus.com/storage/icons/logo.png" width="30" height="30" style="top: {{ysp_logo_image_top_space}};" class="ysp-logo-image position-absolute" alt="ysp-logo">
+{% endif %}

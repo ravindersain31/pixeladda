@@ -1,0 +1,342 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Bulk Order - YardSignPlus{% endblock %}
+{% block stylesheets %}
+    <style>
+        .btn-sgs-white {
+            color: var(--primary-color);
+            background-color: #fff;
+            border-color: var(--primary-color);
+            border-radius: 3px;
+            box-shadow: 2px 3px 2px #000;
+        }
+
+        .btn-sgs-white:hover {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+    </style>
+{% endblock %}
+{% block metaData %}
+    <link rel="canonical" href="{{ url('bulk_order_enquiry') }}" />
+    {% include 'common/_default_schema.html.twig' %}
+{% endblock %}
+{% block body %}
+    <section class="header-design-one container-fluid header-cart-page" style="background-color: var(--primary-color)">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="d-flex justify-content-center align-items-center">
+                    <h2 class="heading" style="color: #fff; font-weight: 700; padding: 12px !important; text-shadow: -4px 4px 4px #000; font-style: italic; text-transform: uppercase;">
+                        BULK ORDERING
+                    </h2>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="common-sec-horizontal-pad ysp-bulk-us-wrapper">
+        <div class="container-md">
+            <div class="row">
+                <div class="col-lg-12 mt-4 mb-4">
+                    <div class="bulk-us-form-wrapper">
+                        {{ include('common/flash.html.twig') }}
+
+                        <div {{ stimulus_controller('form-validation') }}>
+                            {{ form_start(form, { attr: {'validation' : 'jquery'} }) }}
+                            {{ form_errors(form) }}
+
+                            <div id="bulk-form">
+                                <div class="row me-xxl-3">
+                                    <div class="col-md-6 ">
+                                        <div class="form-group">{{ form_row(form.firstName) }}</div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">{{ form_row(form.lastName) }}</div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">{{ form_row(form.phoneNumber) }}</div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">{{ form_row(form.email) }}</div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">{{ form_row(form.company) }}</div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            {{ form_label(form.quantity) }}
+                                            {{ form_widget(form.quantity, {'attr': {'class': 'form-control'}}) }}
+                                            {{ form_errors(form.quantity) }}
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">{{ form_row(form.budget) }}</div>
+                                    </div>
+                                    <div class="col-md-6 deliveryDate">
+                                           <div class="form-group">
+                                        {{ form_label(form.deliveryDate) }}
+                                        <div class="input-group">
+                                            {{ form_widget(form.deliveryDate) }}
+                                            <span class="input-group-calender">
+                                                <i class="fa fa-calendar"></i>
+                                            </span>
+                                        </div>
+                                        
+                                    </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">{{ form_row(form.productInInterested) }}</div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">{{ form_row(form.comment) }}</div>
+                                    </div>
+
+                                    <div class="col-12 d-flex justify-content-center mt-3">
+                                        {% if form.recaptcha is defined %}
+                                            <div class="form-group">{{ form_row(form.recaptcha) }}</div>
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="form-group mt-3 form-group-submit text-center">
+                                        <button type="submit" class="btn">Submit</button>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <div class="error-response text-danger text-capitalize mt-2"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            {{ form_end(form) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+{% endblock %}
+{% block footerJavascripts %}
+
+  <!-- Ensure jQuery and Bootstrap Datepicker JS + CSS are loaded -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-datepicker@1.10.0/dist/css/bootstrap-datepicker.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap-datepicker@1.10.0/dist/js/bootstrap-datepicker.min.js"></script>
+    <script>
+     document.addEventListener('DOMContentLoaded', function() {
+        const phoneInput = document.querySelector('input[name="bulk_order[phoneNumber]"]');
+
+        phoneInput.addEventListener('input', (e) => {
+            let input = e.target.value;
+
+            // Remove all non-digit characters
+            input = input.replace(/\D/g, '');
+
+            if (input.length > 0) {
+            input = '(' + input;
+            }
+            if (input.length > 4) {
+            input = input.slice(0, 4) + ') ' + input.slice(4);
+            }
+            if (input.length > 9) {
+            input = input.slice(0, 9) + '-' + input.slice(9, 13);
+            }
+            if (input.length > 14) {
+            input = input.slice(0, 14);
+            }
+
+            e.target.value = input;
+        });
+    });
+</script>
+<script>
+        window.addEventListener('DOMContentLoaded', function () {
+            $('[validation="jquery"]').validate({
+                rules: {
+                    'bulk_order[firstName]': {
+                        required: true,
+                        pattern: /^(?=.*[A-Za-zÀ-ÿ])[A-Za-zÀ-ÿ' -]+$/,
+                    },
+                    'bulk_order[lastName]': {
+                        required: true,
+                        pattern: /^(?=.*[A-Za-zÀ-ÿ])[A-Za-zÀ-ÿ' -]+$/,
+                    },
+                    'bulk_order[email]': {
+                        required: true,
+                        email: true,
+                    },
+                    'bulk_order[phoneNumber]': {
+                        required: true,
+                        pattern: /^\s*(?:\+?(\d{1,3}))?[-. (]*(\d{3})[-. )]*(\d{3})[-. ]*(\d{4})(?: *x(\d+))?\s*$/,
+                        minlength: 14,
+                    },
+                    'bulk_order[recaptcha]': {
+                        required: true
+                    }
+                },
+                messages: {
+                    'bulk_order[firstName]': {
+                        pattern: 'Please enter a valid name (letters only).',
+                    },
+                    'bulk_order[lastName]': {
+                        pattern: 'Please enter a valid name (letters only).',
+                    },
+                    'bulk_order[email]': {
+                        email: 'Please enter a valid email address',
+                    },
+                    'bulk_order[telephone]': {
+                        pattern: 'Please enter a valid phone number',
+                        minlength: 'Phone number must be at least 10 characters long',
+                    },
+                    'bulk_order[recaptcha]': {
+                        required: 'Please verify you are not a robot',
+                    }
+                },
+                errorPlacement: function(error, element) {
+                    if (element.attr("name") === "bulk_order[recaptcha]") {
+                        error.insertAfter(element.closest('.g-recaptcha'));
+                    } else {
+                        error.insertAfter(element);
+                    }
+                },
+                submitHandler: function (form) {
+                    const $btn = $(form).find('button[type="submit"]');
+                    $btn.prop('disabled', true).text('Processing...');
+                    form.submit();
+                }
+            });
+        });
+    </script>
+
+<script>
+    $('.date-picker').datepicker({
+        format: 'dd/mm/yyyy',
+        autoclose: true,
+        clearBtn: true,
+        startDate: new Date(new Date().setDate(new Date().getDate() + 1)),
+        todayHighlight: false
+    }).on('show', function () {
+        // Retry every few ms until the widget is visible (works even if slightly delayed)
+        const interval = setInterval(() => {
+            const dp = document.querySelector('.datepicker-dropdown');
+            if (dp && dp.offsetHeight > 0) {
+                dp.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center'
+                });
+                clearInterval(interval); // Stop once done
+            }
+        }, 20);
+
+        // Optional: stop after 500ms in case it fails
+        setTimeout(() => clearInterval(interval), 500);
+    });
+
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const placeholderOption = document.querySelector('#bulk_order_budget option[value=""]');
+        if (placeholderOption) {
+            placeholderOption.disabled = true;
+            placeholderOption.hidden = true;
+        }
+    });
+
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.input-group-calender').forEach(el => {
+        el.addEventListener('click', () => {
+            const input = el.closest('.input-group').querySelector('input.date-picker');
+            if (input) input.focus();
+        });
+    });
+});
+</script>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const quantityInput = document.querySelector('input[name="form[quantity]"]');
+    if (quantityInput) {
+        quantityInput.addEventListener('keydown', function (e) {
+            if (e.key === '-' || e.key === 'Minus') {
+                e.preventDefault();
+            }
+        });
+
+        quantityInput.addEventListener('paste', function (e) {
+            const pasted = e.clipboardData.getData('text');
+            if (pasted.includes('-')) {
+                e.preventDefault();
+            }
+        });
+    }
+
+
+    const deliveryDateInput = document.querySelector('input.date-picker');
+
+    if (!deliveryDateInput) return;
+
+    deliveryDateInput.addEventListener('input', function (e) {
+        let value = e.target.value.replace(/\D/g, ''); // remove all non-digits
+
+        if (value.length >= 3 && value.length <= 4) {
+            value = value.slice(0, 2) + '/' + value.slice(2);
+        } else if (value.length > 4) {
+            value = value.slice(0, 2) + '/' + value.slice(2, 4) + '/' + value.slice(4, 8);
+        }
+
+        e.target.value = value.slice(0, 10);
+    });
+
+    deliveryDateInput.addEventListener('blur', function (e) {
+        const value = e.target.value.trim();
+
+        // Regex to check proper MM/DD/YYYY format
+        const regex = /^(0[1-9]|1[0-2])\/(0[1-9]|[12][0-9]|3[01])\/\d{4}$/;
+
+        // Extra check: validate actual date using JS Date object
+        const parts = value.split('/');
+        const mm = parseInt(parts[0], 10);
+        const dd = parseInt(parts[1], 10);
+        const yyyy = parseInt(parts[2], 10);
+
+        const testDate = new Date(yyyy, mm - 1, dd);
+        const isValidDate = testDate.getFullYear() === yyyy &&
+                            testDate.getMonth() === mm - 1 &&
+                            testDate.getDate() === dd;
+
+    });
+
+    deliveryDateInput.addEventListener('keydown', function (e) {
+        if (e.key === 'Delete') {
+            deliveryDateInput.value = '';
+        }
+    });
+});
+</script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const inputs = Array.from(document.querySelectorAll('#bulk-form input, #bulk-form select, #bulk-form textarea'));
+
+    inputs.forEach((input, index) => {
+      input.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          const next = inputs[index + 1];
+          if (next) next.focus();
+        }
+      });
+    });
+  });
+</script>
+
+{% endblock %}

@@ -1,0 +1,37 @@
+<table style="width: 100%; border: none; border-spacing: 0;">
+    {{ include('emails/common/_proof_instruction.html.twig') }}
+    <tr>
+        <td colspan="3">
+            <p class="order-arrive-info" style="font-size: 22px;color: #000000;padding: 0 50px;line-height: 135%;margin: 5px 0 0 0;">
+                Your order will arrive on</p>
+            <p class="order-arrive-date-info" style="font-size: 22px;font-weight: bold;color: {{ primaryColor }};padding: 0 50px;line-height: 135%;margin: 0 0 30px 0;">{{ order.deliveryDate | date('F d, Y') }}</p>
+            <a class="ysp-common-btn-sm view-order-button" href="{{ storeBasedUrl( url('order_view',{oid:order.orderId}), order.storeDomain) }}"
+               style="background-color: #efc825;color: #000000;font-size: 32px;text-transform: uppercase;text-decoration: none;padding: 18px 30px;display: inline-block;font-weight: normal;border-radius: 10px;margin: 0;line-height: 1.5;">
+                CLICK TO VIEW ORDER DETAILS
+            </a>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="3" style="padding: 0 60px 15px;" class="ys-mob-desc-paragraph">
+            <p style="margin: 20px 0 0;color: #6c757d;font-size: 10px;font-weight: normal;line-height: 135%;font-style: italic;">
+                <sup style="font-size: 12px">*</sup>This date is subject to change based on when you approve the ﬁnal proof.
+            </p>
+            <p style="margin: 10px 0 0;color: #6c757d;font-size: 10px;font-weight: normal;line-height: 135%;font-style: italic;">
+                Our current estimate is that your order will be delivered by the delivery date selected.
+            </p>
+            <p style="margin: 10px 0 0;color: #6c757d;font-size: 10px;font-weight: normal;line-height: 135%;font-style: italic;">
+                Colors may slightly vary on the ﬁnal product. This includes repeat orders.
+                All orders are fully custom. The production process includes high temperatures,
+                cutting, and packaging which can impact the ﬁnal visual color.
+            </p>
+            <p style="margin: 10px 0 0;color: #6c757d;font-size: 10px;font-weight: normal;line-height: 135%;font-style: italic;">
+                Please note we almost identically match the CMYK colors listed on the proof
+                we send you for your review.
+            </p>
+            <p style="margin: 10px 0 0;color: #6c757d;font-size: 10px;font-weight: normal;line-height: 135%;font-style: italic;">
+                If any delays occur, please contact us at
+                <a style="color: #1156cd;" href="mailto:{{storeInfo.storeSupportEmail}}">{{storeInfo.storeSupportEmail}}</a>
+                and we will further assist you.</p>
+        </td>
+    </tr>
+</table>

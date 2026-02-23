@@ -1,0 +1,68 @@
+{% extends 'emails/base.html.twig' %}
+{% block title %}YOUR ORDER HAS BEEN DELIVERED! 🎉{% endblock %}
+{% block subject %}YOUR ORDER HAS BEEN DELIVERED! 🎉{% endblock %}
+{% block body %}
+    <tr>
+        <td colspan="3">
+            <p style="font-size: 26px; font-weight: bold; color: #000000; padding: 0 20px; margin: 20px 0 10px; text-align: center;"
+               class="user-name">
+                Hi {{ order.billingAddress.firstName }} {{ order.billingAddress.lastName }}
+            </p>
+            <p class="off-desc"
+               style="font-size: 18px; color: #000000; padding: 0 20px; line-height: 135%; margin: 15px 0 20px; text-align: center;">
+                Your order with Order ID: <b>{{ order.orderId }}</b> has been successfully delivered. <br/>
+                Thank you for choosing us, and we hope you enjoy your purchase!
+            </p>
+            <p class="off-desc"
+               style="font-size: 18px; color: #000000; padding: 0 20px; line-height: 135%; margin: 15px 0 20px; text-align: center;">
+                If you have any questions or need further assistance, please feel free to reach out to our customer
+                support team.
+            </p>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="3">
+            <p style="font-size: 16px; font-weight: bold; color: #000000; padding: 0 20px; margin: 20px 0 30px; text-align: center;">
+                Stay connected with us:
+            </p>
+            <table align="center" style="width: 100%; max-width: 300px; margin: 0 auto;">
+                <tr>
+                    <td style="text-align: center; padding: 10px;">
+                        <a href="https://x.com/yardsignplus" target="_blank" style="text-decoration: none;">
+                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                                <tr>
+                                    <td style="background: #1DA1F2; font-size: 18px; font-weight: 600; color: #000; padding: 5px; border-radius: 10px; text-align: center;">
+                                        <img src="https://static.yardsignplus.com/assets/social/twitter.png" alt="Twitter" width="34" height="34" style="vertical-align: middle;">
+                                    </td>
+                                </tr>
+                            </table>
+                        </a>
+                    </td>
+                    <td style="text-align: center; padding: 10px;">
+                        <a href="https://www.facebook.com/yardsignplusdotcom" target="_blank" style="text-decoration: none;">
+                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                                <tr>
+                                    <td style="background: #1877F2; font-size: 18px; font-weight: 600; color: #000; padding: 5px; border-radius: 10px; text-align: center;">
+                                        <img src="https://static.yardsignplus.com/assets/social/facebook.png" alt="Facebook" width="34" height="34" style="vertical-align: middle;">
+                                    </td>
+                                </tr>
+                            </table>
+                        </a>
+                    </td>
+                    <td style="text-align: center; padding: 10px;">
+                        <a href="https://www.instagram.com/yardsign_plus/" target="_blank" style="text-decoration: none;">
+                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                                <tr>
+                                    <td style="background: linear-gradient(45deg, #F58529, #DD2A7B, #8134AF, #515BD4); font-size: 18px; font-weight: 600; color: #000; padding: 5px; border-radius: 10px; text-align: center;">
+                                        <img src="https://static.yardsignplus.com/assets/social/instagram.png" alt="Instagram" width="34" height="34" style="vertical-align: middle;">
+                                    </td>
+                                </tr>
+                            </table>
+                        </a>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+    {{ include('emails/common/_contact_us_message.html.twig') }}
+{% endblock %}

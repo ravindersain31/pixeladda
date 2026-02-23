@@ -1,0 +1,17 @@
+twig:
+    default_path: '%kernel.project_dir%/templates'
+    form_themes: ['form/ysp.html.twig']
+    globals:
+        vich_s3: '@App\Helper\VichS3Helper'
+        ysp: '@App\Twig\ConfigProvider'
+        enum: '@App\Twig\EnumProvider'
+        warehouse: '@App\Twig\WarehouseProvider'
+        lightCart: '@App\Twig\LightCartProvider'
+        shippingTracking: '@App\Helper\ShippingTrackingLinksHelper'
+        deliveryCalendar: '@App\Service\DeliveryCalendarService'
+        reward: '@App\Service\Reward\RewardService'
+        preferredShipping: '@App\Service\EasyPost\PreferredShipping'
+
+when@test:
+    twig:
+        strict_variables: true

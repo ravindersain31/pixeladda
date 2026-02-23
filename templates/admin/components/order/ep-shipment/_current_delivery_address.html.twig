@@ -1,0 +1,50 @@
+<div>
+    <b>Shipping Address</b>
+    {% if epShippingAddress or epShippingAddress.id is defined %}
+        <i class="fa fa-check-circle text-success" aria-hidden="true"></i>
+    {% endif %}
+</div>
+{% set country = ysp.getCountryByIsoCode(order.shippingAddress.country | default('-')) %}
+{% set state =  ysp.getStateByIsoCode(order.shippingAddress.state | default('-'), country) %}
+<div class="view-address">
+    <p class="mb-0">{{ order.shippingAddress.firstName | default('-') }} {{ order.shippingAddress.lastName | default('-') }}</p>
+    <p class="mb-0">{{ order.shippingAddress.addressLine1 | default('-') }}</p>
+    {% if order.shippingAddress.addressLine2 is defined %}
+        <p class="mb-0">{{ order.shippingAddress.addressLine2 }}</p>
+    {% endif %}
+    <p class="mb-0">
+        <b>City:</b> {{ order.shippingAddress.city | default('-') }} |
+        <b>State:</b> {{ state.name | default('-') }}
+    </p>
+    <p class="mb-0">
+        <b>Country:</b> {{ country.name | default('-') }} |
+        <b>Zipcode:</b> {{ order.shippingAddress.zipcode | default('-') }}
+    </p>
+    <p class="mb-0">
+        <b>Email:</b> {{ order.shippingAddress.email | default('-') }} |
+        <b>Phone:</b> {{ order.shippingAddress.phone | default('-') }}
+    </p>
+</div>
+{% if 'ROLE_WAREHOUSE' not in app.user.roles %}
+    {% if epShippingAddress is null or epShippingAddress.id is not defined %}
+        <div class="d-flex align-items-center mt-2">
+            <button class="btn btn-info btn-sm text-white"
+                    data-action="live#action"
+                    data-live-action-param="validateAddress"
+                    data-live-verify-param="true"
+                    data-loading="addClass(opacity-50 disabled)">
+                Verify Address with EP
+            </button>
+            <button class="btn btn-link p-0 ms-2" data-action="live#action" data-live-action-param="validateAddress"
+                    data-live-verify-param="false" data-loading="addClass(opacity-50 disabled)">
+                Manually Verified
+            </button>
+        </div>
+    {% endif %}
+{% else %}
+    {% if epShippingAddress is null or epShippingAddress.id is not defined %}
+        <div class="alert alert-warning p-2 text-center fw-bold mt-2 fs-15">
+            Please ask the CSR/Admin team to verify the address so that you can create shipment and purchase label.
+        </div>
+    {% endif %}
+{% endif %}

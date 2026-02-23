@@ -1,0 +1,13 @@
+{% if is_granted('warehouse_update_order_details') %}
+    <div class="card shadow-none mb-2">
+        <div class="card-header p-2 text-dark h-auto">Order Details</div>
+        <div class="card-body p-2">
+            {{ component('AdminWarehouseOrderUpdate', {
+                warehouseOrder,
+                order,
+            }) }}
+        </div>
+    </div>
+{% endif %}
+
+{{ component('AdminWarehouseOrderLog', { warehouseOrder }) }}

@@ -1,0 +1,55 @@
+<div {{ attributes }}>
+    {% include 'flash.html.twig' with { class: 'p-2' } %}
+    <div class="d-flex">
+        {% if type == 'shippingAddress' %}
+            <b>Shipping Address:-</b>
+        {% elseif type == 'billingAddress' %}
+            <b>Billing Address:-</b>
+        {% else %}
+            <b>{{ type }}:-</b>
+        {% endif %}
+        {% set epAddress = order.metaDataKey('epShippingAddress') %}
+        {% include('admin/components/order/_edit_address.html.twig') %}
+        {% if type == 'shippingAddress' %}
+            {% if epAddress is null or epAddress.id is not defined %}
+                <button class="btn badge bg-info text-white ms-1"
+                        data-action="live#action"
+                        data-live-action-param="validateAddress"
+                        data-loading="addClass(opacity-50 disabled)">
+                    Validate Address
+                </button>
+                <button class="btn btn-link p-0 ms-2" data-action="live#action" data-live-action-param="validateAddressManual"
+                    data-live-verify-param="false" data-loading="addClass(opacity-50 disabled)">
+                    Manually Verified
+                </button>
+            {% else %}
+                <span class="badge bg-success d-flex align-items-center ms-1">
+                    <i class="fa fa-check-circle me-1" aria-hidden="true"></i>
+                    Verified
+                </span>
+            {% endif %}
+        {% endif %}
+    </div>
+
+    {% set country = ysp.getCountryByIsoCode(address.country | default('-')) %}
+    {% set state =  ysp.getStateByIsoCode(address.state | default('-'), country) %}
+    <div class="view-address">
+        <p class="mb-0">{{ address.firstName | default('-') }} {{ address.lastName | default('-') }}</p>
+        <p class="mb-0">{{ address.addressLine1 | default('-') }}</p>
+        {% if address.addressLine2 is defined %}
+            <p class="mb-0">{{ address.addressLine2 }}</p>
+        {% endif %}
+        <p class="mb-0">
+            <b>City:</b> {{ address.city | default('-') }} |
+            <b>State:</b> {{ state.name | default('-') }}
+        </p>
+        <p class="mb-0">
+            <b>Country:</b> {{ country.name | default('-') }} |
+            <b>Zipcode:</b> {{ address.zipcode | default('-') }}
+        </p>
+        <p class="mb-0">
+            <b>Email:</b> {{ address.email | default('-') }} |
+            <b>Phone:</b> {{ address.phone | default('-') }}
+        </p>
+    </div>
+</div>
